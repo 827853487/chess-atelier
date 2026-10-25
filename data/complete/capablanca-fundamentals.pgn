@@ -1,0 +1,1672 @@
+[Event "Capablanca Chess Fundimentals Part 1: Example 1"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "7k/8/8/8/8/8/8/R6K w - - 0 1"]
+[SetUp "1"]
+[PlyCount "17"]
+[TrainingTitle "例 1 · 车与王的配合"]
+[BookChapter "Example 1"]
+[SourceRecordId "fundamentals-uL7pPw98-1"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Ra7 Kg8 2. Kg2 Kf8 3. Kf3 Ke8 4. Ke4 Kd8 5. Kd5 Kc8 6. Kc6 Kb8 7. Rf7 Ka8
+8. Kb6 Kb8 9. Rf8# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 2"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/8/8/4k3/8/8/8/4K2R w - - 0 1"]
+[SetUp "1"]
+[PlyCount "21"]
+[TrainingTitle "例 2 · 车与王的配合"]
+[BookChapter "Example 2"]
+[SourceRecordId "fundamentals-uL7pPw98-2"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Ke2 Kd5 2. Ke3 Kc4 3. Rh5 Kc3 4. Rh4 Kc2 5. Rc4+ Kb3 6. Kd3 Kb2 7. Rb4+ Ka3
+8. Kc3 Ka2 9. Ra4+ Kb1 10. Ra3 Kc1 11. Ra1# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 3"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "7k/8/8/8/8/8/8/2B1KB2 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "27"]
+[TrainingTitle "例 3 · 象与王兵的配合"]
+[BookChapter "Example 3"]
+[SourceRecordId "fundamentals-uL7pPw98-3"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Bd3 Kg7 2. Bg5 Kf7 3. Bf5 Kg7 4. Kf2 Kf7 5. Kg3 Kg7 6. Kh4 Kf7 7. Kh5 Kg7
+8. Bg6 Kg8 9. Kh6 Kf8 10. Bh5 Kg8 11. Be7 Kh8 12. Bg4 Kg8 13. Be6+ Kh8 14.
+Bf6# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 4"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[FEN "8/8/8/4k3/8/8/8/4K2Q w - - 0 1"]
+[SetUp "1"]
+[ECO "?"]
+[PlyCount "15"]
+[TrainingTitle "例 4 · 后与王的配合"]
+[BookChapter "Example 4"]
+[SourceRecordId "fundamentals-uL7pPw98-4"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+[SourceCorrection "See collection sourceCorrections for documented diagram or castling-flag normalization"]
+
+1. Qc6 Kd4 2. Kd2 Ke5 3. Ke3 Kf5 4. Qd6 Kg5 5. Qe6 Kh4 6. Qg6 Kh3 7. Kf3 Kh4
+8. Qg4# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 5"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/8/8/8/4k3/8/3KP3/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "22"]
+[TrainingTitle "例 5 · 兵的升变与兵残局"]
+[BookChapter "Example 5"]
+[SourceRecordId "fundamentals-uL7pPw98-5"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e3 Ke5 2. Kd3 Kd5 3. e4+ Ke5 4. Ke3 Ke6 5. Kd4 Kd6 6. e5+ Ke6 7. Ke4 Ke7 8.
+Kf5 Kf7 9. e6+ Ke7 10. Ke5 Ke8 11. Kf6 Kf8 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 6"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/8/5k2/8/5K2/8/4P3/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "17"]
+[TrainingTitle "例 6 · 兵的升变与兵残局"]
+[BookChapter "Example 6"]
+[SourceRecordId "fundamentals-uL7pPw98-6"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Ke4 Ke6 2. e3 Kf6 3. Kd5 Ke7 4. Ke5 Kd7 5. Kf6 Ke8 6. e4 Kd7 7. e5 Ke8 8.
+Ke6 Kf8 9. Kd7 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 7"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "5k2/6p1/4K1P1/5P2/8/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "13"]
+[TrainingTitle "例 7 · 兵的升变与兵残局"]
+[BookChapter "Example 7"]
+[SourceRecordId "fundamentals-uL7pPw98-7"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Kd7 Kg8 2. Ke7 Kh8 3. f6 gxf6 4. Kf7 f5 5. g7+ Kh7 6. g8=Q+ Kh6 7. Qg6# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 8"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/6p1/3k4/8/3K1PP1/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "35"]
+[TrainingTitle "例 8 · 兵的升变与兵残局"]
+[BookChapter "Example 8"]
+[SourceRecordId "fundamentals-uL7pPw98-8"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Ke4 Ke6 2. f5+ Kf6 3. Kf4 g6 4. g5+ Kf7 5. f6 Ke6 6. Ke4 Kf7 7. Ke5 Kf8 8.
+f7 Kxf7 9. Kd6 Kf8 10. Ke6 Kg7 11. Ke7 Kg8 12. Kf6 Kh7 13. Kf7 Kh8 14. Kxg6
+Kg8 15. Kh6 Kh8 16. g6 Kg8 17. g7 Kf7 18. Kh7 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 9"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/6pp/3k4/8/3K1PPP/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "11"]
+[TrainingTitle "例 9 · 兵的升变与兵残局"]
+[BookChapter "Example 9"]
+[SourceRecordId "fundamentals-uL7pPw98-9"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. f5 Ke7 2. Ke4 Kf7 3. g5 Ke7 4. h5 g6 5. hxg6 hxg6 6. f6+ *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 10"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/p6p/4k3/8/4K3/8/P5PP/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "13"]
+[TrainingTitle "例 10 · 兵的升变与兵残局"]
+[BookChapter "Example 10"]
+[SourceRecordId "fundamentals-uL7pPw98-10"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. g4 a5 2. a4 Kf6 3. h4 Ke6 4. g5 Kf7 5. Kf5 Kg7 6. h5 Kf7 7. Ke5 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 11"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "5rk1/1b3p1p/ppq3p1/2p5/8/1P1P1R1Q/PBP3PP/7K b - - 0 1"]
+[SetUp "1"]
+[PlyCount "6"]
+[TrainingTitle "例 11 · 子力配合与战略"]
+[BookChapter "Example 11"]
+[SourceRecordId "fundamentals-uL7pPw98-11"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1... Re8 2. Qxh7+ Kxh7 3. Rh3+ Kg8 4. Rh8# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 12"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "5rk1/1bq1bp1p/p1n3p1/1p6/3N4/1P1PR2Q/PBP3PP/7K w - - 0 1"]
+[SetUp "1"]
+[PlyCount "7"]
+[TrainingTitle "例 12 · 子力配合与战略"]
+[BookChapter "Example 12"]
+[SourceRecordId "fundamentals-uL7pPw98-12"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Nxc6 Bg5 2. Ne7+ Qxe7 3. Rxe7 Bxe7 4. Qd7 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 13"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "2q2rk1/1b3ppp/pp6/2p5/2P1N3/PP1Q4/1B3PPP/7K w - - 0 1"]
+[SetUp "1"]
+[PlyCount "5"]
+[TrainingTitle "例 13 · 子力配合与战略"]
+[BookChapter "Example 13"]
+[SourceRecordId "fundamentals-uL7pPw98-13"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Nf6+ gxf6 2. Qg3+ Kh8 3. Bxf6# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 14"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "2q1rrk1/1bpn1ppp/pp1p4/1B6/4N3/1P1QR3/PBP2PPP/6K1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "7"]
+[TrainingTitle "例 14 · 子力配合与战略"]
+[BookChapter "Example 14"]
+[SourceRecordId "fundamentals-uL7pPw98-14"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Bxd7 Qxd7 2. Nf6+ gxf6 3. Rg3+ Kh8 4. Bxf6# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 15"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "r3qrk1/1pp2ppp/p1np4/3Q4/8/P2B1N2/1PP2PPP/3R2K1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "7"]
+[TrainingTitle "例 15 · 子力配合与战略"]
+[BookChapter "Example 15"]
+[SourceRecordId "fundamentals-uL7pPw98-15"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Bxh7+ Kxh7 2. Qh5+ Kg8 3. Ng5 Qe4 4. Nxe4 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 16"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "2nb1rk1/1pqrnppp/p2p4/2pQ1N2/6P1/1P1B1N1P/P3RP2/3R2K1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "19"]
+[TrainingTitle "例 16 · 子力配合与战略"]
+[BookChapter "Example 16"]
+[SourceRecordId "fundamentals-uL7pPw98-16"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Nxe7+ Bxe7 2. Rxe7 Nxe7 3. Bxh7+ Kxh7 4. Qh5+ Kg8 5. Ng5 Rc8 6. Qh7+ Kf8 7.
+Qh8+ Ng8 8. Nh7+ Ke7 9. Re1+ Kd8 10. Qxg8# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 17"]
+[Site "?"]
+[Date "2021.02.18"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "C49"]
+[PlyCount "13"]
+[TrainingTitle "例 17 · 子力配合与战略"]
+[BookChapter "Example 17"]
+[SourceRecordId "fundamentals-uL7pPw98-17"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 Bb4 5. O-O O-O 6. d3 d6 7. Bg5 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 18"]
+[Site "?"]
+[Date "2021.02.19"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "C41"]
+[PlyCount "17"]
+[TrainingTitle "例 18 · 子力配合与战略"]
+[BookChapter "Example 18"]
+[SourceRecordId "fundamentals-uL7pPw98-18"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Nd7 4. Bc4 h6 5. Nc3 Ngf6 6. Be3 Be7 7. Qe2 c6 8. Rd1
+Qc7 9. O-O *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 19"]
+[Site "?"]
+[Date "2021.02.19"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "C41"]
+[PlyCount "16"]
+[TrainingTitle "例 19 · 子力配合与战略"]
+[BookChapter "Example 19"]
+[SourceRecordId "fundamentals-uL7pPw98-19"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Qf6 7. Qb3 b6 8.
+Nc3 c6 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 20"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "r2qkbnr/ppp2pp1/2np3p/4p3/2BPP1b1/2N2N2/PPP2PPP/R1BQK2R w KQkq - 0 1"]
+[SetUp "1"]
+[PlyCount "7"]
+[TrainingTitle "例 20 · 子力配合与战略"]
+[BookChapter "Example 20"]
+[SourceRecordId "fundamentals-uL7pPw98-20"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. dxe5 Nxe5 2. Nxe5 Bxd1 3. Bxf7+ Ke7 4. Nd5# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 21"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "rn1qkbnr/ppp1ppp1/7p/8/2B3b1/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 0 1"]
+[SetUp "1"]
+[PlyCount "6"]
+[TrainingTitle "例 21 · 子力配合与战略"]
+[BookChapter "Example 21"]
+[SourceRecordId "fundamentals-uL7pPw98-21"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1... Nc6 2. Bxf7+ Kxf7 3. Ne5+ Kf6 4. Nxg4+ *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 22"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/p5p1/7p/6k1/8/7K/PP5P/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "16"]
+[TrainingTitle "例 22 · 兵的升变与兵残局"]
+[BookChapter "Example 22"]
+[SourceRecordId "fundamentals-uL7pPw98-22"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. a4 a5 2. Kg2 Kf4 3. b4 axb4 4. a5 b3 5. a6 b2 6. a7 b1=Q 7. a8=Q Qe4+ 8.
+Qxe4+ Kxe4 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 23"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/6p1/7p/8/5k2/8/6KP/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "26"]
+[TrainingTitle "例 23 · 兵的升变与兵残局"]
+[BookChapter "Example 23"]
+[SourceRecordId "fundamentals-uL7pPw98-23"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Kh3 Ke3 2. Kg2 Kf4 3. Kf2 Kg5 4. Kg2 Kh4 5. Kg1 Kh3 6. Kh1 h5 7. Kg1 h4 8.
+Kh1 g5 9. Kg1 g4 10. Kh1 g3 11. hxg3 hxg3 12. Kg1 g2 13. Kf2 Kh2 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 24"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/ppp4k/8/PPP5/8/8/8/7K w - - 0 1"]
+[SetUp "1"]
+[PlyCount "5"]
+[TrainingTitle "例 24 · 兵的升变与兵残局"]
+[BookChapter "Example 24"]
+[SourceRecordId "fundamentals-uL7pPw98-24"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. b6 axb6 2. c6 bxc6 3. a6 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 25"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/p5kp/8/1P6/8/1K6/P7/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "11"]
+[TrainingTitle "例 25 · 兵的升变与兵残局"]
+[BookChapter "Example 25"]
+[SourceRecordId "fundamentals-uL7pPw98-25"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. a4 h5 2. a5 h4 3. b6 axb6 4. a6 b5 5. a7 b4 6. a8=Q *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 26"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/8/4k3/1p5p/1P2K2P/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "2"]
+[TrainingTitle "例 26 · 兵的升变与兵残局"]
+[BookChapter "Example 26"]
+[SourceRecordId "fundamentals-uL7pPw98-26"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Kd4 Kd6 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 27"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "10"]
+[TrainingTitle "例 27 · 兵的升变与兵残局"]
+[BookChapter "Example 27"]
+[SourceRecordId "fundamentals-uL7pPw98-27"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Ke2 Ke7 2. Ke3 Ke6 3. Ke4 Kf6 4. Kf4 Kg6 5. Ke5 Kg7 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 28"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/8/8/4p1p1/8/5P2/6K1/3k4 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "11"]
+[TrainingTitle "例 28 · 兵的升变与兵残局"]
+[BookChapter "Example 28"]
+[SourceRecordId "fundamentals-uL7pPw98-28"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Kh1 Kd2 2. Kh2 Kd3 3. Kh3 Ke2 4. Kg2 Ke3 5. Kg3 Kd4 6. Kg4 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 29"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "k7/8/1K1N4/7p/7N/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "9"]
+[TrainingTitle "例 29 · 马与王兵的配合"]
+[BookChapter "Example 29"]
+[SourceRecordId "fundamentals-uL7pPw98-29"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Nf3 h4 2. Ne5 h3 3. Nc6 h2 4. Nb5 h1=Q 5. Nc7# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 30"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "7k/8/8/6K1/8/3B4/7P/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "0"]
+[TrainingTitle "例 30 · 象与王兵的配合"]
+[BookChapter "Example 30"]
+[SourceRecordId "fundamentals-uL7pPw98-30"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+*
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 31"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/8/5Np1/8/8/7p/5K2/7k b - - 0 1"]
+[SetUp "1"]
+[PlyCount "12"]
+[TrainingTitle "例 31 · 马与王兵的配合"]
+[BookChapter "Example 31"]
+[SourceRecordId "fundamentals-uL7pPw98-31"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1... Kh2 2. Ng4+ Kh1 3. Kf1 g5 4. Kf2 h2 5. Ne3 g4 6. Nf1 g3+ 7. Nxg3# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 33"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/3n4/2p5/1pPp4/pP1P4/P7/8/2B1K3 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "0"]
+[TrainingTitle "例 33 · 子力配合与战略"]
+[BookChapter "Example 33"]
+[SourceRecordId "fundamentals-uL7pPw98-32"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+*
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 34"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/3n1ppp/8/8/8/8/5PPP/2B1K3 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "0"]
+[TrainingTitle "例 34 · 子力配合与战略"]
+[BookChapter "Example 34"]
+[SourceRecordId "fundamentals-uL7pPw98-33"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+*
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 35"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/pppn1ppp/8/8/8/8/PPP2PPP/2B1K3 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "0"]
+[TrainingTitle "例 35 · 子力配合与战略"]
+[BookChapter "Example 35"]
+[SourceRecordId "fundamentals-uL7pPw98-34"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+*
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 36"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/pppn1pp1/8/8/8/8/1PP2PPP/2B1K3 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "0"]
+[TrainingTitle "例 36 · 子力配合与战略"]
+[BookChapter "Example 36"]
+[SourceRecordId "fundamentals-uL7pPw98-35"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+*
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 37"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/pppn1p2/8/8/8/8/2P2PPP/2B1K3 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "0"]
+[TrainingTitle "例 37 · 子力配合与战略"]
+[BookChapter "Example 37"]
+[SourceRecordId "fundamentals-uL7pPw98-36"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+*
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 38"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/p1pn1p2/8/8/8/8/2P2P1P/2B1K3 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "0"]
+[TrainingTitle "例 38 · 子力配合与战略"]
+[BookChapter "Example 38"]
+[SourceRecordId "fundamentals-uL7pPw98-37"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+*
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 39"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4k3/8/8/8/8/8/8/2B1K1N1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "57"]
+[TrainingTitle "例 39 · 子力配合与战略"]
+[BookChapter "Example 39"]
+[SourceRecordId "fundamentals-uL7pPw98-38"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Ke2 Kd7 2. Kd3 Kc6 3. Bf4 Kd5 4. Ne2 Kc5 5. Nc3 Kb4 6. Kd4 Ka5 7. Kc5 Ka6
+8. Kc6 Ka7 9. Nd5 Ka8 10. Nb6+ Ka7 11. Bc7 Ka6 12. Bb8 Ka5 13. Nd5 Ka4 14. Kc5
+Kb3 15. Nb4 Kc3 16. Bf4 Kb3 17. Be5 Ka4 18. Kc4 Ka5 19. Bc7+ Ka4 20. Nd3 Ka3
+21. Bb6 Ka4 22. Nb2+ Ka3 23. Kc3 Ka2 24. Kc2 Ka3 25. Bc5+ Ka2 26. Nd3 Ka1 27.
+Bb4 Ka2 28. Nc1+ Ka1 29. Bc3# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 40"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "15"]
+[TrainingTitle "例 40 · 子力配合与战略"]
+[BookChapter "Example 40"]
+[SourceRecordId "fundamentals-uL7pPw98-39"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Qe5+ Ka7 2. Qa1+ Kb8 3. Qa5 Rb3 4. Qe5+ Ka8 5. Qh8+ Ka7 6. Qg7+ Ka8 7. Qg8+
+Rb8 8. Qa2# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 41"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/k7/2K5/4Q3/8/8/8/1r6 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "19"]
+[TrainingTitle "例 41 · 子力配合与战略"]
+[BookChapter "Example 41"]
+[SourceRecordId "fundamentals-uL7pPw98-40"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Qc7+ Ka6 2. Qc8+ Ka7 3. Qd7+ Kb8 4. Qe8+ Ka7 5. Qf7+ Kb8 6. Qg8+ Ka7 7.
+Qa2+ Kb8 8. Qxb1+ Kc8 9. Qb7+ Kd8 10. Qd7# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 42a"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/5rk1/8/5Q1K/8/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "8"]
+[TrainingTitle "例 42a · 子力配合与战略"]
+[BookChapter "Example 42a"]
+[SourceRecordId "fundamentals-uL7pPw98-41"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Qe5+ Kf8 2. Kg6 Rd7 3. Qe6 Rg7+ 4. Kf6 Rf7+ *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 42b"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/5rk1/8/5Q1K/8/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "15"]
+[TrainingTitle "例 42b · 子力配合与战略"]
+[BookChapter "Example 42b"]
+[SourceRecordId "fundamentals-uL7pPw98-42"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Qg5+ Kh8 2. Qe5+ Kh7 3. Kg5 Ra7 4. Qe4+ Kg8 5. Qc4+ Kh7 6. Kf6 Rg7 7. Qh4+
+Kg8 8. Qh5 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 42c"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/5rk1/8/5Q1K/8/8/8/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "15"]
+[TrainingTitle "例 42c · 子力配合与战略"]
+[BookChapter "Example 42c"]
+[SourceRecordId "fundamentals-uL7pPw98-43"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Qg5+ Kf8 2. Qd8+ Kg7 3. Kg5 Rf3 4. Qd4+ Kf8 5. Kg6 Rg3+ 6. Kf6 Rf3+ 7. Ke6
+Rh3 8. Qf4+ *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 43"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "2kr4/ppp1qp2/4bQ2/8/3P2r1/N1P5/PP4P1/R1B2RK1 b - - 0 1"]
+[SetUp "1"]
+[PlyCount "7"]
+[TrainingTitle "例 43 · 子力配合与战略"]
+[BookChapter "Example 43"]
+[SourceRecordId "fundamentals-uL7pPw98-44"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1... Rdg8 2. Rf2 Rxg2+ 3. Kf1 Bc4+ 4. Nxc4 Rg1# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 44"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "kr2r3/pRp3pp/Q1P5/5R2/Pp1qp3/3p3P/6PK/8 b - - 0 1"]
+[SetUp "1"]
+[PlyCount "6"]
+[TrainingTitle "例 44 · 子力配合与战略"]
+[BookChapter "Example 44"]
+[SourceRecordId "fundamentals-uL7pPw98-45"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1... e3 2. Rxa7+ Qxa7 3. Ra5 Rb7 4. Qxb7# *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 45"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "3q1kn1/r5p1/1ppr1pQn/p2ppP2/P3P2R/1BPPB3/1P3PK1/7R w - - 0 1"]
+[SetUp "1"]
+[PlyCount "15"]
+[TrainingTitle "例 45 · 子力配合与战略"]
+[BookChapter "Example 45"]
+[SourceRecordId "fundamentals-uL7pPw98-46"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Rxh6 gxh6 2. Bxh6+ Ke7 3. Qh7+ Ke8 4. Qxg8+ Kd7 5. Qh7+ Qe7 6. Bf8 Qxh7 7.
+Rxh7+ Ke8 8. Rxa7 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 46"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "4r2r/p1pb1ppk/2ppn2p/1q3N1N/4PPP1/1P2Q3/4R2P/2R3K1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "11"]
+[TrainingTitle "例 46 · 子力配合与战略"]
+[BookChapter "Example 46"]
+[SourceRecordId "fundamentals-uL7pPw98-47"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Nfxg7 Nxg7 2. Nf6+ Kg6 3. Nxd7 f6 4. e5 Kf7 5. Nxf6 Re7 6. Ne4 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 47"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "r1bq1rk1/pp2nppp/4p3/2n5/8/2NBPN2/PP3PPP/R2Q1RK1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "8"]
+[TrainingTitle "例 47 · 子力配合与战略"]
+[BookChapter "Example 47"]
+[SourceRecordId "fundamentals-uL7pPw98-48"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Bxh7+ Kxh7 2. Ng5+ Kg6 3. Qg4 f5 4. Qg3 Kh6 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 48"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "2r1r1k1/2p2pbp/2ppq1p1/8/2n1P3/2N2P2/PPPBQ1PP/1R3RK1 b - - 0 1"]
+[SetUp "1"]
+[PlyCount "17"]
+[TrainingTitle "例 48 · 子力配合与战略"]
+[BookChapter "Example 48"]
+[SourceRecordId "fundamentals-uL7pPw98-49"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1... Ra8 2. h4 Nxd2 3. Qxd2 Qc4 4. Rfd1 Reb8 5. Qe3 Rb4 6. Qg5 Bd4+ 7. Kh1
+Rab8 8. Rxd4 Qxd4 9. Rd1 Qc4 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 49"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "r4rk1/p3q1pp/1pb5/2pn1p2/8/3BPN2/PP2QPPP/2RR2K1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "9"]
+[TrainingTitle "例 49 · 子力配合与战略"]
+[BookChapter "Example 49"]
+[SourceRecordId "fundamentals-uL7pPw98-50"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Nd4 cxd4 2. Rxc6 Nb4 3. Bc4+ Kh8 4. Re6 d3 5. Rxd3 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 50"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "r1bq1rk1/pp2nppp/4p3/2n5/8/2NBPN2/PP3PPP/R2Q1RK1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "33"]
+[TrainingTitle "例 50 · 子力配合与战略"]
+[BookChapter "Example 50"]
+[SourceRecordId "fundamentals-uL7pPw98-51"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Bxh7+ Kxh7 2. Ng5+ Kg6 3. Qg4 f5 4. Qg3 Kh6 5. Qh4+ Kg6 6. Qh7+ Kf6 7. e4
+Ng6 8. exf5 exf5 9. Rad1 Nd3 10. Qh3 Ndf4 11. Qg3 Qc7 12. Rfe1 Ne2+ 13. Rxe2
+Qxg3 14. Nh7+ Kf7 15. hxg3 Rh8 16. Ng5+ Kf6 17. f4 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 51"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "r1bq1k1r/b5pp/1nRN4/4p3/1P2P1n1/5NB1/P4PPP/3Q1RK1 w - - 0 21"]
+[SetUp "1"]
+[PlyCount "19"]
+[TrainingTitle "例 51 · 子力配合与战略"]
+[BookChapter "Example 51"]
+[SourceRecordId "fundamentals-uL7pPw98-52"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+21. Bh4 Qd7 22. Nxc8 Qxc6 23. Qd8+ Qe8 24. Be7+ Kf7 25. Nd6+ Kg6 26. Nh4+ Kh5
+27. Nxe8 Rxd8 28. Nxg7+ Kh6 29. Ngf5+ Kh5 30. h3 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 53"]
+[Site "?"]
+[Date "2021.05.05"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "C10"]
+[PlyCount "65"]
+[TrainingTitle "例 53 · 子力配合与战略"]
+[BookChapter "Example 53"]
+[SourceRecordId "fundamentals-uL7pPw98-53"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Nf3 Ngf6 6. Nxf6+ Nxf6 7. Ne5 Bd6
+8. Qf3 c6 9. c3 O-O 10. Bg5 Be7 11. Bd3 Ne8 12. Qh3 f5 13. Bxe7 Qxe7 14. O-O
+Rf6 15. Rfe1 Nd6 16. Re2 Bd7 17. Rae1 Re8 18. c4 Nf7 19. d5 Nxe5 20. Rxe5 g6
+21. Qh4 Kg7 22. Qd4 c5 23. Qc3 b6 24. dxe6 Bc8 25. Be2 Bxe6 26. Bf3 Kf7 27.
+Bd5 Qd6 28. Qe3 Re7 29. Qh6 Kg8 30. h4 a6 31. h5 f4 32. hxg6 hxg6 33. Rxe6 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 52"]
+[Site "?"]
+[Date "2021.05.05"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "1-0"]
+[ECO "C10"]
+[PlyCount "65"]
+[TrainingTitle "例 52 · 子力配合与战略"]
+[BookChapter "Example 52"]
+[SourceRecordId "fundamentals-uL7pPw98-54"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nd7 5. Nf3 Ngf6 6. Nxf6+ Nxf6 7. Ne5 Bd6
+8. Qf3 c6 9. c3 O-O 10. Bg5 Be7 11. Bd3 Ne8 12. Qh3 f5 13. Bxe7 Qxe7 14. O-O
+Rf6 15. Rfe1 Nd6 16. Re2 Bd7 17. Rae1 Re8 18. c4 Nf7 19. d5 Nxe5 20. Rxe5 g6
+21. Qh4 Kg7 22. Qd4 c5 23. Qc3 b6 24. dxe6 Bc8 25. Be2 Bxe6 26. Bf3 Kf7 27.
+Bd5 Qd6 28. Qe3 Re7 29. Qh6 Kg8 30. h4 a6 31. h5 f4 32. hxg6 hxg6 33. Rxe6 1-0
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 53"]
+[Site "?"]
+[Date "2021.05.06"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "1-0"]
+[ECO "C66"]
+[PlyCount "103"]
+[TrainingTitle "例 53 · 子力配合与战略"]
+[BookChapter "Example 53"]
+[SourceRecordId "fundamentals-uL7pPw98-55"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. O-O d6 5. Bxc6+ bxc6 6. d4 Be7 7. Nc3 Nd7 8.
+dxe5 dxe5 9. Qe2 O-O 10. Rd1 Bd6 11. Bg5 Qe8 12. Nh4 g6 13. Bh6 Nc5 14. Rd2
+Rb8 15. Nd1 Rb4 16. c4 Ne6 17. Bxf8 Qxf8 18. Ne3 Nd4 19. Qd1 c5 20. b3 Rb8 21.
+Nf3 f5 22. exf5 gxf5 23. Nf1 f4 24. Nxd4 cxd4 25. Qh5 Bb7 26. Re1 c5 27. f3
+Re8 28. Rde2 Re6 29. Rxe5 Bxe5 30. Rxe5 Rh6 31. Qe8 Qxe8 32. Rxe8+ Kf7 33. Re5
+Rc6 34. Nd2 Kf6 35. Rd5 Re6 36. Ne4+ Ke7 37. Rxc5 d3 38. Kf2 Bxe4 39. fxe4
+Rxe4 40. Rd5 Re3 41. b4 Re4 42. Rxd3 Rxc4 43. Rh3 Rxb4 44. Rxh7+ Kf6 45. Rxa7
+Kf5 46. Kf3 Rb2 47. Ra5+ Kf6 48. Ra4 Kg5 49. Rxf4 Rxa2 50. h4+ Kh5 51. Rf5+
+Kh6 52. g4 1-0
+
+[Event "Hastings"]
+[Site "Hastings ENG"]
+[Date "1919.08.15"]
+[Round "5"]
+[White "William Winter"]
+[Black "Jose Raul Capablanca"]
+[Result "0-1"]
+[ECO "C49"]
+[PlyCount "58"]
+[TrainingTitle "例 54 · 子力配合与战略"]
+[BookChapter "Example 54"]
+[SourceRecordId "fundamentals-uL7pPw98-56"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 Bb4 5. O-O O-O 6. Bxc6 dxc6 7. d3 Bd6 8.
+Bg5 h6 9. Bh4 c5 10. Nd5 g5 11. Nxf6+ Qxf6 12. Bg3 Bg4 13. h3 Bxf3 14. Qxf3
+Qxf3 15. gxf3 f6 16. Kg2 a5 17. a4 Kf7 18. Rh1 Ke6 19. h4 Rfb8 20. hxg5 hxg5
+21. b3 c6 22. Ra2 b5 23. Rha1 c4 24. axb5 cxb3 25. cxb3 Rxb5 26. Ra4 Rxb3 27.
+d4 Rb5 28. Rc4 Rb4 29. Rxc6 Rxd4 0-1
+
+[Event "London-ch corr"]
+[Site "England"]
+[Date "1919.??.??"]
+[Round "?"]
+[White "Frederick Forrest Lawrie Alexander"]
+[Black "George Alan Thomas"]
+[Result "0-1"]
+[ECO "D52"]
+[PlyCount "88"]
+[TrainingTitle "例 55 · 子力配合与战略"]
+[BookChapter "Example 55"]
+[SourceRecordId "fundamentals-uL7pPw98-57"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. d4 d5 2. Nf3 Nf6 3. c4 e6 4. Nc3 Nbd7 5. Bg5 c6 6. e3 Qa5 7. Bxf6 Nxf6 8.
+a3 Ne4 9. Qb3 Be7 10. Bd3 Nxc3 11. bxc3 dxc4 12. Bxc4 Bf6 13. O-O O-O 14. e4
+e5 15. d5 Qc7 16. Bd3 b6 17. c4 Bb7 18. Rfc1 Be7 19. Rc2 Bc5 20. Qb2 f6 21.
+Rb1 Rad8 22. a4 Ba6 23. Rd1 Rfe8 24. Qb3 Rd6 25. Nh4 g6 26. Be2 cxd5 27. exd5
+e4 28. g3 e3 29. f4 Bc8 30. Nf3 Bf5 31. Rb2 Re4 32. Kg2 Qc8 33. Ng1 g5 34.
+fxg5 fxg5 35. Rf1 g4 36. Bd3 Rf6 37. Ne2 Qf8 38. Rbb1 Qh6 39. Qc2 Qh3+ 40. Kh1
+Rxc4 41. Qxc4 Bxd3 42. Rxf6 Bxc4 43. Nf4 e2 44. Rg1 Qf1 0-1
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 56"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "6k1/p4p1p/1p4p1/3r4/2r5/P1P4P/2R2PP1/2R1K3 b - - 0 1"]
+[SetUp "1"]
+[PlyCount "19"]
+[TrainingTitle "例 56 · 车与王的配合"]
+[BookChapter "Example 56"]
+[SourceRecordId "fundamentals-uL7pPw98-58"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1... Re4+ 2. Re2 Ra4 3. Ra2 h5 4. Rd1 Rda5 5. Rda1 h4 6. Kd2 Kg7 7. Kc2 Rg5 8.
+Rg1 Rf4 9. Kd3 Rf3+ 10. Ke2 Rxh3 *
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 57"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "2r2rk1/p1pp1p1p/2p2p2/8/8/2PP1P2/PP3P1P/R3R1K1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "99"]
+[TrainingTitle "例 57 · 车与王的配合"]
+[BookChapter "Example 57"]
+[SourceRecordId "fundamentals-uL7pPw98-59"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. Re4 Rfe8 2. Rae1 Re6 3. R1e3 Rce8 4. Kf1 Kf8 5. Ke2 Ke7 6. Ra4 Ra8 7. Ra5
+d5 8. c4 Kd6 9. c5+ Kd7 10. d4 f5 11. Rxe6 fxe6 12. f4 Kc8 13. Kd2 Kb7 14. Ra3
+Rg8 15. Rh3 Rg7 16. Ke2 Ka6 17. Rh6 Re7 18. Kd3 Kb7 19. a4 Kc8 20. Rh5 Kd7 21.
+Rg5 Rf7 22. Kc3 Kc8 23. Kb4 Rf6 24. Ka5 Kb7 25. h4 a6 26. h5 Rh6 27. b4 Rf6
+28. b5 axb5 29. axb5 Rf8 30. Rg7 Ra8+ 31. Kb4 cxb5 32. Kxb5 Ra2 33. c6+ Kb8
+34. Rxh7 Rb2+ 35. Ka5 Ra2+ 36. Kb4 Rxf2 37. Re7 Rxf4 38. h6 Rxd4+ 39. Kb5 Rd1
+40. h7 Rb1+ 41. Kc5 Rc1+ 42. Kd4 Rd1+ 43. Ke5 Re1+ 44. Kf6 Rh1 45. Re8+ Ka7
+46. h8=Q Rxh8 47. Rxh8 Kb6 48. Kxe6 Kxc6 49. Kxf5 Kc5 50. Ke5 *
+
+[Event "Havana"]
+[Site "Havana CUB"]
+[Date "1913.03.01"]
+[Round "11"]
+[White "Frank James Marshall"]
+[Black "Abraham Kupchik"]
+[Result "1-0"]
+[ECO "C21"]
+[PlyCount "91"]
+[TrainingTitle "例 58 · 子力配合与战略"]
+[BookChapter "Example 58"]
+[SourceRecordId "fundamentals-uL7pPw98-60"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. d4 exd4 3. c3 d5 4. exd5 Qxd5 5. cxd4 Nc6 6. Nf3 Bg4 7. Be2 Nf6 8.
+h3 Bb4+ 9. Nc3 Bxf3 10. Bxf3 Qc4 11. Bxc6+ bxc6 12. Qe2+ Qxe2+ 13. Kxe2 O-O
+14. Be3 Rfe8 15. Rac1 c5 16. dxc5 Bxc5 17. Nb5 Bxe3 18. fxe3 Rab8 19. Nxc7
+Rxb2+ 20. Kf3 Re5 21. Nd5 Rf5+ 22. Kg3 Rg5+ 23. Kf4 h6 24. Rc8+ Kh7 25. Nxf6+
+gxf6 26. g4 Rxa2 27. Rd1 Ra4+ 28. Rd4 Raa5 29. Rdd8 Rg7 30. h4 h5 31. Rh8+ Kg6
+32. gxh5+ Rxh5 33. Rxh5 Kxh5 34. Rh8+ Rh7 35. Rxh7+ Kg6 36. Rh8 f5 37. h5+ Kg7
+38. Ra8 Kf6 39. Rxa7 Ke6 40. h6 f6 41. h7 Kd5 42. h8=Q Kc4 43. Qc8+ Kd3 44.
+Rd7+ Ke2 45. Qc2+ Kf1 46. Rd1# 1-0
+
+[Event "Capablanca Chess Fundimentals Part 1: Example 59"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "8/7R/8/2k2P2/1p6/3r4/5PKP/8 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "6"]
+[TrainingTitle "例 59 · 车与王的配合"]
+[BookChapter "Example 59"]
+[SourceRecordId "fundamentals-uL7pPw98-61"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. f6 Rd6 2. f7 Rd8 3. Rh5+ Kc4 *
+
+[Event "NYSCA ch"]
+[Site "New York, NY USA"]
+[Date "1910.02.26"]
+[Round "4"]
+[White "Jose Raul Capablanca"]
+[Black "Alfred Kreymborg"]
+[Result "1-0"]
+[ECO "D02"]
+[PlyCount "97"]
+[TrainingTitle "例 60 · 子力配合与战略"]
+[BookChapter "Example 60"]
+[SourceRecordId "fundamentals-uL7pPw98-62"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. d4 d5 2. Nf3 Nf6 3. Bf4 e6 4. e3 c5 5. c3 Nc6 6. Bd3 Bd6 7. Bxd6 Qxd6 8.
+Nbd2 e5 9. dxe5 Nxe5 10. Nxe5 Qxe5 11. Bb5+ Bd7 12. Qa4 Qc7 13. O-O-O O-O 14.
+Bxd7 Nxd7 15. Nf3 Qc6 16. Qxc6 bxc6 17. Nd2 Ne5 18. Kc2 c4 19. Rhf1 f5 20. Nf3
+Nxf3 21. gxf3 Rae8 22. Rd4 Rf6 23. b3 cxb3+ 24. axb3 Kf7 25. Kd3 Re7 26. Ra1
+Ke6 27. Ra6 Rc7 28. Rda4 g5 29. h4 g4 30. Ke2 gxf3+ 31. Kxf3 Rff7 32. Ke2 Kd6
+33. b4 Rb7 34. h5 h6 35. f4 Rg7 36. Kd3 Rge7 37. Ra1 Rg7 38. Kd4 Rg2 39. R6a2
+Rbg7 40. Kd3 Rxa2 41. Rxa2 Re7 42. Rg2 Re6 43. Rg7 Re7 44. Rg8 c5 45. Rg6+ Re6
+46. bxc5+ Kd7 47. Rg7+ Kc6 48. Rxa7 Kxc5 49. Rf7 1-0
+
+[Event "American National"]
+[Site "New York, NY USA"]
+[Date "1913.01.22"]
+[Round "3"]
+[White "Jose Raul Capablanca"]
+[Black "David Janowski"]
+[Result "1-0"]
+[ECO "C48"]
+[PlyCount "107"]
+[TrainingTitle "例 61 · 子力配合与战略"]
+[BookChapter "Example 61"]
+[SourceRecordId "fundamentals-uL7pPw98-63"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Nc3 Nf6 4. Bb5 a6 5. Bxc6 dxc6 6. O-O Bg4 7. h3 Bh5 8.
+Qe2 Bd6 9. d3 Qe7 10. Nd1 O-O-O 11. Ne3 Bg6 12. Nh4 Rhg8 13. Nef5 Qe6 14. f4
+Bxf5 15. Nxf5 exf4 16. Bxf4 Bc5+ 17. Be3 Bf8 18. Qf2 Rd7 19. Bc5 Bxc5 20. Qxc5
+Kb8 21. Rf2 Ne8 22. Raf1 f6 23. b3 Nd6 24. Rf4 Nxf5 25. Qxf5 Qxf5 26. Rxf5 Re8
+27. g4 b6 28. b4 Kb7 29. Kf2 b5 30. a4 Rd4 31. Rb1 Re5 32. Ke3 Rd7 33. a5 Re6
+34. Rbf1 Rde7 35. g5 fxg5 36. Rxg5 Rh6 37. Rg3 Rhe6 38. h4 g6 39. Rg5 h6 40.
+Rg4 Rg7 41. d4 Kb8 42. Rf8+ Kb7 43. e5 g5 44. Ke4 Ree7 45. hxg5 hxg5 46. Rf5
+Kc8 47. Rgxg5 Rh7 48. Rh5 Kd7 49. Rxh7 Rxh7 50. Rf8 Rh4+ 51. Kd3 Rh3+ 52. Kd2
+c5 53. bxc5 Ra3 54. d5 1-0
+
+[Event "Lasker - Marshall World Championship Match"]
+[Site "USA"]
+[Date "1907.01.26"]
+[Round "1"]
+[White "Frank James Marshall"]
+[Black "Emanuel Lasker"]
+[Result "0-1"]
+[ECO "C65"]
+[PlyCount "100"]
+[TrainingTitle "例 62 · 子力配合与战略"]
+[BookChapter "Example 62"]
+[SourceRecordId "fundamentals-uL7pPw98-64"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/uL7pPw98.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6 4. d4 exd4 5. O-O Be7 6. e5 Ne4 7. Nxd4 O-O 8.
+Nf5 d5 9. Bxc6 bxc6 10. Nxe7+ Qxe7 11. Re1 Qh4 12. Be3 f6 13. f3 fxe5 14. fxe4
+d4 15. g3 Qf6 16. Bxd4 exd4 17. Rf1 Qxf1+ 18. Qxf1 Rxf1+ 19. Kxf1 Rb8 20. b3
+Rb5 21. c4 Rh5 22. Kg1 c5 23. Nd2 Kf7 24. Rf1+ Ke7 25. a3 Rh6 26. h4 Ra6 27.
+Ra1 Bg4 28. Kf2 Ke6 29. a4 Ke5 30. Kg2 Rf6 31. Re1 d3 32. Rf1 Kd4 33. Rxf6
+gxf6 34. Kf2 c6 35. a5 a6 36. Nb1 Kxe4 37. Ke1 Be2 38. Nd2+ Ke3 39. Nb1 f5 40.
+Nd2 h5 41. Nb1 Kf3 42. Nc3 Kxg3 43. Na4 f4 44. Nxc5 f3 45. Ne4+ Kf4 46. Nd6 c5
+47. b4 cxb4 48. c5 b3 49. Nc4 Kg3 50. Ne3 b2 0-1
+
+[Event "Capablanca Chess Fundimentals Part 2: Example 65 A"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "r3r1k1/2pq1p1p/p5p1/1p1pP3/3P4/3Q4/PP3PPP/2R1R1K1 w - - 0 1"]
+[SetUp "1"]
+[PlyCount "39"]
+[TrainingTitle "例 65 A · 子力配合与战略"]
+[BookChapter "Example 65 A"]
+[SourceRecordId "fundamentals-k3M5fqR7-65"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+[SourceCorrection "See collection sourceCorrections for documented diagram or castling-flag normalization"]
+
+1. Rc5 c6 2. Qa3 Re6 3. Rec1 Rc8 4. Qb4 Qb7 5. Qa3 f5 6. h3 Ra8 7. f4 Rc8 8.
+g4 Ra8 9. Kh1 Rc8 10. gxf5 gxf5 11. Qf3 Qd7 12. R5c2 Rg6 13. Rg2 Kh8 14. Rcg1
+Rcg8 15. Qh5 Rxg2 16. Rxg2 Rxg2 17. Kxg2 Qg7+ 18. Kh2 Qg6 19. Qxg6 hxg6 20. b4
+*
+
+[Event "Capablanca Chess Fundimentals Part 2: Example 65 B"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "白方"]
+[Black "黑方"]
+[Result "*"]
+[ECO "?"]
+[FEN "3r3k/2q4p/p1p1r1p1/1pRpPp2/1P1P1PP1/2R3KP/P7/2Q5 b - - 1 1"]
+[SetUp "1"]
+[PlyCount "2"]
+[TrainingTitle "例 65 B · 子力配合与战略"]
+[BookChapter "Example 65 B"]
+[SourceRecordId "fundamentals-k3M5fqR7-66"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1... Rf8 2. Qc2 *
+
+[Event "Havana"]
+[Site "Havana CUB"]
+[Date "1913.02.25"]
+[Round "8"]
+[White "David Janowski"]
+[Black "Abraham Kupchik"]
+[Result "1-0"]
+[ECO "D53"]
+[PlyCount "75"]
+[TrainingTitle "例 67 · 子力配合与战略"]
+[BookChapter "Example 67"]
+[SourceRecordId "fundamentals-k3M5fqR7-67"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 Nbd7 6. Bd3 dxc4 7. Bxc4 Nb6 8.
+Bd3 Nfd5 9. Bxe7 Qxe7 10. Nf3 O-O 11. O-O Bd7 12. Rc1 c6 13. Ne4 f5 14. Nc5
+Be8 15. Ne5 Rb8 16. Re1 Rf6 17. Qf3 Rh6 18. Qg3 Rc8 19. f3 Rc7 20. a3 Kh8 21.
+h3 g5 22. e4 f4 23. Qf2 Ne3 24. Rxe3 fxe3 25. Qxe3 Nc8 26. Ng4 Rg6 27. e5 Rg7
+28. Bc4 Bf7 29. Nf6 Nb6 30. Nce4 h6 31. h4 Nd5 32. Qd2 Rg6 33. hxg5 Qf8 34. f4
+Ne7 35. g4 hxg5 36. fxg5 Bg8 37. Qh2+ Kg7 38. Bxe6 1-0
+
+[Event "Capablanca - Marshall"]
+[Site "Scranton, PA USA"]
+[Date "1909.05.01"]
+[Round "7"]
+[White "Frank James Marshall"]
+[Black "Jose Raul Capablanca"]
+[Result "1-0"]
+[ECO "D53"]
+[PlyCount "49"]
+[TrainingTitle "Frank James Marshall - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "Frank James Marshall - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-68"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 Ne4 6. Bxe7 Qxe7 7. Bd3 Nxc3 8.
+bxc3 Nd7 9. Nf3 O-O 10. cxd5 exd5 11. Qb3 Nf6 12. a4 c5 13. Qa3 b6 14. a5 Bb7
+15. O-O Qc7 16. Rfb1 Nd7 17. Bf5 Rfc8 18. Bxd7 Qxd7 19. a6 Bc6 20. dxc5 bxc5
+21. Qxc5 Rab8 22. Rxb8 Rxb8 23. Ne5 Qf5 24. f4 Rb6 25. Qxb6 1-0
+
+[Event "San Sebastian"]
+[Site "San Sebastian ESP"]
+[Date "1911.03.13"]
+[Round "13"]
+[White "Akiba Rubinstein"]
+[Black "Jose Raul Capablanca"]
+[Result "1-0"]
+[ECO "D33"]
+[PlyCount "83"]
+[TrainingTitle "Akiba Rubinstein - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "Akiba Rubinstein - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-69"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. d4 d5 2. Nf3 c5 3. c4 e6 4. cxd5 exd5 5. Nc3 Nc6 6. g3 Be6 7. Bg2 Be7 8.
+O-O Rc8 9. dxc5 Bxc5 10. Ng5 Nf6 11. Nxe6 fxe6 12. Bh3 Qe7 13. Bg5 O-O 14.
+Bxf6 Qxf6 15. Nxd5 Qh6 16. Kg2 Rcd8 17. Qc1 exd5 18. Qxc5 Qd2 19. Qb5 Nd4 20.
+Qd3 Qxd3 21. exd3 Rfe8 22. Bg4 Rd6 23. Rfe1 Rxe1 24. Rxe1 Rb6 25. Re5 Rxb2 26.
+Rxd5 Nc6 27. Be6+ Kf8 28. Rf5+ Ke8 29. Bf7+ Kd7 30. Bc4 a6 31. Rf7+ Kd6 32.
+Rxg7 b5 33. Bg8 a5 34. Rxh7 a4 35. h4 b4 36. Rh6+ Kc5 37. Rh5+ Kb6 38. Bd5 b3
+39. axb3 a3 40. Bxc6 Rxb3 41. Bd5 a2 42. Rh6+ 1-0
+
+[Event "Havana"]
+[Site "Havana CUB"]
+[Date "1913.02.22"]
+[Round "6"]
+[White "David Janowski"]
+[Black "Jose Raul Capablanca"]
+[Result "1-0"]
+[ECO "A46"]
+[PlyCount "99"]
+[TrainingTitle "David Janowski - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "David Janowski - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-70"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. d4 Nf6 2. Nf3 d6 3. Bg5 Nbd7 4. e3 e5 5. Nc3 c6 6. Bd3 Be7 7. Qe2 Qa5 8.
+O-O Nf8 9. Rfd1 Bg4 10. h3 Bh5 11. dxe5 dxe5 12. Ne4 Nxe4 13. Bxe7 Kxe7 14.
+Bxe4 Bg6 15. Qc4 Ne6 16. b4 Qc7 17. Bxg6 hxg6 18. Qe4 Kf6 19. Rd3 Rad8 20.
+Rad1 g5 21. c4 Rxd3 22. Rxd3 Rd8 23. Rxd8 Nxd8 24. h4 gxh4 25. Qxh4+ Ke6 26.
+Qg4+ Kf6 27. Qg5+ Ke6 28. Qxg7 Qd6 29. c5 Qd5 30. e4 Qd1+ 31. Kh2 f6 32. Qg4+
+Ke7 33. Nxe5 Qxg4 34. Nxg4 Ne6 35. e5 fxe5 36. Nxe5 Nd4 37. g4 Ke6 38. f4 a5
+39. bxa5 Kd5 40. g5 Kxc5 41. g6 Nf5 42. Kh3 Kd5 43. Kg4 Ng7 44. Kg5 c5 45. Nd7
+c4 46. Nb6+ Kd4 47. Nxc4 Kxc4 48. f5 Kd5 49. f6 Ne6+ 50. Kh6 1-0
+
+[Event "Savorin Cup"]
+[Site "St Petersburg RUE"]
+[Date "1913.12.18"]
+[Round "2"]
+[White "Jose Raul Capablanca"]
+[Black "Eugene Aleksandrovich Znosko-Borovsky"]
+[Result "0-1"]
+[ECO "C12"]
+[PlyCount "94"]
+[TrainingTitle "Jose Raul Capablanca - Eugene Aleksandrovich Znosko-Borovsky · 子力配合与战略"]
+[BookChapter "Jose Raul Capablanca - Eugene Aleksandrovich Znosko-Borovsky"]
+[SourceRecordId "fundamentals-k3M5fqR7-71"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. d4 e6 2. e4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. exd5 Qxd5 6. Bxf6 gxf6 7. Nf3 Bxc3+
+8. bxc3 b6 9. Be2 Bb7 10. Qd2 Nd7 11. c4 Qf5 12. O-O-O O-O-O 13. Qe3 Rhg8 14.
+g3 Qa5 15. Rd3 Kb8 16. Rhd1 Qf5 17. Nh4 Qg5 18. f4 Qg7 19. Bf3 Rge8 20. Bxb7
+Kxb7 21. c5 c6 22. Nf3 Qf8 23. Nd2 bxc5 24. Nc4 Nb6 25. Na5+ Ka8 26. dxc5 Nd5
+27. Qd4 Rc8 28. c4 e5 29. Qg1 e4 30. cxd5 exd3 31. d6 Re2 32. d7 Rc2+ 33. Kb1
+Rb8+ 34. Nb3 Qe7 35. Rxd3 Re2 36. Qd4 Rd8 37. Qa4 Qe4 38. Qa6 Kb8 39. Kc1 Rxd7
+40. Nd4 Re1+ 41. Kd2 Rxd4 42. a3 Re3 43. Kc1 Qh1+ 44. Kb2 Re2+ 45. Rd2 Rexd2+
+46. Kc3 Qf3+ 47. Qd3 Qxd3# 0-1
+
+[Event "St. Petersburg"]
+[Site "St. Petersburg  RUE"]
+[Date "1914.05.18"]
+[Round "7"]
+[White "Emanuel Lasker"]
+[Black "Jose Raul Capablanca"]
+[Result "1-0"]
+[ECO "C68"]
+[PlyCount "83"]
+[TrainingTitle "Emanuel Lasker - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "Emanuel Lasker - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-72"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. d4 exd4 6. Qxd4 Qxd4 7. Nxd4 Bd6
+8. Nc3 Ne7 9. O-O O-O 10. f4 Re8 11. Nb3 f6 12. f5 b6 13. Bf4 Bb7 14. Bxd6
+cxd6 15. Nd4 Rad8 16. Ne6 Rd7 17. Rad1 Nc8 18. Rf2 b5 19. Rfd2 Rde7 20. b4 Kf7
+21. a3 Ba8 22. Kf2 Ra7 23. g4 h6 24. Rd3 a5 25. h4 axb4 26. axb4 Rae7 27. Kf3
+Rg8 28. Kf4 g6 29. Rg3 g5+ 30. Kf3 Nb6 31. hxg5 hxg5 32. Rh3 Rd7 33. Kg3 Ke8
+34. Rdh1 Bb7 35. e5 dxe5 36. Ne4 Nd5 37. N6c5 Bc8 38. Nxd7 Bxd7 39. Rh7 Rf8
+40. Ra1 Kd8 41. Ra8+ Bc8 42. Nc5 1-0
+
+[Event "Rice Memorial"]
+[Site "New York, NY USA"]
+[Date "1916.02.07"]
+[Round "2"]
+[White "Oscar Chajes"]
+[Black "Jose Raul Capablanca"]
+[Result "1-0"]
+[ECO "C12"]
+[PlyCount "131"]
+[TrainingTitle "Oscar Chajes - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "Oscar Chajes - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-73"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Bb4 5. e5 h6 6. Bd2 Bxc3 7. bxc3 Ne4 8.
+Qg4 Kf8 9. Bc1 c5 10. Bd3 Qa5 11. Ne2 cxd4 12. O-O dxc3 13. Bxe4 dxe4 14. Qxe4
+Nc6 15. Rd1 g6 16. f4 Kg7 17. Be3 Ne7 18. Bf2 Nd5 19. Rd3 Bd7 20. Nd4 Rac8 21.
+Rg3 Kh7 22. h4 Rhg8 23. h5 Qb4 24. Rh3 f5 25. exf6 Nxf6 26. hxg6+ Rxg6 27.
+Rxh6+ Kxh6 28. Nf5+ exf5 29. Qxb4 Rcg8 30. g3 Bc6 31. Rd1 Kh5 32. Rd6 Be4 33.
+Qxc3 Nd5 34. Rxg6 Kxg6 35. Qe5 Kf7 36. c4 Re8 37. Qb2 Nf6 38. Bd4 Rh8 39. Qb5
+Rh1+ 40. Kf2 a6 41. Qb6 Rh2+ 42. Ke1 Nd7 43. Qd6 Bc6 44. g4 fxg4 45. f5 Rh1+
+46. Kd2 Ke8 47. f6 Rh7 48. Qe6+ Kf8 49. Be3 Rf7 50. Bh6+ Kg8 51. Bg7 g3 52.
+Ke2 g2 53. Kf2 Nf8 54. Qg4 Nd7 55. Kg1 a5 56. a4 Bxa4 57. Qh3 Rxf6 58. Bxf6
+Nxf6 59. Qxg2+ Kf8 60. Qxb7 Be8 61. Qb6 Ke7 62. Qxa5 Nd7 63. Kf2 Bf7 64. Ke3
+Kd6 65. Kd4 Kc6 66. Qf5 1-0
+
+[Event "San Sebastian"]
+[Site "San Sebastian ESP"]
+[Date "1911.02.23"]
+[Round "3"]
+[White "Jose Raul Capablanca"]
+[Black "Amos Burn"]
+[Result "1-0"]
+[ECO "C77"]
+[PlyCount "91"]
+[TrainingTitle "Jose Raul Capablanca - Amos Burn · 子力配合与战略"]
+[BookChapter "Jose Raul Capablanca - Amos Burn"]
+[SourceRecordId "fundamentals-k3M5fqR7-74"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. d3 d6 6. c3 Be7 7. Nbd2 O-O 8. Nf1
+b5 9. Bc2 d5 10. Qe2 dxe4 11. dxe4 Bc5 12. Bg5 Be6 13. Ne3 Re8 14. O-O Qe7 15.
+Nd5 Bxd5 16. exd5 Nb8 17. a4 b4 18. cxb4 Bxb4 19. Bxf6 Qxf6 20. Qe4 Bd6 21.
+Qxh7+ Kf8 22. Nh4 Qh6 23. Qxh6 gxh6 24. Nf5 h5 25. Bd1 Nd7 26. Bxh5 Nf6 27.
+Be2 Nxd5 28. Rfd1 Nf4 29. Bc4 Red8 30. h4 a5 31. g3 Ne6 32. Bxe6 fxe6 33. Ne3
+Rdb8 34. Nc4 Ke7 35. Rac1 Ra7 36. Re1 Kf6 37. Re4 Rb4 38. g4 Ra6 39. Rc3 Bc5
+40. Rf3+ Kg7 41. b3 Bd4 42. Kg2 Ra8 43. g5 Ra6 44. h5 Rxc4 45. bxc4 Rc6 46. g6
+1-0
+
+[Event "Exhibition game"]
+[Site "Berlin GER"]
+[Date "1913.11.18"]
+[Round "2"]
+[White "Jacques Mieses"]
+[Black "Jose Raul Capablanca"]
+[Result "0-1"]
+[ECO "C22"]
+[PlyCount "90"]
+[TrainingTitle "Jacques Mieses - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "Jacques Mieses - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-75"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e5 2. d4 exd4 3. Qxd4 Nc6 4. Qe3 Nf6 5. Nc3 Bb4 6. Bd2 O-O 7. O-O-O Re8
+8. Qg3 Nxe4 9. Nxe4 Rxe4 10. Bf4 Qf6 11. Nh3 d6 12. Bd3 Nd4 13. Be3 Bg4 14.
+Ng5 Rxe3 15. Qxg4 Ne2+ 16. Bxe2 Rxe2 17. Ne4 Rxe4 18. Qxe4 Qg5+ 19. f4 Qb5 20.
+c3 Bc5 21. Rhe1 Qc6 22. Rd5 Qd7 23. f5 c6 24. Rd2 d5 25. Qf3 Be7 26. Rde2 Bf6
+27. Qh5 h6 28. g4 Kh7 29. Kb1 Rd8 30. Rd1 c5 31. Qh3 Qa4 32. Red2 Qe4+ 33. Ka1
+b5 34. Qg2 Qa4 35. Kb1 b4 36. cxb4 Qxb4 37. a3 Qa4 38. Rxd5 Rb8 39. R1d2 c4
+40. Qg3 Rb3 41. Qd6 c3 42. Rc2 cxb2 43. Rd3 Qe4 44. Rd1 Rc3 45. Qd2 Rxa3 0-1
+
+[Event "Exhibition game"]
+[Site "Berlin GER"]
+[Date "1913.11.20"]
+[Round "2"]
+[White "Jose Raul Capablanca"]
+[Black "Richard Teichmann"]
+[Result "1-0"]
+[ECO "D63"]
+[PlyCount "75"]
+[TrainingTitle "Jose Raul Capablanca - Richard Teichmann · 子力配合与战略"]
+[BookChapter "Jose Raul Capablanca - Richard Teichmann"]
+[SourceRecordId "fundamentals-k3M5fqR7-76"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. d4 d5 2. Nf3 Nf6 3. c4 e6 4. Bg5 Be7 5. Nc3 Nbd7 6. e3 O-O 7. Rc1 b6 8.
+cxd5 exd5 9. Bb5 Bb7 10. O-O a6 11. Ba4 Rc8 12. Qe2 c5 13. dxc5 Nxc5 14. Rfd1
+Nxa4 15. Nxa4 b5 16. Rxc8 Qxc8 17. Nc3 Qc4 18. Nd4 Qxe2 19. Ncxe2 Rc8 20. Nf5
+Kf8 21. Nxe7 Kxe7 22. Nd4 g6 23. f3 h6 24. Bxh6 Nd7 25. h4 Nc5 26. Bf4 Ne6 27.
+Nxe6 Kxe6 28. Rd2 Rh8 29. Rc2 Rc8 30. Rxc8 Bxc8 31. Kf2 d4 32. exd4 Kd5 33.
+Ke3 Be6 34. Kd3 Kc6 35. a3 Bc4+ 36. Ke3 Be6 37. Bh6 Kd5 38. Bg7 1-0
+
+[Event "St. Petersburg"]
+[Site "St. Petersburg  RUE"]
+[Date "1914.05.14"]
+[Round "4"]
+[White "Jose Raul Capablanca"]
+[Black "Frank James Marshall"]
+[Result "1-0"]
+[ECO "C42"]
+[PlyCount "121"]
+[TrainingTitle "Jose Raul Capablanca - Frank James Marshall · 子力配合与战略"]
+[BookChapter "Jose Raul Capablanca - Frank James Marshall"]
+[SourceRecordId "fundamentals-k3M5fqR7-77"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 4. Nf3 Nxe4 5. Qe2 Qe7 6. d3 Nf6 7. Bg5 Be6 8.
+Nc3 h6 9. Bxf6 Qxf6 10. d4 Be7 11. Qb5+ Nd7 12. Bd3 g5 13. h3 O-O 14. Qxb7
+Rab8 15. Qe4 Qg7 16. b3 c5 17. O-O cxd4 18. Nd5 Bd8 19. Bc4 Nc5 20. Qxd4 Qxd4
+21. Nxd4 Bxd5 22. Bxd5 Bf6 23. Rad1 Bxd4 24. Rxd4 Kg7 25. Bc4 Rb6 26. Re1 Kf6
+27. f4 Ne6 28. fxg5+ hxg5 29. Rf1+ Ke7 30. Rg4 Rg8 31. Rf5 Rc6 32. h4 Rgc8 33.
+hxg5 Rc5 34. Bxe6 fxe6 35. Rxc5 Rxc5 36. g6 Kf8 37. Rc4 Ra5 38. a4 Kg7 39. Rc6
+Rd5 40. Rc7+ Kxg6 41. Rxa7 Rd1+ 42. Kh2 d5 43. a5 Rc1 44. Rc7 Ra1 45. b4 Ra4
+46. c3 d4 47. Rc6 dxc3 48. Rxc3 Rxb4 49. Ra3 Rb7 50. a6 Ra7 51. Ra5 Kf6 52. g4
+Ke7 53. Kg3 Kd6 54. Kf4 Kc7 55. Ke5 Kd7 56. g5 Ke7 57. g6 Kf8 58. Kxe6 Ke8 59.
+g7 Rxg7 60. a7 Rg6+ 61. Kf5 1-0
+
+[Event "St. Petersburg"]
+[Site "St. Petersburg  RUE"]
+[Date "1914.05.03"]
+[Round "9"]
+[White "Jose Raul Capablanca"]
+[Black "David Janowski"]
+[Result "1-0"]
+[ECO "C68"]
+[PlyCount "61"]
+[TrainingTitle "Jose Raul Capablanca - David Janowski · 子力配合与战略"]
+[BookChapter "Jose Raul Capablanca - David Janowski"]
+[SourceRecordId "fundamentals-k3M5fqR7-78"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. Nc3 Bc5 6. d3 Bg4 7. Be3 Bxe3 8.
+fxe3 Qe7 9. O-O O-O-O 10. Qe1 Nh6 11. Rb1 f6 12. b4 Nf7 13. a4 Bxf3 14. Rxf3
+b6 15. b5 cxb5 16. axb5 a5 17. Nd5 Qc5 18. c4 Ng5 19. Rf2 Ne6 20. Qc3 Rd7 21.
+Rd1 Kb7 22. d4 Qd6 23. Rc2 exd4 24. exd4 Nf4 25. c5 Nxd5 26. exd5 Qxd5 27. c6+
+Kb8 28. cxd7 Qxd7 29. d5 Re8 30. d6 cxd6 31. Qc6 1-0
+
+[Event "New York"]
+[Site "New York, NY USA"]
+[Date "1918.10.26"]
+[Round "4"]
+[White "Jose Raul Capablanca"]
+[Black "Oscar Chajes"]
+[Result "1-0"]
+[ECO "C11"]
+[PlyCount "89"]
+[TrainingTitle "Jose Raul Capablanca - Oscar Chajes · 子力配合与战略"]
+[BookChapter "Jose Raul Capablanca - Oscar Chajes"]
+[SourceRecordId "fundamentals-k3M5fqR7-79"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e6 2. d4 d5 3. Nc3 Nf6 4. Bd3 dxe4 5. Nxe4 Nbd7 6. Nxf6+ Nxf6 7. Nf3 Be7
+8. Qe2 O-O 9. Bg5 h6 10. Bxf6 Bxf6 11. Qe4 g6 12. h4 e5 13. dxe5 Bf5 14. Qf4
+Bxd3 15. O-O-O Bg7 16. Rxd3 Qe7 17. Qc4 Rad8 18. Rhd1 Rxd3 19. Rxd3 Re8 20. c3
+c6 21. Re3 c5 22. Kc2 b6 23. a4 Qd7 24. Rd3 Qc8 25. Qe4 Qe6 26. Rd5 Kf8 27. c4
+Kg8 28. b3 Kf8 29. Kd3 Kg8 30. Rd6 Qc8 31. Rd5 Qe6 32. g4 Kf8 33. Qf4 Kg8 34.
+Qe4 Kf8 35. Ke2 Kg8 36. Kf1 Kf8 37. Kg2 Kg8 38. Kg3 Kf8 39. h5 gxh5 40. gxh5
+Qe7 41. Qf5 Kg8 42. Rd7 Bxe5+ 43. Kg4 Qf6 44. Nxe5 Qg7+ 45. Kf4 1-0
+
+[Event "New York"]
+[Site "New York, NY USA"]
+[Date "1918.11.03"]
+[Round "10"]
+[White "John Stuart Morrison"]
+[Black "Jose Raul Capablanca"]
+[Result "0-1"]
+[ECO "C62"]
+[PlyCount "82"]
+[TrainingTitle "John Stuart Morrison - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "John Stuart Morrison - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-80"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 d6 4. Nc3 Bd7 5. d4 exd4 6. Nxd4 g6 7. Nf3 Bg7 8.
+Bg5 Nf6 9. Qd2 h6 10. Bh4 O-O 11. O-O-O Re8 12. Rhe1 g5 13. Bg3 Nh5 14. Nd5 a6
+15. Bd3 Be6 16. c3 f5 17. h4 f4 18. hxg5 hxg5 19. Rh1 Bf7 20. Kb1 Ne5 21. Nxe5
+Rxe5 22. Bh2 Nf6 23. g3 Nxe4 24. Bxe4 Rxe4 25. gxf4 c6 26. Ne3 Qa5 27. c4 Qxd2
+28. Rxd2 gxf4 29. Ng4 Bg6 30. Ka1 Rae8 31. a3 Re1+ 32. Rxe1 Rxe1+ 33. Ka2 Bf7
+34. Kb3 d5 35. Bxf4 dxc4+ 36. Kb4 c3 37. bxc3 Re4+ 38. c4 Rxc4+ 39. Ka5 Rxf4
+40. Rd8+ Kh7 41. Rd7 Be6 0-1
+
+[Event "New York"]
+[Site "New York, NY USA"]
+[Date "1918.11.01"]
+[Round "8"]
+[White "Frank James Marshall"]
+[Black "Jose Raul Capablanca"]
+[Result "0-1"]
+[ECO "D64"]
+[PlyCount "78"]
+[TrainingTitle "Frank James Marshall - Jose Raul Capablanca · 子力配合与战略"]
+[BookChapter "Frank James Marshall - Jose Raul Capablanca"]
+[SourceRecordId "fundamentals-k3M5fqR7-81"]
+[Reference "https://www.gutenberg.org/ebooks/33870"]
+[Source "https://lichess.org/api/study/k3M5fqR7.pgn"]
+
+1. d4 d5 2. Nf3 Nf6 3. c4 e6 4. Nc3 Nbd7 5. Bg5 Be7 6. e3 O-O 7. Rc1 c6 8. Qc2
+dxc4 9. Bxc4 Nd5 10. Bxe7 Qxe7 11. O-O Nxc3 12. Qxc3 b6 13. e4 Bb7 14. Rfe1
+Rfd8 15. d5 Nc5 16. dxe6 Nxe6 17. Bxe6 Qxe6 18. Nd4 Qe5 19. Nxc6 Qxc3 20. Rxc3
+Rd2 21. Rb1 Re8 22. e5 g5 23. h4 gxh4 24. Re1 Re6 25. Rec1 Kg7 26. b4 b5 27.
+a3 Rg6 28. Kf1 Ra2 29. Kg1 h3 30. g3 a6 31. e6 Rxe6 32. g4 Rh6 33. f3 Rd6 34.
+Ne7 Rdd2 35. Nf5+ Kf6 36. Nh4 Kg5 37. Nf5 Rg2+ 38. Kf1 h2 39. f4+ Kxf4 0-1
+

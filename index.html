@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN" data-theme="walnut">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
+<title>棋境 · 国际象棋练习</title>
+<link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
+<link href="./app.css?v=53" rel="stylesheet"/><link href="./engine-ui.css?v=53" rel="stylesheet"/><link href="./library-ui.css?v=53" rel="stylesheet"/>
+</head>
+<body>
+<div class="shell">
+<header class="masthead">
+<div class="brand-wrap"><a aria-label="棋境" class="brand" href="#" id="home"><span aria-hidden="true" class="brand-icon"><span class="brand-flip"><span class="brand-face brand-face-front"><span class="brand-knight">♞</span></span><span class="brand-face brand-face-back"><span class="brand-knight">♞</span></span></span></span><span class="brand-type"><b>棋境</b><small>国际象棋练习</small></span></a></div>
+<div class="top-tools"><button aria-controls="music-panel" aria-expanded="false" aria-label="古典乐，未播放" class="tool-icon tool-icon--music" id="music-toggle" title="古典音乐"><span aria-hidden="true" class="music-status-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.85" viewbox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><ellipse cx="6" cy="18" rx="3" ry="2"></ellipse><ellipse cx="18" cy="16" rx="3" ry="2"></ellipse></svg><i class="music-live-dot"></i></span><span class="tool-icon-label">古典乐</span></button><button aria-controls="settings-dialog" aria-expanded="false" aria-haspopup="dialog" class="tool-icon tool-icon--bare tool-icon--gear" id="settings-toggle" title="设置" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.85" viewbox="0 0 24 24"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h0a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h0a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v0a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"></path></svg></button></div>
+</header>
+<main class="studio">
+<section aria-label="棋盘与复盘控制" class="left">
+<div class="board-block">
+<div class="board-heading"><div><h1>棋盘</h1></div><span class="side-badge" id="side-badge">白方</span></div>
+<div aria-label="学习模式" class="play-mode-bar" role="group">
+<div class="mode-segment" id="mode-segment"><button aria-pressed="true" class="selected" data-play-mode="free" type="button">打谱</button><button aria-pressed="false" data-play-mode="book" type="button">对弈</button></div>
+</div>
+<div class="board-frame">
+<div class="promo-choice hidden" id="promo-choice" role="dialog" aria-label="选择升变棋子"></div><div aria-hidden="true" class="board-coordinates"><div class="rank-labels"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div class="file-labels"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div><div aria-label="国际象棋棋盘" class="board" id="board" role="grid"></div><svg aria-hidden="true" class="arrows" id="arrows" viewbox="0 0 800 800"><defs><marker id="arrow-head" markerheight="5" markerwidth="5" orient="auto" refx="3" refy="2.5"><path d="M0 0 L5 2.5 L0 5 Z" fill="var(--gold)"></path></marker></defs><line id="candidate-arrow" marker-end="url(#arrow-head)" stroke="var(--gold)" stroke-linecap="round" stroke-opacity=".45" stroke-width="7" visibility="hidden"></line></svg><div aria-live="assertive" class="game-result hidden" id="game-result" role="alert"></div></div>
+<div aria-label="棋谱步数控制" class="transport"><button aria-label="第一步" id="first" title="第一步"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M5 5v14"></path><path d="m17 6-6 6 6 6"></path></svg></button><button aria-label="上一步" id="prev" title="上一步，键盘 ←"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></button><button aria-label="自动播放棋谱" aria-pressed="false" class="primary-transport" id="autoplay" title="播放与暂停"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"></path></svg></button><button aria-label="下一步" id="next" title="下一步，键盘 →"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg></button><button aria-label="最后一步" id="last" title="最后一步"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M19 5v14"></path><path d="m7 6 6 6-6 6"></path></svg></button></div>
+<span aria-hidden="true" class="visually-hidden" id="ply">0 / 0</span><div class="board-actions"><button class="soft-button" id="reset">新棋局</button><button class="soft-button" id="undo">悔棋</button><button class="soft-button" id="flip">翻转棋盘</button><button class="soft-button mode-book-only hidden" id="save">保存棋谱</button></div>
+<div class="board-feedback"><div aria-live="polite" class="move-cue" id="move-cue" role="status">初始局面 · 点击棋子开始</div><button aria-pressed="true" class="sound-switch" id="sound-toggle" title="开关走棋提示音">音效开</button></div><div class="board-status" id="status" role="status">点击棋子查看参考着法</div>
+</div>
+</section>
+<section aria-label="棋谱与学习" class="right">
+<div class="section-top"><div><h2 id="right-heading">棋谱</h2></div></div>
+<div aria-labelledby="analysis-heading" class="analysis-card-wrap"><h3 class="analysis-heading" id="analysis-heading">局势分析</h3><div aria-label="局面分析" class="coach-card" data-paused="false">
+<div class="engine-toolbar"><span class="engine-connection" id="engine-connection" data-state="busy"><i aria-hidden="true"></i><strong id="engine-name">Stockfish</strong></span><button aria-label="实时分析" aria-pressed="true" class="engine-toggle" id="analysis-toggle" type="button"><span>实时分析</span><i aria-hidden="true"></i></button></div>
+<div class="analysis-body"><div class="analysis-live">
+<div class="engine-probability" data-known="false" data-pending="true" id="engine-probability" title="Stockfish 胜／和／负模型估计，非玩家实战胜率；分析完成后更新。"><div aria-label="等待胜率分析" class="engine-probability-bar" id="engine-probability-bar" role="img"><span class="odds-white" id="odds-bar-white" style="width:0%"></span><span class="odds-draw" id="odds-bar-draw" style="width:100%"></span><span class="odds-black" id="odds-bar-black" style="width:0%"></span></div><div class="engine-odds-labels"><span class="odds-white-label">白 <b id="odds-white">—</b></span><span class="odds-draw-label">和 <b id="odds-draw">—</b></span><span class="odds-black-label">黑 <b id="odds-black">—</b></span></div></div>
+<div aria-label="Stockfish 候选着法" aria-busy="true" class="engine-suggestions" id="engine-insight"></div>
+<span aria-live="polite" class="visually-hidden" id="analysis-state" role="status">正在连接</span>
+</div><div aria-hidden="true" aria-label="棋间短句，双击或按回车换一句" class="analysis-rest" id="analysis-rest" role="button" tabindex="-1" title="双击换一句"><blockquote><p id="chess-note"></p><p hidden id="chess-note-translation"></p></blockquote></div></div><div class="engine-footer"><button class="inline-button hidden" id="retry-engine" type="button">重试</button></div>
+</div></div>
+<div class="search-card mode-free-only" id="study-workspace">
+<div aria-label="棋谱分类" class="library-categories" id="library-categories" role="tablist"><button aria-controls="collection" aria-selected="true" data-category="openings" id="category-openings" role="tab" type="button">开局学习<span class="category-count">0</span></button><button aria-controls="collection" aria-selected="false" data-category="masters" id="category-masters" role="tab" tabindex="-1" type="button">大师对局<span class="category-count">0</span></button><button aria-controls="collection" aria-selected="false" data-category="training" id="category-training" role="tab" tabindex="-1" type="button">专题训练<span class="category-count">0</span></button><button aria-controls="collection" aria-selected="false" data-category="mine" id="category-mine" role="tab" tabindex="-1" type="button">我的棋谱<span class="category-count">0</span></button></div>
+<div class="library-toolbar"><label class="visually-hidden" for="archive-select">当前分类的合集</label><select aria-label="当前分类的合集" id="archive-select"></select><input aria-label="在当前分类中搜索棋谱" id="filter-collection" placeholder="搜索开局名称"/></div><div class="library-summary"><div class="library-meta" id="collection-meta"></div><details class="collection-guide" id="collection-guide" hidden><summary>学习与来源</summary><div class="collection-guide-body"><p></p><a href="#" target="_blank" rel="noopener noreferrer"></a></div></details><div class="library-actions" hidden><button class="inline-button" id="import" title="导入到我的棋谱" type="button">导入 PGN</button><button class="inline-button" id="new-pack" title="管理我的合集" type="button">管理合集</button><input accept=".pgn,.txt" hidden="" id="fileinput" multiple="" type="file"/></div></div>
+<p class="library-status" id="library-status"></p><div aria-labelledby="category-openings" class="library-list" id="collection" role="tabpanel"></div></div>
+<div class="source-row duel-config mode-book-only hidden"><select aria-hidden="true" class="hidden" id="mode"><option value="free">打谱研究</option><option value="book">人机对弈</option></select>
+<div class="field-small"><label for="side">我执</label><div class="atelier-select-slot" data-for="side"><select aria-label="我执" class="native" id="side"><option value="w">白方</option><option value="b">黑方</option></select></div></div>
+<div class="field-small"><label for="bot-level">Stockfish 难度</label><div class="atelier-select-slot" data-for="bot-level"><select aria-label="电脑难度" class="native" id="bot-level"><option value="1">入门 · 1320</option><option selected="" value="2">休闲 · 1600</option><option value="3">进阶 · 1900</option><option value="4">高手 · 2200</option><option value="5">大师 · 2600</option><option value="6">全力 · 不限强度</option></select></div></div><button class="duel-start" id="duel-start" type="button">开始对弈</button></div>
+<p class="difficulty-note mode-book-only hidden" id="difficulty-note">难度采用 Stockfish 目标 Elo；局面分析始终使用全强度。</p>
+<div class="detail-panel" id="panel-notes"><div class="panel-heading"><h3 id="record-heading">棋谱着法</h3><button class="inline-button mode-book-only hidden" id="export">导出 PGN ↗</button></div><div class="move-tape" id="movelist">选择棋谱，展示全部着法。</div></div>
+</section>
+</main>
+</div>
+<div aria-label="古典乐" class="music-panel hidden" id="music-panel" role="dialog">
+<div class="music-top"><strong>古典乐</strong><button aria-label="关闭" id="music-close">×</button></div>
+<div aria-label="音乐时期" class="era-bar" role="group">
+<button class="era-btn selected" data-era="all">随机</button>
+<button class="era-btn" data-era="baroque">巴洛克</button>
+<button class="era-btn" data-era="classical">古典</button>
+<button class="era-btn" data-era="romantic">浪漫</button>
+<button class="era-btn" data-era="modern">近现代</button>
+</div>
+<div class="now-playing"><div aria-hidden="true" class="now-art"><svg class="music-art-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="2.5"></circle><circle cx="17.5" cy="16" r="2.5"></circle></svg></div><div class="now-text"><div class="music-title-viewport"><div class="music-title" id="music-title">选择时期后播放</div></div><p class="muted-info" id="music-artist">钢琴与管弦乐</p></div><span aria-hidden="true" class="wave-bars"><i></i><i></i><i></i><i></i></span></div>
+<div class="music-controls"><span aria-hidden="true" class="music-control-spacer"></span><div class="music-main-controls"><button aria-label="上一首" id="music-prev" title="上一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 5v14M18 6 10 12l8 6V6z"></path></svg></button><button aria-label="播放" class="music-play-primary" id="music-play" title="播放"></button><button aria-label="下一首" id="music-next" title="下一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19 5v14M6 6l8 6-8 6V6z"></path></svg></button></div><button aria-label="随机播放" aria-pressed="true" id="music-shuffle" title="切换为顺序播放"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M4 7h4l8 10h4M17 14l3 3-3 3M4 17h4l2.5-3.2M13.5 10L16 7h4M17 4l3 3-3 3"></path></svg></button></div>
+<div class="music-progress"><span id="music-elapsed">0:00</span><input aria-label="进度" id="music-seek" max="1000" min="0" type="range" value="0"/><span id="music-duration">0:00</span></div>
+<p aria-live="polite" class="visually-hidden" id="music-count"></p>
+<a class="visually-hidden" href="https://commons.wikimedia.org" id="music-source" rel="noopener noreferrer" target="_blank">曲目来源</a>
+<audio id="music-audio" preload="auto"></audio><audio id="music-next-audio" preload="auto"></audio>
+</div>
+<dialog class="settings-dialog" id="settings-dialog"><div class="settings-head"><strong>设置</strong><button aria-label="关闭" id="settings-close" type="button">×</button></div><div class="settings-body">
+<p class="settings-section-title">外观</p>
+<div class="settings-row"><label for="theme">配色</label><select id="theme"><option selected="" value="walnut">浅胡桃</option><option value="sage">鼠尾草</option><option value="oat">燕麦灰</option><option value="blush">浅藕粉</option><option value="slate">雾霭蓝</option><option value="mist">冷雾灰</option></select></div>
+<div class="settings-row"><label for="piece-style">棋子</label><select id="piece-style"><option value="fantasy">雅致</option><option selected="" value="rhosgfx">经典</option><option value="chessnut">简约</option></select></div>
+<div class="settings-row"><label for="animation-speed">走棋动画</label><select id="animation-speed"><option value="on">平滑</option><option value="off">关闭</option></select></div>
+<div class="settings-row"><label for="move-hints">走子提示</label><select id="move-hints"><option selected="" value="on">开启</option><option value="off">关闭</option></select></div>
+<p class="settings-section-title">来源</p>
+<div class="settings-links"><a href="https://database.lichess.org/" rel="noopener" target="_blank">Lichess 开放棋谱库 ↗</a><a href="https://stockfishchess.org/" rel="noopener" target="_blank">Stockfish ↗</a><a href="https://commons.wikimedia.org/" rel="noopener" target="_blank">古典乐 ↗</a></div>
+</div></dialog>
+<dialog class="settings-dialog pack-dialog" id="pack-dialog"><div class="settings-head"><strong>管理合集</strong><button aria-label="关闭" id="pack-close" type="button">×</button></div><div class="settings-body">
+<p class="settings-section-title">新建合集</p>
+<div class="pack-create"><input id="pack-name" maxlength="32" placeholder="输入名称后创建"/><button class="inline-button" id="pack-create" type="button">创建</button></div>
+<p class="settings-section-title">我的合集</p>
+<div class="pack-list" id="pack-list"></div>
+<p class="pack-note">内置合集不可删除或改序。同一合集可多次导入棋谱。</p>
+<p class="settings-section-title">合集棋谱 <span id="pack-games-label"></span></p>
+<div class="pack-games-bar"><button class="inline-button" id="pack-add-games" type="button">加入棋谱</button></div>
+<div class="pack-games" id="pack-games"></div>
+<input accept=".pgn,.txt" hidden="" id="pack-fileinput" multiple="" type="file"/>
+</div></dialog>
+<dialog class="settings-dialog" id="save-dialog"><div class="settings-head"><strong>保存棋谱</strong><button aria-label="关闭" id="save-close" type="button">×</button></div><div class="settings-body">
+<div class="settings-row"><label for="save-title">名称</label><input id="save-title" maxlength="80"/></div>
+<div class="settings-row"><label for="save-pack">合集</label><select id="save-pack"></select></div>
+<div class="pack-create"><span></span><button class="inline-button" id="save-confirm" type="button">保存</button></div>
+</div></dialog>
+<div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
+<script src="./app.bundle.js?v=53" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=53" defer></script>
+</body>
+</html>

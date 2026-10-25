@@ -1,0 +1,25 @@
+# Personal / runtime state
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+代理配置.txt
+data/server-port.json
+*.sqlite
+*.sqlite-*
+test-results/
+.openai/
+
+# Generated website and dependency caches
+dist/
+node_modules/
+.venv/
+venv/
+
+# Native installation and original local backups (not web assets)
+engines/*.exe
+engines/stockfish
+stockfish-windows-x86-64-universal.zip
+*.7z
+*.log

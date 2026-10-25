@@ -1,0 +1,35 @@
+{
+  "package": "stockfish",
+  "version": "19.0.1",
+  "build": "lite-single",
+  "license": "GPL-3.0",
+  "files": {
+    "stockfish-19-lite-single.js": {
+      "url": "https://github.com/nmrugg/stockfish.js/releases/download/v19.0.1/stockfish-19-lite-single.js",
+      "bytes": 28230,
+      "sha256": "ccb130d7ff29408531c47d859a49f91d59d4f482d05a53eb1a3231a4f624c91a"
+    },
+    "stockfish-19-lite-single.wasm": {
+      "url": "https://github.com/nmrugg/stockfish.js/releases/download/v19.0.1/stockfish-19-lite-single.wasm",
+      "bytes": 1845971,
+      "sha256": "ee4f115bdb2d32cadf96cada104a05b5ec257d7ad6f57582190b49bc71f096de"
+    },
+    "Copying.txt": {
+      "url": "https://raw.githubusercontent.com/nmrugg/stockfish.js/v19.0.1/Copying.txt",
+      "sha256": "0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b"
+    },
+    "AUTHORS": {
+      "url": "https://raw.githubusercontent.com/nmrugg/stockfish.js/v19.0.1/AUTHORS",
+      "sha256": "f81e7d74c350626766382ec67fa262c38cda00cb8b501790f95cdebb526006c1"
+    },
+    "README.md": {
+      "url": "https://raw.githubusercontent.com/nmrugg/stockfish.js/v19.0.1/README.md",
+      "sha256": "b4fd98bf4cd5cc6587c830abf1bb1fae6b6c9cc56d53f710691e587c0e18f178"
+    },
+    "source.tar.gz": {
+      "url": "https://codeload.github.com/nmrugg/stockfish.js/tar.gz/refs/tags/v19.0.1",
+      "bytes": 426054,
+      "sha256": "a18aa8a871f5265014b110b3e07804ff3637899d2e189be6ded2b99e2c17a10e"
+    }
+  }
+}

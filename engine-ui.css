@@ -1,0 +1,72 @@
+/* Quiet local analysis: compact controls, settled probabilities, three suggestions. */
+:root{--engine-opponent:#c58c50}
+html[data-theme=sage]{--engine-opponent:#b98750}html[data-theme=slate]{--engine-opponent:#bf896b}html[data-theme=oat]{--engine-opponent:#92905e}html[data-theme=blush]{--engine-opponent:#62978d}html[data-theme=mist]{--engine-opponent:#b39b62}
+.coach-card{padding:10px 14px 11px}
+.analysis-card-wrap{min-width:0}
+.analysis-heading{margin:0 0 8px 2px;font-size:15px;line-height:1.5;font-weight:600;color:var(--muted)}
+.engine-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:25px;padding:0;margin:0;border:0}
+.engine-connection{display:flex;align-items:center;gap:6px;min-width:0;font-size:13px;color:var(--ink)}
+.engine-connection>i{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;opacity:.65}
+.engine-connection[data-state=busy]>i{background:var(--engine-opponent)}
+.engine-connection[data-state=error]>i{background:#ad6755}
+.engine-connection[data-state=paused]>i{background:var(--muted);opacity:.35}
+.engine-connection{transition:color .12s ease}
+.coach-card[data-paused=true] .engine-connection{color:color-mix(in srgb,var(--accent) 40%,var(--paper))}
+.coach-card[data-paused=true] .engine-connection>i{background:currentColor;opacity:.65}
+.analysis-body{position:relative;min-height:158px}
+.analysis-live{opacity:1;visibility:visible;transition:opacity .12s ease,visibility 0s}
+.coach-card[data-paused=true] .analysis-live{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .12s ease,visibility 0s .12s}
+.analysis-rest{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:13px 18px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .12s ease,visibility 0s .12s;user-select:none;cursor:pointer;border-radius:8px}
+.coach-card[data-paused=true] .analysis-rest{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .12s ease .06s,visibility 0s}
+.analysis-rest blockquote{margin:0;color:var(--muted);font-family:Georgia,'Noto Serif SC','SimSun',serif;font-style:italic;font-size:14px;line-height:1.85;text-align:center}
+.analysis-rest p{margin:0}.analysis-rest p[lang=en]{line-height:1.55}.analysis-rest #chess-note-translation{margin-top:2px;font-size:12px;line-height:1.5}
+.analysis-rest:focus-visible{outline:1px solid var(--line);outline-offset:-2px}
+.engine-toggle{display:flex;align-items:center;gap:7px;border:0;background:transparent;padding:4px 0 4px 8px;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;min-height:25px}
+.engine-toggle>i{display:block;position:relative;width:25px;height:14px;border-radius:9px;background:var(--line);transition:background .2s ease}
+.engine-toggle>i::after{content:'';position:absolute;left:2px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--paper);transition:transform .2s ease}
+.engine-toggle[aria-pressed=true]>i{background:var(--accent)}
+.engine-toggle[aria-pressed=true]>i::after{transform:translateX(11px)}
+.engine-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.engine-probability{padding:9px 0 8px;opacity:1;transition:opacity .3s ease}
+.engine-probability[data-pending=true]{opacity:.5}
+.engine-probability-bar{display:flex;height:6px;overflow:hidden;border-radius:5px;background:var(--sub)}
+.engine-probability-bar>span{display:block;height:100%;flex:none;transition:width .75s cubic-bezier(.2,.65,.3,1)}
+.odds-white{background:var(--accent)}.odds-draw{background:color-mix(in srgb,var(--accent) 17%,var(--paper))}.odds-black{background:var(--engine-opponent)}
+.engine-probability[data-known=false] .odds-draw{background:var(--line)}
+.engine-odds-labels{display:flex;justify-content:space-between;gap:7px;margin-top:5px;font-size:12px;line-height:1.3;font-variant-numeric:tabular-nums}
+.engine-odds-labels b{font-weight:400;display:inline-block;min-width:24px;text-align:right}
+.odds-white-label{color:var(--accent)}.odds-draw-label{color:var(--muted)}.odds-black-label{color:color-mix(in srgb,var(--engine-opponent) 85%,var(--ink))}
+.engine-pvs{display:grid;gap:3px}
+.engine-pv{display:grid;grid-template-columns:14px minmax(42px,max-content) minmax(0,1fr);gap:9px;align-items:center;width:100%;padding:7px 8px;text-align:left;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--ink);font:inherit;font-size:14px;cursor:pointer;min-height:36px}
+.engine-pv:first-child{background:var(--accent-soft)}
+.engine-pv:hover,.engine-pv:focus-visible{background:var(--sub);outline:1px solid var(--line)}
+.engine-pv-rank{font-size:11px;color:var(--muted);opacity:.7}
+.engine-pv-line{font-size:12px;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;word-spacing:4px}
+.engine-empty{display:grid;align-content:center;min-height:108px;font-size:14px;line-height:1.8;color:var(--muted);overflow-wrap:anywhere}
+.engine-footer{display:none;align-items:center;justify-content:flex-end;gap:8px;margin-top:7px;font-size:11px;color:var(--muted)}
+.engine-footer:has(#retry-engine:not(.hidden)){display:flex}
+.engine-footer .inline-button{font-size:11px;min-height:24px}
+.difficulty-note{font-size:11px;line-height:1.7;color:var(--muted);margin:8px 2px 12px}
+/* Interpolate inherited theme colors once at the root, including gradient consumers. */
+html.appearance-ready{transition:--bg .32s ease,--paper .32s ease,--sub .32s ease,--ink .32s ease,--muted .32s ease,--line .32s ease,--accent .32s ease,--accent-soft .32s ease,--gold .32s ease,--light .32s ease,--dark .32s ease,--w .32s ease,--d .32s ease,--b .32s ease,--white-piece .32s ease,--white-outline .32s ease,--black-piece .32s ease,--capture-color .32s ease,--move-color .32s ease,--engine-opponent .32s ease}
+.piece-visual>.piece-art-img{transition:none!important}
+.square>.appearance-ghost{pointer-events:none;z-index:4}
+@media(prefers-reduced-motion:reduce){html.appearance-ready{transition:none}}
+.duel-config .field-small:has(#bot-level){width:166px;max-width:none;flex:0 1 166px}
+.duel-config .atelier-select-slot:has(#bot-level) .atelier-select,.duel-config #atelier-list-bot-level{max-width:none!important;width:100%!important}
+.move-token-placeholder{display:inline-block;min-width:36px}
+body[data-play-mode=book] #panel-notes{display:block!important}
+body[data-play-mode=free] #save,body[data-play-mode=free] #export{display:none!important}
+body[data-play-mode=free] .board-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+.square.check::before{background:rgba(239,137,133,.23)!important;box-shadow:inset 0 0 0 2px rgba(207,100,91,.72)!important;opacity:1}
+.square.check-flash,.square.check-mate-flash{animation:none!important}
+.square.check-nudge::before{animation:check-response .28s ease-in-out 2!important}
+@keyframes check-response{0%,100%{opacity:.48}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.engine-probability-bar>span,.engine-toggle>i,.engine-toggle>i::after{transition:none}.square.check-nudge::before{animation:none!important}}
+/* Only text-entry fields display a text caret; board and notation controls keep their interaction cursors. */
+body{cursor:default;caret-color:transparent}
+:where(body *){caret-color:transparent}
+:where(input:not([type]),input[type=text],input[type=search],input[type=email],input[type=password],input[type=url],input[type=tel],input[type=number],textarea,[contenteditable=true]){caret-color:var(--ink);cursor:text}
+:where(a,button,select,[role=button],[role=tab]){cursor:pointer}
+#movelist{user-select:none;-webkit-user-select:none;caret-color:transparent;cursor:default}
+#movelist .move-token,#movelist .move-token *{cursor:pointer;caret-color:transparent;user-select:none;-webkit-user-select:none}

@@ -1,0 +1,1082 @@
+/* merged historical overlays (former version CSS) */
+
+/* from network-v9.css */
+
+
+.network-tools{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.network-action{padding:6px 12px;min-height:34px;border:1px solid var(--line,#d9d9d3);border-radius:9px;background:transparent;color:var(--ink,#3f413c);font-size:13px;cursor:pointer;white-space:nowrap}
+.network-action:hover{background:rgba(120,120,100,.07)}
+.network-dialog{position:fixed;inset:0;max-width:min(520px,calc(100vw - 28px));width:100%;padding:22px;border:1px solid #d5d3c9;border-radius:16px;background:#fffefb;color:#333;box-shadow:0 16px 60px rgba(30,30,20,.15)}
+.network-dialog::backdrop{background:rgba(26,28,23,.35)}
+.network-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:18px}
+.network-head button{border:0;background:transparent;cursor:pointer;font-size:28px;line-height:1;color:inherit;min-width:40px;min-height:40px}
+.network-report{display:grid;gap:8px}.diag-summary{font-weight:600;margin:5px 0 9px}
+.diag-item{display:flex;flex-direction:column;gap:2px;padding:10px;border:1px solid #e6e4da;border-radius:9px}
+.diag-item small{font-size:12px;color:#64645d;overflow-wrap:anywhere}.diag-error{background:#f9f1ec;color:#744c3b;padding:12px;border-radius:8px;overflow-wrap:anywhere}
+.network-guide{color:#60615b;font-size:13px;line-height:1.7;margin:16px 0 0}
+.launch-warning{position:fixed;z-index:9999;bottom:0;left:0;right:0;background:#f6ebd9;color:#5e4034;padding:14px 18px;text-align:center;font:600 14px sans-serif}
+@media(max-width:750px){.network-tools{gap:7px}.network-action{font-size:12px;padding:4px 8px;min-height:32px}}
+
+
+/* from v10.css */
+
+/* V10 typography and alignment */
+:root{font-size:17px}html,body{font-size:17px;line-height:1.55}
+.shell{max-width:1420px}.studio{grid-template-columns:minmax(360px,.93fr) minmax(450px,1.07fr);gap:clamp(22px,3.2vw,45px)}
+.play-mode-bar{display:flex!important;align-items:center;justify-content:center!important;margin:10px 0 18px;width:100%}
+.mode-segment{margin-inline:auto;max-width:350px;min-width:290px}.mode-segment button{font-size:17px}
+.board-heading h1,.section-top h2{font-size:28px}
+.coach-card{padding:20px 22px}.coach-title strong{font-size:19px}
+.coach-body{display:flex!important;flex-direction:column!important;gap:10px!important;grid-template-columns:1fr!important}
+.coach-body #move-explanation{font-size:16px;line-height:1.85;color:var(--ink);margin:0}
+.engine-insight{border-top:1px solid var(--line);padding-top:11px;font-size:15px;line-height:1.75;color:var(--accent)}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.source-row label,.stats-head,.music-filters label{font-size:14px}
+.source-row select,.field-grow select,.field-small select,.settings-field select{font-size:16px}
+.variation .san{font-size:20px}.variation,.tab,.move-token,.game-card,.collection-row{font-size:15px}
+.games-head h3,.panel-heading h3{font-size:20px}
+.board-actions button,.transport button,.inline-button,.archive-loader button,.tabs button{display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.board-actions button{font-size:15px}.music-title,.music-row-title{font-size:15px}
+#side-badge,.board-status{font-size:15px}
+@media(max-width:900px){.studio{display:block}.mode-segment{max-width:380px}.right{margin-top:22px}}
+@media(max-width:520px){.board-actions button{font-size:13px}.top-tools .select-label{font-size:12px}.mode-segment{min-width:0;width:100%}}
+
+
+/* from period.css */
+
+/* Period-first classical music: restrained, consistent controls */
+.music-panel{width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:23px;box-shadow:0 14px 55px rgba(37,39,34,.13);border:1px solid var(--border,#e4e1d8);}
+.era-bar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:15px 0 19px;}
+.era-btn{border:1px solid #deddd5;border-radius:9px;min-height:40px;padding:7px 2px;background:transparent;color:var(--ink,#333c38);font-size:13px;line-height:1.1;cursor:pointer;text-align:center;}
+.era-btn:hover{background:#eeeae0}.era-btn.selected{background:#e3e6df;border-color:#afb8ae;font-weight:650}
+.music-panel .now-playing{margin:8px 0 15px}.music-panel .music-controls{margin:10px 0}.music-panel .music-progress{margin:11px 0 8px}
+.music-minimal-status{font-size:12px;line-height:1.55;color:#777b75;min-height:0;margin:7px 0;}
+.music-credit-link{font-size:12px;color:#727b72;display:inline-flex;margin-top:6px;text-decoration:none}
+@media(max-width:500px){.music-panel{padding:16px}.era-btn{font-size:12px;min-height:38px}.era-bar{gap:3px}}
+
+
+/* from v13.css */
+
+/* Board pieces, typography and music: guaranteed local rendering. */
+:root{--white-piece:#fcfbf4;--white-outline:#4d534f;--black-piece:#2c3934;--black-outline:#e1e0d7}
+.piece-svg{display:block;width:77%;height:77%;overflow:visible;filter:drop-shadow(0 2px 1px #15151526)}
+.piece-svg.white path{fill:var(--white-piece);stroke:var(--white-outline);stroke-width:20;paint-order:stroke fill}
+.piece-svg.black path{fill:var(--black-piece);stroke:#c4cbbd;stroke-width:10;paint-order:stroke fill}
+:root[data-piece-style="rhosgfx"] .piece-svg{width:79%;height:79%;filter:drop-shadow(0 2px 1px #0000000d)}
+:root[data-piece-style="rhosgfx"] .piece-svg.white path{stroke-width:14}
+:root[data-piece-style="fantasy"] .piece-svg{width:75%;height:75%;filter:none}
+:root[data-piece-style="fantasy"] .piece-svg.white path{stroke-width:28}
+.play-mode-bar{justify-content:center}
+.era-bar{grid-template-columns:repeat(5,minmax(0,1fr))}
+
+
+/* from v14.css */
+
+
+/* V14: quiet music header, consistently centered transport icons. */
+.top-tools #music-toggle span {font-size:13px;font-weight:600;line-height:1.2;letter-spacing:0}
+.music-panel .music-top strong {font-size:17px;line-height:1.3;font-weight:670;letter-spacing:0}
+.transport {
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  align-items:stretch;
+  gap:8px;
+}
+.transport button {
+  width:100%;min-width:0;max-width:none;
+  display:grid;place-items:center;
+  margin:0;padding:0;border-radius:10px;
+  line-height:1;text-align:center;
+}
+.transport button svg {display:block;width:22px;height:22px;flex:none;overflow:visible}
+.transport #ply {display:grid;place-items:center;width:100%;min-width:0;margin:0;padding:0;font-size:14px;line-height:1.2;white-space:nowrap}
+.floating-piece {transform-origin:50% 50%;pointer-events:none;will-change:transform,opacity;backface-visibility:hidden}
+@media(max-width:560px) {
+  .top-tools #music-toggle span {font-size:12px}
+  .music-panel .music-top strong {font-size:16px}
+  .transport {gap:5px}
+  .transport button svg {width:20px;height:20px}
+  .transport #ply {width:100%;min-width:0;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce) {.floating-piece {will-change:auto}}
+
+
+/* from v15.css */
+
+/* V15 · coherent Material Design inspired surfaces, high contrast and measured motion. */
+:root{--radius-card:18px;--radius-control:12px;--motion-standard:cubic-bezier(.2,0,0,1);--motion-exit:cubic-bezier(.3,0,.8,.15)}
+html{font-size:16px;scroll-behavior:smooth}body{font-family:'Noto Sans SC','Microsoft YaHei UI','PingFang SC','Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.6;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+.shell{max-width:1500px;padding-left:clamp(14px,3vw,42px);padding-right:clamp(14px,3vw,42px)}
+.masthead{height:76px}.studio{grid-template-columns:minmax(395px,.91fr) minmax(465px,1.09fr);gap:clamp(23px,3.8vw,58px);padding-top:24px}.left{top:18px}
+.brand-type b{font-size:23px;letter-spacing:.05em}.brand-icon{width:44px;height:44px;border-radius:13px;font-size:31px}
+.board-heading h1,.section-top h2{font-size:23px;line-height:1.3;font-weight:700;letter-spacing:-.022em}
+.board-block{max-width:610px}.board-heading{margin-bottom:10px}.play-mode-bar{margin:2px 0 13px}.mode-segment{width:min(100%,370px);padding:4px;border-radius:13px}.mode-segment button{font-weight:650;min-height:43px;border-radius:10px}
+.board-frame{padding:20px 9px 27px 27px;border-radius:16px;aspect-ratio:1/1;box-shadow:0 10px 35px #2c32260c;overflow:hidden}
+.board{border-radius:8px;overflow:hidden}.square{overflow:hidden;isolation:isolate;transition:filter 170ms var(--motion-standard)}.square .coord{display:none!important}
+.board-coordinates{position:absolute;inset:0;pointer-events:none;color:var(--muted);font-size:11px;font-weight:650;letter-spacing:.02em}
+.rank-labels{position:absolute;left:6px;top:20px;bottom:27px;width:15px;display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center}
+.file-labels{position:absolute;left:27px;right:9px;bottom:4px;height:19px;display:grid;grid-template-columns:repeat(8,1fr);align-items:center;text-align:center}
+.arrows{inset:20px 9px 27px 27px;width:calc(100% - 36px);height:calc(100% - 47px)}
+.piece{width:100%;height:100%;min-width:0;min-height:0;display:grid;place-items:center;overflow:hidden;contain:layout paint;z-index:3}
+.piece-visual{width:100%;height:100%;display:grid;place-items:center;position:relative;pointer-events:none;overflow:hidden}
+.piece-visual>.piece-backup{grid-area:1/1;width:100%;height:100%;display:grid;place-items:center}
+.piece-visual>.piece-backup .piece-svg{width:66%!important;height:71%!important;max-width:72%;max-height:77%;filter:drop-shadow(0 1px 1px #171a1420);overflow:visible}
+.piece-visual>.piece-art-img{grid-area:1/1;display:block;width:79%!important;height:79%!important;max-width:79%;max-height:79%;object-fit:contain;z-index:2;opacity:0;transition:opacity 140ms ease;pointer-events:none}
+.piece-visual>.piece-art-img.loaded{opacity:1}
+.piece-visual>.piece-art-img.unavailable{display:none}
+.floating-piece{position:absolute;z-index:15;display:grid;place-items:center;pointer-events:none;contain:layout;transform-origin:center;filter:drop-shadow(0 7px 4px #1e211526)}
+.floating-piece .piece-visual{width:100%;height:100%}
+.square.check{box-shadow:none}
+.square.check::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;
+ background:color-mix(in srgb,#d24a42 38%,transparent);box-shadow:inset 0 0 0 3px #c5362ef0}
+.square.check-flash{animation:king-check 660ms var(--motion-standard)}
+.square.check-mate-flash{animation:king-check 1050ms var(--motion-standard) 2}
+@keyframes king-check{0%{box-shadow:inset 0 0 0 0 #b6534d00}22%{box-shadow:inset 0 0 0 8px #b6534d9c}70%{box-shadow:inset 0 0 0 4px #b6534d5a}100%{box-shadow:inset 0 0 0 4px #b6534d8c}}
+.square.pulse-move:after,.square.pulse-capture:after{content:'';position:absolute;inset:8%;border:2px solid #607d698c;border-radius:50%;pointer-events:none;animation:land-ripple 550ms var(--motion-standard) both;z-index:4}
+.square.pulse-capture:after{border-color:#a36c4baf}
+@keyframes land-ripple{0%{opacity:0;transform:scale(.25)}20%{opacity:1}100%{opacity:0;transform:scale(1.1)}}
+.game-result{bottom:clamp(18px,5%,32px);font-weight:730;border:1px solid var(--line);box-shadow:0 20px 60px #20231f26}
+.game-result.result-enter{animation:finish-appear 500ms var(--motion-standard) both}
+@keyframes finish-appear{from{opacity:0;transform:translate(-50%,calc(-50% + 16px)) scale(.95)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.transport{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-top:12px}.transport button,.transport #ply{min-width:0;width:100%;height:48px;min-height:48px;border-radius:12px;display:grid;place-items:center;text-align:center}.transport button svg{display:block;width:21px;height:21px;margin:auto;justify-self:center;align-self:center}
+.board-actions{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.board-actions button,.tool-icon,.tabs button,.network-action,.era-btn,.source-row select,.select-label select,.settings-field select{min-height:44px;border-radius:var(--radius-control);font-size:14px}
+button{transition:background-color .18s var(--motion-standard),box-shadow .18s var(--motion-standard),color .18s var(--motion-standard),border-color .18s var(--motion-standard)}button:hover:not(:disabled){box-shadow:0 2px 8px #2c322417}
+.coach-card,.search-card,.detail-panel{border:1px solid var(--line);border-radius:var(--radius-card);box-shadow:none}.coach-card{padding:17px 21px}.coach-title strong{font-size:17px}.coach-body{display:block;padding-top:12px}.coach-body p{min-height:0;margin:0;font-size:15px;line-height:1.8;max-width:75ch}.engine-insight{border-left:none!important;border-top:1px solid var(--line);margin-top:13px;padding:12px 0 0!important;font-size:14px;line-height:1.7}
+.section-top{margin-bottom:12px}.search-card{padding:20px 22px}.opening-name{font-size:16px;font-weight:650}.variation{min-height:57px;border-radius:10px}.variation .san{font-size:17px}.game-card{border-radius:14px}.games-list{max-height:252px}
+.tabs{gap:6px}.tab{min-height:43px}.board-feedback{padding-top:9px}
+.music-panel{border-radius:20px;padding:21px 22px 17px;box-shadow:0 25px 90px #212a2026;transform-origin:top right;animation:music-pop 250ms var(--motion-standard)}
+@keyframes music-pop{0%{opacity:0;transform:translateY(-7px) scale(.975)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.now-art{position:relative;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent-soft),var(--sub));border:1px solid var(--line);border-radius:14px;width:58px;height:58px}
+.music-notes{font-size:22px;color:var(--accent);transform:translateY(-2px)}.wave-bars{position:absolute;bottom:8px;display:flex;align-items:end;gap:2px;height:12px}.wave-bars i{display:block;width:2px;height:5px;border-radius:10px;background:var(--accent);opacity:.67}
+.music-panel:has(audio:not([src])) .wave-bars i{animation:none}
+.music-panel.is-playing .wave-bars i{animation:music-wave 800ms ease-in-out infinite alternate}
+.wave-bars i:nth-child(2){animation-delay:140ms}.wave-bars i:nth-child(3){animation-delay:310ms}.wave-bars i:nth-child(4){animation-delay:70ms}.wave-bars i:nth-child(5){animation-delay:230ms}
+@keyframes music-wave{from{height:3px}to{height:11px}}
+.music-panel .music-top strong{font-size:17px}.music-title{font-size:15px;line-height:1.45}.era-btn{border-radius:10px}.era-btn.selected{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.music-progress input,.music-controls input{accent-color:var(--accent)}
+@media(max-width:980px){.studio{display:block}.left{position:relative;top:0;max-width:610px;margin:0 auto 26px}.right{width:100%}}
+@media(max-width:600px){.masthead{gap:8px}.board-frame{padding:16px 6px 23px 23px}.rank-labels{left:3px;top:16px;bottom:23px}.file-labels{left:23px;right:6px;bottom:1px}.arrows{inset:16px 6px 23px 23px;width:calc(100% - 29px);height:calc(100% - 39px)}.board-heading h1{font-size:21px}.transport{gap:5px}.transport button,.transport #ply{height:43px;min-height:43px}.transport button svg{width:19px;height:19px}.coach-card,.search-card,.detail-panel{padding:14px 15px}.coach-body p{font-size:14px}.music-panel{padding:16px}.board-actions{gap:5px}.board-actions button{min-height:42px}}
+@media(prefers-reduced-motion:reduce){.floating-piece,.game-result,.square.check-flash,.square.check-mate-flash,.music-panel,.wave-bars i,.square.pulse-move:after,.square.pulse-capture:after{animation:none!important;transition:none!important}}
+
+#stat-caption:empty{display:none}
+
+/* Keep each board square mathematically square, independent of external coordinate gutters. */
+.board-frame{aspect-ratio:auto}
+.board{width:100%;height:auto;aspect-ratio:1/1}
+
+
+/* from v16.css */
+
+/* V16 — consistent, quieter interface. */
+:root{--radius-card:16px;--radius-control:11px}
+html{font-size:16px}
+body,button,select,input{font-family:"Noto Sans SC","Microsoft YaHei UI","PingFang SC","Source Han Sans SC","Segoe UI",system-ui,sans-serif}
+body{line-height:1.58}
+.build-mark{font-size:10px;letter-spacing:.1em;color:var(--accent);padding-left:7px;font-weight:700}
+.build-label{display:none}
+.masthead{height:74px}
+.brand-type small{font-size:11px;letter-spacing:.045em}
+.studio{grid-template-columns:minmax(360px,.94fr) minmax(440px,1.06fr);gap:clamp(22px,3.3vw,48px);padding-top:26px}
+.board-block{width:100%;max-width:625px}
+.board-heading h1,.section-top h2{font-size:23px;font-weight:700;letter-spacing:0}
+.play-mode-bar{display:flex;justify-content:center}
+.mode-segment{width:min(100%,340px)}
+/* True external-coordinate gutters, no overlap with square content. */
+.board-frame{position:relative!important;aspect-ratio:auto!important;height:auto!important;padding:14px 14px 32px 33px!important;overflow:hidden;border-radius:16px}
+.board{width:100%!important;height:auto!important;aspect-ratio:1/1!important;grid-template-rows:repeat(8,minmax(0,1fr));border-radius:5px}
+.board-coordinates{position:absolute;inset:0;pointer-events:none;z-index:1;color:var(--muted);font-size:12px;font-weight:600}
+.rank-labels{position:absolute;left:7px!important;top:14px!important;bottom:32px!important;width:21px!important;display:grid;grid-template-rows:repeat(8,1fr);place-items:center}
+.file-labels{position:absolute;left:33px!important;right:14px!important;bottom:5px!important;height:22px!important;display:grid;grid-template-columns:repeat(8,1fr);place-items:center}
+.arrows{inset:14px 14px 32px 33px!important;width:calc(100% - 47px)!important;height:calc(100% - 46px)!important}
+.square{position:relative;overflow:hidden!important;isolation:isolate;contain:layout paint;min-width:0;min-height:0}
+.square .coord{display:none!important}
+/* A single piece occupies at most 68% of its square, including outlines. */
+.square > .piece{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-width:0;min-height:0;display:grid!important;place-items:center!important;pointer-events:none;overflow:hidden!important;font-size:0!important}
+.piece-visual{position:relative;display:grid;place-items:center;width:100%;height:100%;overflow:hidden!important;pointer-events:none}
+.piece-visual > .piece-art-img{display:block!important;grid-area:1/1;width:69%!important;height:69%!important;max-width:69%!important;max-height:69%!important;object-fit:contain!important;overflow:hidden;opacity:0;filter:drop-shadow(0 1px 1px #292e2619);transition:opacity .15s ease}
+.piece-visual.asset-ready > .piece-art-img{opacity:1}
+.piece-visual.asset-failed > .piece-art-img{display:none!important}
+.piece-visual > .piece-backup{grid-area:1/1;display:grid;place-items:center;width:100%;height:100%;opacity:1;pointer-events:none}
+.piece-visual.asset-ready > .piece-backup{display:none!important}
+.piece-visual > .piece-backup .piece-svg{width:61%!important;height:61%!important;max-width:61%;max-height:61%;overflow:hidden!important}
+.floating-piece{overflow:hidden!important}
+.floating-piece > .piece-visual{width:100%;height:100%}
+.transport{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(56px,1fr) repeat(3,minmax(0,1fr));gap:8px}
+.transport button,.transport #ply{display:grid;place-items:center;min-height:46px;height:46px;border-radius:11px;min-width:0;text-align:center}
+.transport button svg{width:19px;height:19px;margin:0!important;place-self:center}
+.board-actions button{min-height:44px;font-size:14px}
+.coach-card,.search-card,.detail-panel{border-radius:16px;border-color:var(--line)}
+.coach-card{padding:18px 20px}
+.coach-body p{font-size:15px;line-height:1.73}
+.engine-insight{padding-top:11px!important;font-size:14px;line-height:1.68;color:var(--ink)}
+.network-tools{gap:6px}
+.network-action{min-height:36px;padding:6px 11px}
+.variation{min-height:55px}
+.source-row select,.select-label select,.settings-field select,.tool-icon,.soft-button,.tabs button,.era-btn{border-radius:11px;min-height:44px}
+.game-card,.variation,.collection-row{border-radius:10px}
+@media(max-width:980px){.studio{display:block}.left{max-width:625px;margin:0 auto 26px;position:relative;top:0}}
+@media(max-width:600px){.shell{padding-left:12px;padding-right:12px}.masthead{height:auto;min-height:72px;flex-wrap:wrap;padding:12px 0}.brand-type b{font-size:20px}.top-tools{gap:7px;flex-wrap:wrap}.board-frame{padding:12px 9px 28px 28px!important}.rank-labels{top:12px!important;bottom:28px!important;left:4px!important;width:18px!important}.file-labels{left:28px!important;right:9px!important;bottom:2px!important;height:20px!important}.arrows{inset:12px 9px 28px 28px!important;width:calc(100% - 37px)!important;height:calc(100% - 40px)!important}.piece-visual > .piece-art-img{width:68%!important;height:68%!important}.transport{gap:5px}.transport button,.transport #ply{height:42px;min-height:42px}.board-heading h1,.section-top h2{font-size:20px}.board-actions{gap:5px}.board-actions button{font-size:12.5px;min-height:42px}}
+@media(prefers-reduced-motion:reduce){.piece-visual > .piece-art-img{transition:none!important}}
+
+
+/* from v1.css */
+
+/* Chess Atelier 1.0 — coherent compact two-pane study layout and quiet Material-style motion. */
+:root{--motion:cubic-bezier(.2,0,0,1);--ease-out:cubic-bezier(0,0,.2,1);--tap-color:color-mix(in srgb,var(--accent) 15%,transparent)}
+html{scroll-behavior:auto}body{min-width:0}
+.brand-type small{letter-spacing:.02em}.side-badge{font-size:12px}
+/* Five equally spaced, readable transport controls; no redundant step counter on board. */
+.transport{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:7px!important;margin-top:9px!important}
+.transport button{min-width:0!important;width:100%;height:42px!important;min-height:42px!important;display:grid!important;place-items:center!important;border-radius:11px!important;padding:0!important}
+.transport button svg{display:block!important;width:19px!important;height:19px!important;margin:auto!important;overflow:visible}
+.transport #autoplay{background:var(--accent-soft);color:var(--accent);border-color:var(--line)}
+.transport #autoplay[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 20%,var(--paper));color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,var(--line));box-shadow:none}
+.transport #autoplay[aria-pressed="true"] svg{animation:none}
+.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;overflow:hidden!important;border:0!important}
+.board-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:8px!important}
+.board-actions button{min-height:39px!important;height:39px!important;white-space:nowrap;border-radius:11px;padding:0 6px;font-size:13px}
+.board-feedback,.board-status{display:none!important}
+.board-heading{margin-bottom:5px!important;min-height:29px!important}
+.play-mode-bar{margin:0 0 8px!important;min-height:39px!important;align-items:center}
+.mode-segment{width:min(100%,288px)!important;padding:3px!important}
+.mode-segment button{min-height:34px!important;border-radius:9px!important;font-size:14px}
+.board-frame{padding:12px 12px 27px 29px!important;border-radius:16px!important}
+.rank-labels{top:12px!important;bottom:27px!important;left:4px!important;width:20px!important}
+.file-labels{bottom:3px!important;left:29px!important;right:12px!important;height:19px!important}
+.arrows{inset:12px 12px 27px 29px!important;width:calc(100% - 41px)!important;height:calc(100% - 39px)!important;pointer-events:none}
+.square .coord{display:none!important}
+.piece-visual>.piece-art-img{width:74%!important;height:74%!important;max-width:74%!important;max-height:74%!important;filter:none!important}
+.floating-piece{filter:drop-shadow(0 2px 3px #14191424)!important;will-change:transform}
+/* Quiet move affordance rather than zooming or jumping. */
+.square .dot{opacity:.5;transform:scale(.82);transition:opacity .17s var(--motion),transform .17s var(--motion)}
+.square:hover .dot{opacity:.82;transform:scale(1)}
+.square .capture{opacity:.7;transition:opacity .17s var(--motion)}
+.square.pulse-move::after,.square.pulse-capture::after{inset:15%;border-width:1.5px;animation:atelier-land .32s var(--ease-out) both}
+@keyframes atelier-land{0%{opacity:0;transform:scale(.74)}30%{opacity:.68}100%{opacity:0;transform:scale(1.07)}}
+.square.check-flash{animation:atelier-check .72s var(--motion) both}.square.check-mate-flash{animation:atelier-check 1s var(--motion) both}
+@keyframes atelier-check{0%{box-shadow:inset 0 0 0 0 transparent}35%{box-shadow:inset 0 0 0 5px #bc5a5a80}100%{box-shadow:inset 0 0 0 3px #bc5a5a75}}
+.square.check-nudge::before{animation:check-nudge .92s var(--motion) both}
+@keyframes check-nudge{0%{opacity:.42}22%{opacity:1}48%{opacity:.28}72%{opacity:.92}100%{opacity:.55}}
+/* All controls share a focus treatment, mild state overlay, and consistent 180ms feedback. */
+button,select,input[type="range"]{font-family:inherit}
+button{position:relative;isolation:isolate;transition:background-color .18s var(--motion),border-color .18s var(--motion),color .18s var(--motion),box-shadow .18s var(--motion)!important;transform:none!important;-webkit-tap-highlight-color:transparent}
+button:hover:not(:disabled){box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--accent) 4%,transparent)!important}
+button:active:not(:disabled){box-shadow:inset 0 0 0 999px color-mix(in srgb,var(--accent) 9%,transparent)!important}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button:disabled{opacity:.42;cursor:not-allowed}
+.tap-feedback{position:absolute;inset:auto;pointer-events:none;border-radius:50%;background:var(--tap-color);transform:translate(-50%,-50%) scale(0);opacity:0;animation:atelier-tap .48s var(--motion) forwards;z-index:5}
+@keyframes atelier-tap{0%{opacity:.7;transform:translate(-50%,-50%) scale(0)}55%{opacity:.35}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+/* Panels expand with the same motion curve; avoid over-scaled entrances. */
+.music-panel:not(.hidden),.detail-panel:not(.hidden),.network-dialog[open]{animation:atelier-panel-enter .21s var(--motion) both}
+@keyframes atelier-panel-enter{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.mode-segment button.selected,.era-btn.selected,.tab.active{transition:background-color .19s var(--motion),color .19s var(--motion),box-shadow .19s var(--motion)!important}
+.toast{border-radius:12px;transition:opacity .2s var(--motion),transform .2s var(--motion)}
+/* Calm, compact music playback. */
+.music-panel{width:min(390px,calc(100vw - 24px));padding:17px 19px 14px;gap:0;border-radius:18px}
+.music-panel .music-top{padding-bottom:7px}
+.music-panel .music-top strong{font-size:16px!important;font-weight:650}
+.music-panel .music-top button{font-size:22px;width:38px;height:38px;min-height:38px;border-radius:10px}
+.era-bar{margin:12px 0 12px;gap:4px}.era-btn{min-height:36px!important;height:36px!important;font-size:12px!important;border-radius:10px!important}
+.music-panel .now-playing{margin:5px 0 10px;padding:4px 0}.now-art{width:49px;height:49px;border-radius:11px}.music-notes{font-size:19px}
+.music-title{font-size:14px;font-weight:650}.now-playing .muted-info{font-size:12px}
+.music-controls{display:grid!important;grid-template-columns:40px 40px 47px 40px minmax(58px,1fr);align-items:center;justify-content:space-between;gap:5px!important;margin:6px 0 10px!important}
+.music-controls button{height:39px!important;min-height:39px!important;min-width:0!important;width:39px!important;border-radius:11px!important;background:transparent!important;color:var(--ink)!important;border:1px solid transparent!important;display:grid!important;place-items:center!important;padding:0!important}
+.music-controls button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+.music-controls #music-prev svg path:first-child,.music-controls #music-next svg path:first-child{stroke-width:2.2}
+.music-controls .music-play-primary{height:46px!important;min-height:46px!important;width:46px!important;border-radius:50%!important;background:var(--accent)!important;color:var(--paper)!important;border-color:var(--accent)!important;box-shadow:none!important}
+.music-controls .music-play-primary svg{stroke-width:0;fill:currentColor;width:19px;height:19px}
+.music-controls #music-shuffle[aria-pressed="true"]{background:var(--accent-soft)!important;color:var(--accent)!important;border-color:var(--line)!important}
+.music-controls input{width:100%!important;min-width:50px!important;margin:0!important}
+.music-progress{gap:8px;margin:3px 0 1px!important}
+.music-panel .wave-bars i{animation-duration:1100ms!important;opacity:.4}
+/* Desktop: the left side fits entirely within the viewport; only the study column scrolls. */
+@media(min-width:981px){
+ html,body{height:100%;overflow:hidden}
+ .shell{height:100dvh;display:flex;flex-direction:column;overflow:hidden;padding-bottom:0!important}
+ .masthead{height:67px!important;min-height:67px;flex:0 0 67px}
+ .studio{flex:1 1 auto;min-height:0!important;overflow:hidden;align-items:start;padding-top:11px!important;grid-template-columns:minmax(340px,.93fr) minmax(440px,1.07fr)!important;gap:clamp(16px,2.65vw,43px)!important}
+ .left{position:relative!important;top:0!important;min-height:0;height:100%;overflow:hidden;display:flex;justify-content:center;align-items:flex-start}
+ .board-block{width:min(100%,calc(100dvh - 315px))!important;max-width:610px!important}
+ .right{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:0 8px 35px 0;min-height:0}
+ .board-frame{box-shadow:0 8px 23px #25282008!important}
+}
+@media(min-width:981px) and (max-height:720px){.board-block{width:min(100%,calc(100dvh - 286px))!important}.board-heading h1,.section-top h2{font-size:21px}.mode-segment button{min-height:30px!important}.play-mode-bar{min-height:34px!important;margin-bottom:5px!important}.transport button{height:36px!important;min-height:36px!important}.board-actions button{height:36px!important;min-height:36px!important}.masthead{height:58px!important;min-height:58px;flex-basis:58px}}
+@media(max-width:980px){html,body{height:auto!important;overflow-y:auto!important}.studio{overflow:visible}.left,.right{overflow:visible}.board-block{max-width:590px}}
+@media(max-width:600px){.board-frame{padding:11px 8px 23px 24px!important}.rank-labels{top:11px!important;bottom:23px!important;left:1px!important;width:20px!important}.file-labels{left:24px!important;right:8px!important;bottom:1px!important}.arrows{inset:11px 8px 23px 24px!important;width:calc(100% - 32px)!important;height:calc(100% - 34px)!important}.board-actions{gap:4px}.board-actions button{font-size:12px}.music-panel{right:8px;top:62px}}
+@media(prefers-reduced-motion:reduce){button,.tap-feedback,.music-panel,.detail-panel,.network-dialog,.era-btn,.tab,.square .dot,.square .capture,.wave-bars i,.square.check-nudge::before{animation:none!important;transition:none!important}}
+
+/* Feedback remains within control shapes; board has its own move indicators. */
+button:not(.square){overflow:hidden}
+#candidate-arrow{stroke-width:7!important;opacity:.45}#arrow-head path{opacity:.6}
+
+
+/* from refine.css */
+
+/* Chess Atelier / unified interaction pass. CSS geometry keeps SVG rasterizer on natural layers. */
+:root{--ui-ease:cubic-bezier(.2,0,0,1);--gentle-accent:color-mix(in srgb,var(--accent) 8%,transparent)}
+#music-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.music-status-icon{display:inline-flex;position:relative;align-items:center;justify-content:center;line-height:1;font-size:17px;width:20px;height:20px;flex:none}
+.music-live-dot{position:absolute;right:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:transparent;transition:background-color .23s var(--ui-ease),box-shadow .23s var(--ui-ease)}
+#music-toggle.music-is-playing .music-live-dot{background:#769781;box-shadow:0 0 0 3px color-mix(in srgb,#769781 12%,transparent)}
+#music-toggle.music-is-playing{background:color-mix(in srgb,var(--accent-soft) 60%,var(--paper));border-color:color-mix(in srgb,var(--accent) 20%,var(--line))}
+#music-toggle.music-is-playing .music-status-icon{animation:gentle-music .85s var(--ui-ease) infinite alternate}
+@keyframes gentle-music{from{opacity:.75}to{opacity:1}}
+.music-controls{display:flex!important;align-items:center;justify-content:center!important;gap:18px!important;margin:10px auto 13px!important}
+.music-controls button{flex:0 0 40px!important}
+.music-controls #music-shuffle[aria-pressed="true"]{border-color:transparent!important;background:var(--accent-soft)!important}
+.music-progress input[type=range]{accent-color:color-mix(in srgb,var(--accent) 42%,#d2d9d0);opacity:.86;height:5px;cursor:pointer}
+.music-progress input[type=range]:hover{opacity:1}
+.music-controls #music-volume{display:none!important}
+/* Clear studying surface when competing, with meaningful mode-specific choices. */
+.duel-intro{display:none;font-weight:700;font-size:16px;margin-bottom:14px}
+body[data-play-mode="book"] .duel-intro{display:block}
+body[data-play-mode="book"] .study-config,body[data-play-mode="book"] .toolbar-row{display:none!important}
+body[data-play-mode="book"] #panel-collection,body[data-play-mode="book"] #panel-settings{display:none!important}
+body[data-play-mode="book"] .source-row{display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:12px}
+body[data-play-mode="book"] .duel-config{display:block!important;width:auto!important;min-width:0!important}
+body[data-play-mode="book"] .duel-config label{margin-bottom:7px}
+body[data-play-mode="book"] #panel-notes{display:block!important;animation:quiet-enter .23s var(--ui-ease) both}
+body[data-play-mode="book"] .search-card{padding:20px!important}
+body[data-play-mode="book"] .coach-card{margin-bottom:12px}
+/* Fix stale hidden legend and any broad overlay that darkens buttons. */
+button:not(.square){transition:background-color .18s var(--ui-ease),color .18s var(--ui-ease),border-color .18s var(--ui-ease),opacity .18s var(--ui-ease)!important;box-shadow:none!important}
+button:not(.square):hover:not(:disabled){background-image:linear-gradient(var(--gentle-accent),var(--gentle-accent));box-shadow:none!important}
+button:not(.square).press-feedback:not(:disabled){background-image:linear-gradient(color-mix(in srgb,var(--accent) 11%,transparent),color-mix(in srgb,var(--accent) 11%,transparent))!important}
+.tap-feedback{display:none!important}
+/* All expandable surfaces use consistent duration/acceleration. */
+.music-panel:not(.hidden),.detail-panel:not(.hidden),.network-dialog[open],.search-card:not(.hidden){animation:quiet-enter .26s var(--ui-ease) both}
+@keyframes quiet-enter{from{opacity:.35;transform:translate3d(0,-6px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+.mode-segment button.selected,.tab.active,.era-btn.selected{transition:background-color .2s var(--ui-ease),color .2s var(--ui-ease)!important}
+/* Avoid fuzzy nested compositing and doubled vector scaling. ViewBox stays SVG-native. */
+.piece-visual>.piece-art-img{width:73%!important;height:73%!important;max-width:73%!important;max-height:73%!important;object-fit:contain!important;filter:none!important;transform:none!important;image-rendering:auto!important;backface-visibility:visible;will-change:auto}
+.piece-visual,.piece-visual>.piece-backup{transform:none!important;filter:none!important}
+.piece-visual .piece-svg{shape-rendering:geometricPrecision;text-rendering:geometricPrecision}
+.floating-piece{transform-origin:0 0;backface-visibility:hidden;will-change:transform;contain:layout paint}
+#board{isolation:isolate}
+/* Move hint uses a restrained surface wash, not a thick animated outline. */
+.square .dot{width:20%;height:20%;opacity:.36;transform:none!important;transition:opacity .2s var(--ui-ease)!important}
+.square .capture{inset:8%;border-width:2px!important;opacity:.46}
+.square.pulse-move::after,.square.pulse-capture::after{border:0!important;inset:0!important;background:color-mix(in srgb,var(--accent) 14%,transparent)!important;animation:quiet-landing .28s var(--ui-ease) both!important}
+@keyframes quiet-landing{0%{opacity:0}35%{opacity:.42}100%{opacity:0}}
+.square.check-flash,.square.check-mate-flash{animation:subtle-check .65s var(--ui-ease) both!important}
+@keyframes subtle-check{0%{box-shadow:inset 0 0 0 1px #b65f5f40}55%{box-shadow:inset 0 0 0 3px #bb77777a}100%{box-shadow:inset 0 0 0 2px #bb77774d}}
+.coach-card .coach-body p{font-size:15px;line-height:1.74}
+.engine-insight{color:var(--ink);font-size:14px;line-height:1.76}
+@media(max-width:580px){.music-controls{gap:12px!important}body[data-play-mode="book"] .source-row{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Finishing pass: persistent user preferences and consistent controls */
+.toast{background:color-mix(in srgb,var(--paper) 97%,var(--accent-soft))!important;color:var(--ink)!important;border:1px solid var(--line)!important;box-shadow:0 5px 22px #20292212!important;padding:9px 15px!important;font-size:13px!important;line-height:1.45;max-width:min(450px,90vw)}
+#music-toggle.music-is-playing{color:var(--accent)!important}
+#music-shuffle[aria-pressed="false"]{background:transparent!important;color:var(--muted)!important}
+#music-shuffle[aria-pressed="true"]{background:color-mix(in srgb,var(--accent-soft) 72%,var(--paper))!important;color:var(--accent)!important}
+#music-shuffle svg,#music-prev svg,#music-next svg{display:block;width:20px;height:20px;margin:auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#music-play svg{display:block;width:24px;height:24px;margin:auto;fill:currentColor;stroke:none}
+#music-toggle .music-status-icon{transform:none!important}
+.piece-visual.asset-ready>.piece-art-img{opacity:1!important}
+.piece-visual.asset-ready>.piece-backup{display:none!important}
+.piece-visual>.piece-art-img{width:72%!important;height:72%!important;max-width:72%!important;max-height:72%!important;transition:opacity .12s linear!important;image-rendering:auto!important;filter:none!important;backface-visibility:visible!important}
+.piece-visual>.piece-backup{filter:none!important}
+/* More exact pixel rasterization at browser default zoom when supported */
+@supports(width:round(nearest,2.75px,1px)){
+ .piece-visual>.piece-art-img{width:round(nearest,72%,1px)!important;height:round(nearest,72%,1px)!important}
+}
+.studio button,.source-row select,.filter-row select{font-variant-ligatures:none}
+body[data-play-mode="book"] .duel-intro{font-weight:650;margin-bottom:12px}
+body[data-play-mode="book"] .search-card{min-height:0}
+body[data-play-mode="book"] .games-head,body[data-play-mode="book"] .games-list{display:none!important}
+body[data-play-mode="book"] #panel-notes .panel-heading #record-heading{font-size:16px}
+@media(prefers-reduced-motion:reduce){.music-status-icon,.music-panel:not(.hidden),.detail-panel:not(.hidden){animation:none!important}}
+
+
+/* from atelier-updated.css */
+
+/* Chess Atelier UI revision — source-of-truth theme states and consistent controls. */
+:root{--focus-tint:color-mix(in srgb,var(--accent) 12%,transparent);--selected-surface:color-mix(in srgb,var(--accent) 18%,var(--paper));--muted-accent:color-mix(in srgb,var(--accent) 58%,var(--paper));--seek-fill:color-mix(in srgb,var(--accent) 42%,var(--paper));--seek-track:color-mix(in srgb,var(--accent) 13%,var(--paper))}
+/* Wider and optically centered board; a narrower, calmer reference column. */
+@media(min-width:981px){
+ .shell{max-width:1520px!important;padding-left:clamp(18px,3.1vw,54px)!important;padding-right:clamp(18px,3.1vw,54px)!important}
+ .studio{grid-template-columns:minmax(440px,1.18fr) minmax(380px,.82fr)!important;column-gap:clamp(24px,3.4vw,54px)!important}
+ .left{justify-content:center!important;padding-left:clamp(0px,1.2vw,17px)}
+ .board-block{margin-inline:auto;max-width:625px!important}
+ .right{padding-left:5px;padding-right:7px}
+}
+@media(min-width:981px) and (max-height:820px){.board-block{width:min(100%,calc(100dvh - 300px))!important}}
+@media(min-width:981px) and (max-height:700px){.board-block{width:min(100%,calc(100dvh - 272px))!important}}
+@media(max-width:980px){.studio{grid-template-columns:1fr!important}.board-block{margin-inline:auto}.right{width:100%}}
+/* Restore delicate solid-outline antique piece set with SVG-native antialiasing and bounded geometry. */
+.piece-visual>.piece-art-img{width:74%!important;height:74%!important;max-width:74%!important;max-height:74%!important;object-fit:contain;filter:none!important;image-rendering:auto!important;transform:none!important}
+.piece-visual.asset-ready>.piece-backup{display:none!important}
+.floating-piece .piece-visual>.piece-art-img{width:74%!important;height:74%!important}
+/* Shared theme colors for all motion and selection affordances. */
+.square.last.light{background:color-mix(in srgb,var(--accent) 13%,var(--light))!important}
+.square.last.dark{background:color-mix(in srgb,var(--accent) 19%,var(--dark))!important}
+.square.selected{box-shadow:inset 0 0 0 3px color-mix(in srgb,var(--accent) 80%,var(--paper))!important;outline:2px solid var(--accent)!important;outline-offset:-4px!important}
+.square.selected.last{background:color-mix(in srgb,var(--accent) 21%,var(--light))!important}
+.square.can-move .dot{background:color-mix(in srgb,var(--accent) 50%,transparent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--paper) 15%,transparent)!important;opacity:.7!important}
+.square.can-capture .capture{border:2px solid color-mix(in srgb,var(--accent) 68%,var(--paper))!important;background:color-mix(in srgb,var(--accent) 7%,transparent)!important;opacity:.86!important}
+#candidate-arrow{stroke:var(--accent)!important;opacity:.34!important;stroke-width:6!important}
+#arrow-head path{fill:var(--accent)!important;opacity:.55!important}
+/* Alternative moves: replace uninformative full-width bars with counts and legible selection. */
+#variations{min-height:110px!important;max-height:365px}
+.variation{grid-template-columns:minmax(52px,auto) minmax(0,1fr) minmax(62px,auto)!important;column-gap:12px!important;min-height:60px!important;padding:10px 13px!important;margin:1px 0!important;border:1px solid transparent!important;border-bottom-color:var(--line)!important;border-radius:10px!important;transition:background-color .18s ease,border-color .18s ease!important}
+.variation .san{font-size:20px!important;line-height:1.18;font-weight:750!important;letter-spacing:-.01em;color:var(--ink)!important}
+.variation .move-detail{display:flex!important;flex-direction:column!important;gap:2px!important;line-height:1.36!important}
+.variation .move-detail strong{display:block;font-size:13px;font-weight:630;color:var(--ink)!important}
+.variation .move-detail small{display:block;font-size:12px!important;color:color-mix(in srgb,var(--muted) 72%,var(--ink))!important}
+.variation .percent{font-size:12px!important;font-weight:630;color:var(--accent)!important;text-align:right;white-space:nowrap}
+.variation:hover{background:color-mix(in srgb,var(--accent) 6%,var(--paper))!important;border-color:color-mix(in srgb,var(--accent) 18%,var(--line))!important}
+.variation:focus-visible{outline:2px solid var(--accent)!important;outline-offset:0!important}
+.variation:active,.variation.just-chosen{background:var(--accent-soft)!important}
+.stats-head{color:var(--ink);font-weight:700!important}
+/* Make control icons consistently centered, without distorted viewboxes. */
+.transport button{display:grid!important;place-items:center!important}
+.transport button svg{width:19px!important;height:19px!important;display:block!important;justify-self:center!important;align-self:center!important;stroke:currentColor!important;stroke-linecap:round!important;stroke-linejoin:round!important;fill:none;overflow:visible}
+.transport button svg path[fill="currentColor"]{fill:currentColor!important;stroke:none!important}
+.music-status-icon svg{width:19px;height:19px;display:block;overflow:visible}
+.music-controls button svg{width:20px!important;height:20px!important;display:block!important;flex:none;overflow:visible}
+#music-play svg{width:21px!important;height:21px!important;stroke:none!important;fill:currentColor!important}
+.music-controls button:active,.transport button:active{background:var(--accent-soft)!important;color:var(--accent)!important}
+/* Music progress uses the theme's accent on all Blink/WebKit/Gecko engines. */
+#music-seek{-webkit-appearance:none;appearance:none;border:0!important;border-radius:999px;width:100%;height:5px!important;min-height:5px;padding:0;margin:0;outline:none!important;background:linear-gradient(to right,var(--seek-fill) 0%,var(--seek-fill) var(--seek-progress,0%),var(--seek-track) var(--seek-progress,0%),var(--seek-track) 100%)!important;opacity:1!important;cursor:pointer}
+#music-seek::-webkit-slider-runnable-track{height:5px;border-radius:99px;background:transparent;border:0}
+#music-seek::-moz-range-track{height:5px;border-radius:99px;background:transparent;border:0}
+#music-seek::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:11px;height:11px;border-radius:50%;background:color-mix(in srgb,var(--accent) 67%,var(--paper));border:2px solid var(--paper);box-shadow:0 0 0 1px var(--seek-fill);margin-top:-3px}
+#music-seek::-moz-range-thumb{width:9px;height:9px;border-radius:50%;background:var(--accent);border:1px solid var(--paper)}
+#music-seek:focus-visible{outline:2px solid var(--accent)!important;outline-offset:5px!important}
+#music-toggle.music-is-playing .music-live-dot{background:var(--accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 13%,transparent)!important}
+#music-toggle.music-is-playing{background:var(--accent-soft)!important;color:var(--accent)!important;border-color:color-mix(in srgb,var(--accent) 27%,var(--line))!important}
+.music-controls #music-shuffle[aria-pressed="true"]{background:var(--accent-soft)!important;color:var(--accent)!important}
+/* Clarify card hierarchy while keeping low-saturation styling. */
+.coach-card{border-color:color-mix(in srgb,var(--accent) 12%,var(--line))!important;box-shadow:0 4px 18px #20292208!important}
+.coach-title strong{color:var(--ink);font-weight:750!important}
+.section-top h2,.board-heading h1{letter-spacing:-.022em!important}
+button:not(.square):disabled{opacity:.46!important}
+/* Accessible feedback is carried by fill, border and text, not scale or a black ripple. */
+.mode-segment button.selected,.tab.active{color:var(--accent)!important}
+.tool-icon[aria-expanded="true"],.inline-button:active,.soft-button:active{background:var(--accent-soft)!important;border-color:var(--accent)!important;color:var(--accent)!important}
+@media(max-width:600px){.variation{grid-template-columns:52px minmax(0,1fr) 64px!important;padding:9px 8px!important}.variation .san{font-size:18px!important}.board-block{max-width:100%!important}}
+@media(prefers-reduced-motion:reduce){.variation,.music-panel,.mode-segment button{transition:none!important;animation:none!important}}
+
+.variation .percent{font-size:13px!important;font-weight:700!important;white-space:nowrap;color:var(--accent)!important}
+/* On compact screens put all configuration controls on their own usable row. */
+@media(max-width:600px){
+ .masthead{display:grid!important;grid-template-columns:minmax(0,1fr)!important;height:auto!important;min-height:0!important;gap:7px!important;padding:10px 0!important;align-items:center}
+ .masthead .brand{grid-row:1;min-width:0}
+ .masthead .top-tools{grid-row:2;width:100%!important;min-width:0!important;display:flex!important;justify-content:space-between!important;align-items:center;flex-wrap:nowrap!important;gap:5px!important}
+ .top-tools .select-label{display:flex!important;min-width:0!important;font-size:12px!important;gap:4px!important;white-space:nowrap}
+ .top-tools .pieces-label{display:flex!important}
+ .top-tools select{width:auto!important;max-width:114px!important;min-width:75px!important;height:35px!important;min-height:35px!important;padding:5px 7px!important;font-size:12px!important}
+ #music-toggle{display:inline-flex!important;min-width:0!important;min-height:35px!important;height:35px!important;padding:5px 8px!important;font-size:12px!important;white-space:nowrap;flex:0 0 auto}
+ #music-toggle>span:last-child{display:inline!important;font-size:12px!important}
+ .music-status-icon{width:15px;height:17px}.music-status-icon svg{width:15px;height:15px}
+}
+@media(max-width:385px){
+ .top-tools .select-label{font-size:0!important;gap:0!important}
+ .top-tools select{max-width:110px!important}
+}
+
+
+/* from v1.1.css */
+
+/* Chess Atelier v1.1 · uniform controls, audio card, theme-aware pieces */
+:root{--atelier-ease:cubic-bezier(.2,0,0,1)}
+/* Wide enough gaps at the header. Keyboard focus remains discernible without a dark box. */
+.masthead .top-tools{gap:clamp(13px,1.65vw,24px)!important;align-items:center;}
+.top-tools .select-label{gap:8px!important;align-items:center!important}
+.top-tools select{background-color:var(--paper)!important;background-image:none;box-shadow:none!important}
+.top-tools select:focus,.top-tools select:active,.top-tools select:focus-visible,
+#music-toggle:focus,#music-toggle:focus-visible{outline:none!important;outline-offset:0!important;box-shadow:none!important}
+.top-tools select:focus-visible,#music-toggle:focus-visible{
+ box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 29%,transparent)!important;border-color:var(--accent)!important
+}
+.top-tools select:hover,#music-toggle:hover{border-color:color-mix(in srgb,var(--accent) 43%,var(--line))!important;background-color:color-mix(in srgb,var(--paper) 88%,var(--accent-soft))!important}
+.top-tools select:active,#music-toggle:active{background-color:var(--accent-soft)!important}
+.top-tools select,#music-toggle{transition:background-color .18s var(--atelier-ease),border-color .18s var(--atelier-ease),color .18s var(--atelier-ease)!important;transform:none!important}
+#music-toggle{gap:7px!important;isolation:isolate!important}
+#music-toggle:has(.music-live-dot){min-width:101px!important}
+/* Still accessible for keyboard navigation; native controls remain semantic. */
+button:focus:not(:focus-visible),select:focus:not(:focus-visible){outline:0!important;box-shadow:none!important}
+button:focus-visible:not(.square),select:focus-visible{outline:none!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 29%,transparent)!important;border-color:var(--accent)!important}
+/* Clear hierarchy, no thick square/ripple on mouse click. */
+.music-controls button,.era-btn,#music-toggle,.inline-button{box-shadow:none!important}
+.music-panel{width:min(414px,calc(100vw - 22px))!important;min-width:0!important;padding:19px 22px 19px!important;overflow:hidden!important;border-radius:20px!important;box-shadow:0 14px 48px #26332d20!important}
+.music-panel .music-top{border:0!important;padding:0 0 12px!important;margin:0!important;display:flex;align-items:center!important;justify-content:space-between}
+.music-panel .music-top strong{font-size:18px!important;line-height:1.4!important;letter-spacing:-.01em!important}
+.music-panel .music-top button{display:grid!important;place-items:center!important;flex:0 0 35px!important;height:35px!important;width:35px!important;min-height:35px!important;padding:0!important;font-size:22px!important;border:0!important;border-radius:50%!important;color:var(--muted)!important;background:transparent!important}
+.music-panel .era-bar{border:0!important;padding:0!important;margin:2px 0 16px!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important}
+.music-panel .era-btn{height:38px!important;min-height:38px!important;padding:0 3px!important;white-space:nowrap!important;font-size:13px!important;font-weight:590!important;border:1px solid var(--line)!important;border-radius:11px!important;box-shadow:none!important;text-align:center!important}
+.music-panel .era-btn.selected{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))!important;background:var(--accent-soft)!important;color:var(--accent)!important}
+/* Cover and playing indicator are separately allocated; never overlap. */
+.music-panel .now-playing{display:grid!important;grid-template-columns:56px minmax(0,1fr) 17px!important;gap:13px!important;align-items:center!important;min-height:74px!important;height:74px!important;margin:0 0 12px!important;padding:2px 0!important;overflow:hidden!important}
+.music-panel .now-art{display:grid!important;place-items:center!important;width:56px!important;height:56px!important;min-width:56px!important;min-height:56px!important;flex:none!important;border-radius:14px!important;background:linear-gradient(145deg,var(--accent-soft),var(--sub))!important;overflow:hidden!important}
+.music-panel .now-art .music-art-icon{width:29px!important;height:29px!important;min-width:29px!important;max-width:29px!important;stroke:var(--accent)!important;stroke-width:1.6!important;fill:none!important;display:block!important;aspect-ratio:1!important}
+.music-panel .now-text{min-width:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:4px!important;height:64px!important}
+.music-panel .music-title-viewport{width:100%;height:24px;position:relative;overflow:hidden;mask-image:linear-gradient(90deg,black 0%,black 90%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,black 0%,black 90%,transparent 100%)}
+.music-panel .music-title{display:block!important;max-height:none!important;white-space:nowrap!important;overflow:visible!important;width:max-content!important;max-width:none!important;font-size:15px!important;font-weight:700!important;line-height:24px!important;letter-spacing:.005em!important;transform:translateX(0)}
+.music-panel .music-title.title-scroll{animation:atelier-track-scroll 13s linear 1.7s infinite alternate}
+@keyframes atelier-track-scroll{0%,10%{transform:translateX(0)}85%,100%{transform:translateX(var(--track-shift,0px))}}
+.music-panel .now-playing .muted-info{font-size:13px!important;line-height:19px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;margin:0!important}
+.music-panel .wave-bars{position:static!important;width:17px!important;height:18px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:2px!important;flex:0 0 17px!important;overflow:hidden!important;opacity:0!important;transition:opacity .22s var(--atelier-ease)!important}
+.music-panel.is-playing .wave-bars{opacity:.75!important}
+.music-panel .wave-bars i{width:2px!important;min-width:2px!important;max-width:2px!important;max-height:16px!important;background:var(--accent)!important;animation:none!important;opacity:1!important}
+.music-panel.is-playing .wave-bars i{animation:music-wave 950ms ease-in-out infinite alternate!important}
+/* Physical control footprints are independent of metadata and track length. */
+.music-panel .music-controls{display:grid!important;grid-template-columns:repeat(2,42px) 50px 42px 42px!important;align-items:center!important;justify-content:center!important;justify-items:center!important;column-gap:9px!important;width:100%!important;height:56px!important;min-height:56px!important;margin:0 auto 10px!important;padding:0!important}
+.music-panel .music-controls button{box-sizing:border-box!important;flex:none!important;width:42px!important;min-width:42px!important;max-width:42px!important;height:42px!important;min-height:42px!important;max-height:42px!important;display:grid!important;place-items:center!important;padding:0!important;border-radius:12px!important;line-height:1!important;transform:none!important;transition:background-color .18s var(--atelier-ease),color .18s var(--atelier-ease)!important}
+.music-panel .music-controls #music-play{width:50px!important;min-width:50px!important;max-width:50px!important;height:50px!important;min-height:50px!important;max-height:50px!important;border-radius:50%!important}
+.music-panel .music-controls button svg{display:block!important;box-sizing:border-box!important;flex:none!important;width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;aspect-ratio:1!important;overflow:visible!important;fill:none!important;stroke:currentColor!important;stroke-width:1.75!important;stroke-linecap:round!important;stroke-linejoin:round!important;transform:none!important}
+.music-panel .music-controls #music-play svg{width:22px!important;height:22px!important;fill:currentColor!important;stroke:none!important;stroke-width:0!important}
+.music-panel .music-controls #music-play svg path{fill:currentColor!important;stroke:none!important}
+.music-panel .music-controls button svg path{vector-effect:non-scaling-stroke}
+.music-panel .music-progress{border:0!important;display:grid!important;grid-template-columns:37px minmax(0,1fr) 37px!important;gap:9px!important;align-items:center!important;min-height:22px!important;height:22px!important;margin:5px 0 0!important;padding:0!important}
+.music-panel #music-elapsed,.music-panel #music-duration{white-space:nowrap!important;line-height:18px!important;font-size:12px!important;font-variant-numeric:tabular-nums!important;color:var(--muted)!important}
+/* Remove former separator strokes throughout music controls. */
+.music-panel .music-top,.music-panel .era-bar,.music-panel .music-controls,.music-panel .music-progress,.music-panel .now-playing{border-top:0!important;border-bottom:0!important}
+@media(max-width:600px){.masthead .top-tools{gap:6px!important}.top-tools .select-label{gap:4px!important}#music-toggle{min-width:0!important}.music-panel{right:6px!important;top:70px!important;padding:16px!important}.music-panel .era-btn{font-size:12px!important}.music-panel .music-controls{column-gap:6px!important}}
+@media(prefers-reduced-motion:reduce){.music-title.title-scroll{animation:none!important}.music-panel .wave-bars i{animation:none!important}}
+
+
+/* from v1.2.css */
+
+/* Chess Atelier v1.2 · precise hierarchy and theme-consistent controls */
+:root{--atelier-ease:cubic-bezier(.22,.68,0,1)}
+/* Single UI language for selector triggers. The native input continues to drive state. */
+.atelier-native-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;clip-path:inset(50%)!important;pointer-events:none!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important}
+.atelier-select{min-width:0;position:relative;display:block;width:100%;isolation:isolate;z-index:1}
+.atelier-select.is-open{z-index:75}
+.atelier-select-trigger{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:17px;width:100%;min-width:0;min-height:43px;padding:0 13px 0 16px;border:1px solid var(--line);border-radius:11px;background:var(--paper);font:inherit;color:var(--ink);text-align:left;white-space:nowrap;transition:background .2s var(--atelier-ease),border-color .2s var(--atelier-ease),box-shadow .2s var(--atelier-ease)!important}
+.atelier-select-trigger .atelier-selected-label{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:14px;font-weight:630;line-height:1.3}
+.atelier-select-trigger svg{flex:0 0 18px;width:18px;height:18px;transition:transform .22s var(--atelier-ease);color:var(--muted)}
+.atelier-select.is-open .atelier-select-trigger svg{transform:rotate(-180deg)}
+.atelier-select-trigger:hover{background:color-mix(in srgb,var(--paper) 88%,var(--accent-soft));border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.atelier-select-trigger:focus{outline:0!important;box-shadow:none!important}
+.atelier-select-trigger:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent)!important;outline-offset:2px!important}
+.atelier-select.is-open .atelier-select-trigger{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:var(--paper)}
+.atelier-select-list{box-sizing:border-box;position:absolute;top:calc(100% + 5px);left:0;right:0;min-width:max(100%,150px);max-height:276px;overflow:auto;overscroll-behavior:contain;padding:6px;border-radius:13px;border:1px solid var(--line);background:var(--paper);box-shadow:0 15px 36px rgba(25,30,23,.14);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-5px) scale(.985);transform-origin:top center;transition:opacity .18s var(--atelier-ease),transform .2s var(--atelier-ease),visibility .2s;z-index:130}
+.atelier-select.is-open .atelier-select-list{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1)}
+.atelier-option{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:37px;padding:6px 10px!important;border-radius:8px;border:0;background:transparent;color:var(--ink);text-align:left;white-space:nowrap;font-family:inherit;font-size:13px;font-weight:520;cursor:pointer}
+.atelier-option svg{display:none;flex:0 0 17px;width:17px;height:17px;color:var(--accent)}
+.atelier-option[aria-selected="true"]{background:var(--accent-soft)!important;color:var(--accent)!important;font-weight:710}
+.atelier-option[aria-selected="true"] svg{display:block}
+.atelier-option:hover:not([aria-disabled="true"]),.atelier-option:focus-visible{background:color-mix(in srgb,var(--accent) 9%,var(--paper))!important;color:var(--accent)!important;outline:0!important}
+.atelier-option[aria-disabled="true"]{opacity:.42;pointer-events:none}
+/* Top row spacing remains consistent across 1100–1440px. */
+.masthead .top-tools{gap:clamp(15px,1.65vw,27px)!important}
+.top-tools .select-label{display:flex;align-items:center;gap:9px!important;font-size:13px;min-width:0}
+.top-tools .select-label .atelier-select{width:auto;min-width:106px;max-width:130px}
+.top-tools .select-label .atelier-select-trigger{min-height:41px;padding-left:12px;padding-right:11px;gap:9px}
+.top-tools .select-label .atelier-selected-label{font-size:13px}
+.top-tools .select-label .atelier-select-list{min-width:142px}
+.source-row .field-grow .atelier-select{width:100%}
+.source-row .field-small .atelier-select{width:100%}
+.filter-row .atelier-select{display:inline-block;width:160px;max-width:100%}
+/* Move hierarchy; analysis is beside the explanatory heading, not buried in notation. */
+.coach-card .coach-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.coach-card .coach-title .coach-analyze{margin:0 0 0 auto!important;padding:8px 13px!important;min-height:34px!important;flex:none;white-space:nowrap;font-size:12px!important;font-weight:650!important;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line))!important;border-radius:9px!important;background:var(--accent-soft)!important;color:var(--accent)!important}
+.coach-card .coach-title .coach-analyze:hover{background:color-mix(in srgb,var(--accent) 16%,var(--paper))!important}
+.variation .san{font-size:17px!important;line-height:1.35!important;letter-spacing:0!important;font-weight:730!important}
+.variation{column-gap:13px!important;min-height:60px!important}
+.variation .move-detail strong{font-size:13px!important}
+.variation .move-detail small{font-size:12px!important}
+/* The three transport buttons are centered on the card; shuffle is pinned to right. */
+.music-panel .music-controls{display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;column-gap:0!important;align-items:center!important;justify-content:stretch!important;width:100%!important;height:58px!important;min-height:58px!important;margin:1px auto 13px!important;padding:0!important}
+.music-panel .music-control-spacer{grid-column:1;display:block;min-width:0}
+.music-panel .music-main-controls{grid-column:2;display:grid;grid-template-columns:42px 50px 42px;justify-content:center;align-items:center;gap:13px}
+.music-panel .music-controls #music-shuffle{grid-column:3;justify-self:end;width:42px!important;height:42px!important}
+.music-panel .music-progress{width:100%!important;max-width:342px!important;box-sizing:border-box!important;grid-template-columns:37px minmax(0,1fr) 37px!important;justify-content:center!important;margin:5px auto 0!important}
+/* Discrete, fixed-size icons; prevent stretch from global button/svg rules. */
+.music-panel .music-main-controls button{width:42px!important;height:42px!important;min-width:42px!important;max-width:42px!important;min-height:42px!important;max-height:42px!important}
+.music-panel .music-main-controls #music-play{width:50px!important;height:50px!important;min-width:50px!important;max-width:50px!important;min-height:50px!important;max-height:50px!important}
+.music-panel .music-controls button svg{width:20px!important;height:20px!important;aspect-ratio:1!important;flex:0 0 20px!important;transform:none!important}
+.music-panel .music-controls #music-play svg{width:21px!important;height:21px!important;flex:0 0 21px!important}
+.music-panel #music-seek{width:100%;min-width:0}
+@media(max-width:950px){.top-tools .select-label .atelier-select{min-width:85px;max-width:108px}.top-tools .select-label{gap:5px!important}.music-panel .music-main-controls{gap:10px}}
+@media(max-width:560px){.top-tools .select-label{font-size:0!important}.top-tools .select-label .atelier-select{min-width:78px;max-width:109px}.top-tools .select-label .atelier-select-trigger{min-height:35px;padding:0 7px 0 8px;gap:5px}.top-tools .select-label .atelier-selected-label{font-size:12px}.top-tools .select-label .atelier-select-list{min-width:135px}.music-panel .music-main-controls{gap:8px}}
+@media(prefers-reduced-motion:reduce){.atelier-select-list,.atelier-select-trigger,.atelier-select-trigger svg{transition:none!important}}
+
+
+/* from v1.3.css */
+
+/* Chess Atelier v1.3 — simplified learning / play modes */
+#duel-start{margin:10px 0 0;padding:0 19px;min-height:43px;background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));border-radius:11px;font-weight:750;cursor:pointer}
+#duel-start:hover{background:color-mix(in srgb,var(--accent) 17%,var(--paper))}
+#study-workspace{overflow:visible}
+#study-workspace .games-head{margin:18px 0 10px;padding:14px 2px 0;border-top:1px solid var(--line)}
+#study-workspace .games-head h3{margin:0;font-size:17px}
+#study-workspace #games{margin:0 0 7px}
+#study-workspace #panel-collection{padding:14px!important;box-shadow:none!important;margin:11px 0 16px!important;border:1px solid var(--line)!important;max-height:490px;overflow-y:auto;overscroll-behavior:contain}
+#study-workspace #panel-collection .collection-list{max-height:350px;overflow:auto}
+#study-workspace #panel-collection .panel-heading{margin-bottom:9px}
+#study-workspace #panel-collection .archive-loader{margin-top:15px}
+#catalog-shortcut{white-space:nowrap}
+body[data-play-mode="book"] .study-config{display:none!important}
+body[data-play-mode="book"] #study-workspace{padding:18px 20px!important}
+body[data-play-mode="book"] #study-workspace .duel-intro{display:block;font-size:16px;font-weight:730;margin:0 0 12px}
+body[data-play-mode="book"] .right>.toolbar-row{display:none!important}
+body[data-play-mode="book"] #panel-settings{display:none!important}
+body[data-play-mode="book"] #panel-notes{display:block!important}
+body[data-play-mode="free"] .duel-config,body[data-play-mode="free"] #duel-start,body[data-play-mode="free"] #study-workspace .duel-intro{display:none!important}
+body[data-play-mode="book"] #autoplay{visibility:visible}
+body[data-play-mode="book"] #status{min-height:0}
+@media(max-width:650px){#study-workspace .games-head{flex-wrap:wrap;row-gap:8px}#study-workspace #panel-collection{max-height:none}}
+
+
+/* live app.css */
+
+/* Chess Atelier · 统一界面层（v2）
+   目标：减少组件、减少层叠覆盖、减少重绘成本。
+   本文件是唯一定义「棋谱库」布局的地方，不再叠加 v1.x 系列的历史覆盖。 */
+
+:root{
+ --library-row-min:54px;
+}
+
+.hidden{display:none !important}
+
+/* ---------- 顶栏 ---------- */
+.masthead{position:sticky;top:0;z-index:30}
+.top-tools{display:flex;align-items:center;gap:5px!important}
+.tool-icon{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer}
+.tool-icon:hover{background:var(--sub)}
+.tool-icon svg,.music-status-icon svg{width:17px;height:17px;display:block}
+/* 纯图标小按钮：旧层给 .tool-icon 设了 min-height:44px / padding，这里必须显式压过 */
+.masthead .top-tools{gap:4px!important}
+.tool-icon--bare{box-sizing:border-box!important;flex:0 0 38px!important;padding:0!important;
+ width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;max-width:38px!important;
+ justify-content:center!important;border-radius:11px;position:relative;gap:0!important;font-size:0!important;
+ overflow:visible}
+.tool-icon--bare>*{font-size:0}
+.tool-icon--bare .music-status-icon{width:20px!important;height:20px!important}
+.tool-icon--bare svg{width:20px!important;height:20px!important}
+.tool-icon--gear svg{width:20px!important;height:20px!important}
+.masthead .top-tools .tool-icon{
+ color:color-mix(in srgb,var(--accent) 42%,var(--muted))!important;
+ background:transparent!important;
+ border-color:color-mix(in srgb,var(--accent) 16%,var(--line))!important;
+ font-weight:550!important}
+.masthead .top-tools .tool-icon:hover,.masthead .top-tools .tool-icon[aria-expanded="true"]{
+ color:color-mix(in srgb,var(--accent) 72%,var(--muted))!important;
+ background:color-mix(in srgb,var(--accent-soft) 55%,transparent)!important;
+ border-color:color-mix(in srgb,var(--accent) 28%,var(--line))!important}
+#music-toggle.tool-icon--music,#music-toggle:has(.music-live-dot){box-sizing:border-box!important;flex:0 0 auto!important;gap:7px!important;
+ padding:0 14px!important;width:auto!important;min-width:108px!important;max-width:none!important;
+ height:38px!important;min-height:38px!important;
+ justify-content:center!important;border-radius:11px;overflow:visible;isolation:isolate}
+#music-toggle.tool-icon--music .tool-icon-label{display:inline!important;flex:none;line-height:1;
+ font-size:14px!important;font-weight:550!important;letter-spacing:.01em;white-space:nowrap}
+#music-toggle.tool-icon--music .music-status-icon{width:20px!important;height:20px!important;flex:none}
+#music-toggle.tool-icon--music svg{width:20px!important;height:20px!important}
+.music-status-icon{position:relative;display:inline-flex}
+.music-live-dot{position:absolute;right:-2px;top:-2px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:0}
+#music-toggle.music-is-playing .music-live-dot,.music-live-dot.on{opacity:1}
+
+/* ---------- 左上角 logo：整枚徽章双面翻转（避免半截裁切与镜像马） ---------- */
+.masthead,.brand-wrap,.brand{overflow:visible}
+.brand-wrap{position:relative;flex:0 0 auto;min-width:0;perspective:720px}
+.brand-icon{
+ --logo-ink:color-mix(in srgb,var(--accent) 78%,var(--ink));
+ position:relative;display:block;flex:none;box-sizing:border-box;
+ width:42px;height:42px;border-radius:12px;
+ padding:0!important;overflow:visible!important;
+ background:transparent!important;
+ perspective:none;transform-style:preserve-3d
+}
+.brand-flip{
+ position:relative;display:block;width:100%;height:100%;
+ transform-style:preserve-3d;transform-origin:50% 50%
+}
+.brand-face{
+ position:absolute;inset:0;
+ display:grid;place-items:center;
+ background:conic-gradient(var(--dark) 0 25%,var(--light) 25% 50%,var(--dark) 50% 75%,var(--light) 75% 100%);color:var(--logo-ink);
+ box-sizing:border-box;border:1.5px solid color-mix(in srgb,var(--accent) 55%,var(--paper));border-radius:12px;overflow:hidden;
+ font:33px/1 Georgia,'Noto Sans Symbols 2',serif;
+ padding:0;transform-origin:50% 50%;
+ -webkit-backface-visibility:hidden;backface-visibility:hidden
+}
+.brand-face-back{transform:rotateY(180deg)}
+.brand-knight{display:block;transform:translateX(-1px);-webkit-text-stroke:0;filter:none}
+@keyframes brand-coin{
+ 0%{transform:rotateY(0deg)}
+ 100%{transform:rotateY(360deg)}
+}
+.brand-icon.is-flipping .brand-flip{
+ animation:brand-coin 1.12s cubic-bezier(.22,.82,.28,1) both
+}
+
+/* ---------- 棋子图片：落子必须瞬间出现，绝不淡入 ---------- */
+/* 旧层给 .piece-art-img 设了 opacity:0→1 的过渡；节点现在由 piece-art.js 预热复用，
+   图片早已解码，保留过渡只会在换格时留下一帧可见的淡入。 */
+.piece-visual>.piece-art-img{opacity:1!important;transition:none!important}
+.floating-piece{transform-origin:50% 50%!important}
+.piece-visual.asset-failed>.piece-art-img{display:none!important}
+
+/* 全局：点击文字不出现选区/输入框式的高亮闪烁 */
+body{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+input,textarea,[contenteditable],.move-tape,.analysis-zone,.library-list,.az-line,.credit{user-select:text;-webkit-user-select:text}
+::selection{background:color-mix(in srgb,var(--accent) 24%,transparent)}
+
+/* ---------- 右栏整体收窄 ---------- */
+/* 棋盘本来就锁在 635px 以内，右半边没必要和左半边等宽。
+   把分栏配比从 1.04/.96 收到 1.19/.81，右栏在 1440 宽下由约 634px 收到约 540px。 */
+@media(min-width:1051px){
+ .studio{grid-template-columns:minmax(0,1.19fr) minmax(322px,.81fr)!important;column-gap:clamp(14px,1.9vw,30px)!important}
+ .right{padding:0 6px 35px 0!important}
+}
+@media(min-width:861px){
+ body[data-layout="split"] .studio{grid-template-columns:minmax(0,1.19fr) minmax(322px,.81fr)!important}
+ body[data-layout="split"] .right{max-width:none!important}
+}
+
+/* ---------- 右栏整体 ---------- */
+.right{display:flex;flex-direction:column;gap:14px;min-width:0}
+/* .right 是列向 flex 且自身可滚动：子项默认 flex-shrink:1，而带 overflow:auto 的
+   子项其 min-height:auto 会解析成 0，于是子面板会被压扁（走法建议只剩一条缝）。
+   这里让所有直接子项都不参与收缩，由 .right 自己滚。 */
+.right>*{flex:0 0 auto}
+.section-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.board-heading h1,.section-top h2{font-size:23px!important;font-weight:700!important;letter-spacing:0!important;line-height:1.3;margin:0}
+.network-tools{display:flex;align-items:center;gap:10px}
+.network-action{background:none;border:0;color:var(--muted);font-size:12.5px;cursor:pointer;padding:4px 2px}
+.network-action:hover{color:var(--accent)}
+.source-state{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:default}
+.source-state i{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.source-state.online i{background:#5f9c6a}
+.source-state.offline i{background:#b87a5c}
+
+/* ---------- 讲解卡：讲解 + 固定高度的局势分析区 ---------- */
+.coach-card{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:13px 15px 12px}
+.coach-title{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.coach-title strong{font-size:15px;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#lesson-phase{flex:none;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.coach-analyze{margin-left:auto;flex:none}
+.minor-button{background:var(--sub);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
+.minor-button:hover{background:var(--accent-soft);color:var(--accent)}
+.coach-body p#move-explanation,.coach-card>p#move-explanation{margin:0;font-size:13px;line-height:1.6;color:var(--ink)}
+
+/* 局势分析：固定高度 + 内部滚动，深度分析返回后不再撑高页面 */
+.analysis-zone{margin-top:9px;height:132px;min-height:132px;overflow:auto;overscroll-behavior:contain;
+ scrollbar-width:thin;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--sub)}
+.az-line{margin:0;font-size:12.5px;line-height:1.6;color:var(--ink)}
+.az-line.az-hint{font-size:14.5px;line-height:1.7}
+.az-tag.hint{font-size:13px;padding:2px 8px}
+.az-line+.az-line{margin-top:5px}
+.az-line b{font-weight:700}
+.az-sub{font-size:12px;color:var(--muted)}
+.az-dim{color:var(--muted)}
+.az-tag{display:inline-block;margin-right:7px;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:650;
+ background:var(--accent-soft);color:var(--accent);vertical-align:1px;white-space:nowrap}
+.az-tag.white{background:color-mix(in srgb,#fff 70%,var(--accent-soft));color:var(--ink)}
+.az-tag.black{background:color-mix(in srgb,var(--ink) 82%,transparent);color:var(--paper)}
+.az-tag.equal,.az-tag.neutral{background:var(--sub);color:var(--muted)}
+.az-tag.sm{font-size:10.5px;padding:0 6px}
+.az-tag.good{background:var(--accent-soft);color:var(--accent)}
+.az-tag.ok{background:color-mix(in srgb,var(--gold) 16%,var(--paper));color:var(--ink)}
+.az-tag.bad{background:color-mix(in srgb,#b4573c 14%,var(--paper));color:#a04a30}
+.az-cands{margin:6px 0 0;font-size:12px;display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+.az-cands-label{color:var(--muted)}
+
+/* ---------- 内嵌滚动区：子菜单与右半边页面之间的滚动分界 ----------
+   原来四处全是 overscroll-behavior:contain：子菜单滚到顶就卡住，
+   右半边页面纹丝不动，于是分不清刚才滚的是哪一层。
+   改成 auto 后，子菜单到顶继续向上滚会把滚动交还给右栏；
+   再用 local/scroll 双层背景，在有更多内容的那一端露出阴影作视觉提示。 */
+.analysis-zone,.variation-chips,.library-list,.move-tape{overscroll-behavior-y:auto!important;overscroll-behavior-x:contain}
+.analysis-zone{background-image:
+ linear-gradient(var(--sub) 0 32%,#0000 100%),
+ linear-gradient(#0000,var(--sub) 66%),
+ radial-gradient(farthest-side at 50% 0,rgba(24,24,16,.14),#0000),
+ radial-gradient(farthest-side at 50% 100%,rgba(24,24,16,.14),#0000);
+ background-color:var(--sub)}
+.library-list{background-image:
+ linear-gradient(var(--paper) 0 22px,#0000 42px),
+ linear-gradient(#0000,var(--paper) 26px),
+ radial-gradient(farthest-side at 50% 0,rgba(24,24,16,.13),#0000),
+ radial-gradient(farthest-side at 50% 100%,rgba(24,24,16,.13),#0000);
+ background-color:var(--paper)}
+.move-tape{background-image:
+ linear-gradient(var(--paper) 0 20px,#0000 36px),
+ linear-gradient(#0000,var(--paper) 24px),
+ radial-gradient(farthest-side at 50% 0,rgba(24,24,16,.13),#0000),
+ radial-gradient(farthest-side at 50% 100%,rgba(24,24,16,.13),#0000);
+ background-color:var(--paper)}
+body[data-play-mode="free"] #variation-head,
+body[data-play-mode="free"] #variations{display:none!important}
+/* 走法建议独立成一个子面板，视觉上和右半边的页面内容分开一层（具体规则见下方 .variation-chips） */
+.variation-chips{border-radius:11px}
+/* ---------- 走法建议：紧凑 chip，占一行即可 ---------- */
+.stats-head{display:flex;align-items:baseline;gap:8px;margin:0 0 6px;font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:.02em}
+.stats-head small{font-weight:400;font-size:11.5px;opacity:.85}
+#variations{min-height:0!important;max-height:92px!important}
+#variations:has(>.hint:only-child){max-height:none}
+.variation-chips{display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;max-height:90px;overflow:auto;overscroll-behavior-y:auto;scrollbar-width:thin;
+ padding:7px 8px;border:1px solid var(--line);border-radius:11px;background-color:var(--sub);background-image:
+ linear-gradient(var(--sub) 0 24%,#0000 100%),
+ linear-gradient(#0000,var(--sub) 70%),
+ radial-gradient(farthest-side at 50% 0,rgba(24,24,16,.13),#0000),
+ radial-gradient(farthest-side at 50% 100%,rgba(24,24,16,.13),#0000)}
+.variation-chips,.chip,.chip *,#engine-insight{-webkit-user-select:none;user-select:none;caret-color:transparent}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:8px;
+ padding:3px 9px;background:var(--paper);color:var(--ink);font-size:14px;font-weight:650;cursor:pointer;
+ transition:background-color .14s ease,border-color .14s ease}
+.variation-chips .chip{min-width:52px;min-height:30px;padding:4px 11px;justify-content:center;border-radius:8px;font-size:13.5px;gap:5px}
+.chip span,.chip b,.chip i{pointer-events:none}
+.chip:focus,.chip:focus-visible{outline:none}
+.chip:hover{border-color:var(--accent);background:var(--accent-soft)}
+.chip:active,.chip.just-chosen{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.chip--top{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:var(--accent-soft);color:var(--accent)}
+.chip--top:active{background:var(--accent);color:var(--paper)}
+.chip i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--muted);opacity:.8}
+.chip--tiny{padding:2px 8px;font-size:12.5px;font-weight:600;cursor:default}
+.chip--tiny:hover{border-color:var(--line);background:var(--sub)}
+.variation-chips .hint{margin:2px 0;font-size:12px;color:var(--muted)}
+
+/* ---------- 棋谱库 ---------- */
+.search-card{display:flex;flex-direction:column;gap:9px;border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:14px 16px 4px}
+.library-toolbar{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.library-toolbar .atelier-select{flex:1 1 170px;min-width:0}
+.library-toolbar .atelier-select-trigger{height:40px!important;min-height:40px!important}
+.library-toolbar input[type=search],.library-toolbar #filter-collection{
+ flex:1 1 150px;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);
+ border-radius:9px;padding:9px 12px;min-height:40px;font-size:13.5px}
+.library-toolbar #filter-collection::placeholder{color:var(--muted);opacity:.75}
+.library-toolbar .inline-button{flex:none;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:9px;
+ background:var(--sub);color:var(--ink);font-size:13px;cursor:pointer;white-space:nowrap;align-self:stretch}
+.library-toolbar .inline-button:hover{background:var(--accent-soft);color:var(--accent)}
+.library-meta{font-size:12px;color:var(--muted)}
+.library-status{margin:0;font-size:12px;color:var(--accent);min-height:0;line-height:1.5}
+.library-status:empty{display:none}
+.library-list{max-height:min(52vh,470px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;
+ border-top:1px solid var(--line);margin:0 -16px;padding:0 16px}
+.library-list .hint{margin:14px 2px;font-size:13px;color:var(--muted)}
+.library-row{display:flex;align-items:center;gap:10px;
+ padding:9px 10px;border:0;border-bottom:1px solid var(--line);min-height:var(--library-row-min);
+ background:none;width:100%;text-align:left;cursor:pointer;color:var(--ink);font:inherit;
+ content-visibility:auto;contain-intrinsic-size:auto 54px}
+.library-row:hover{background:var(--sub)}
+.library-row .row-main{min-width:0;flex:1}
+.library-row b{display:block;-webkit-user-select:none;user-select:none;font-size:13.5px;font-weight:650;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.library-row small{display:block;-webkit-user-select:none;user-select:none;font-size:11.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.library-row::after{content:'';flex:none;width:6px;height:6px;border-right:1.6px solid currentColor;border-top:1.6px solid currentColor;
+ transform:rotate(45deg);opacity:.28;transition:opacity .14s ease}
+.library-row:hover::after{opacity:.6}
+.library-row.is-current{background:var(--accent-soft);color:var(--accent)}
+.library-row.is-current b{color:var(--accent)}
+.library-row.is-current::after{opacity:0}
+
+/* ---------- 对弈配置：三个控件收成一条紧凑带，开始按钮明显放大 ---------- */
+/* refine.css 的 body[data-play-mode="book"] .source-row 是两列 grid（特异性更高），
+   会把开始对弈挤到第二行。这里显式压回单行，让三个控件收成一条。 */
+body[data-play-mode="book"] .source-row.duel-config{display:flex!important;justify-content:flex-start!important;
+ align-items:flex-end!important;gap:12px;flex-wrap:nowrap;
+ border:1px solid var(--line);border-radius:13px;background:var(--paper);padding:11px 12px}
+.duel-config label{display:block;font-size:11px;line-height:14px;letter-spacing:.03em;color:var(--muted);margin-bottom:4px}
+.duel-config .field-small,.duel-config .field-grow{display:flex;flex-direction:column;min-width:0;
+ flex:0 0 110px;width:110px;max-width:110px}
+.duel-config select{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:8px 10px;min-height:36px;font-size:13px}
+/* slot 内只放一个原生 select + 一个自定义触发器，两者都占满 slot */
+.atelier-select-slot{display:block;width:100%;min-width:0}
+.atelier-select-slot .atelier-native-select{display:none}
+.duel-config .atelier-select-slot .atelier-select{width:100%;min-width:0;max-width:110px}
+.duel-config .atelier-select-list{min-width:100%!important;width:100%!important;max-width:110px}
+.duel-config .atelier-select-trigger{width:100%;min-height:36px;height:36px;border-radius:8px;padding:0 9px 0 11px;gap:6px}
+.duel-config .atelier-select-trigger .atelier-selected-label{font-size:13px;font-weight:550}
+.duel-config .atelier-select-trigger svg{flex:0 0 15px;width:15px;height:15px}
+/* 开始 / 重新开始：与两侧下拉同高，不要拉满整行 */
+#duel-start{flex:0 0 auto!important;width:auto!important;min-width:88px!important;max-width:108px!important;
+ align-self:flex-end;margin:0!important;
+ border:0!important;border-radius:9px;min-height:36px!important;height:36px!important;padding:0 12px;
+ font-size:13px!important;font-weight:700;letter-spacing:.02em;cursor:pointer;white-space:nowrap;
+ color:#fff!important;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 94%,#fff),color-mix(in srgb,var(--accent) 84%,#000))!important;
+ box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 26%,transparent)}
+#duel-start:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 86%,#fff),color-mix(in srgb,var(--accent) 78%,#000))!important}
+#duel-start:active{transform:translateY(1px);box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 26%,transparent)}
+
+/* ---------- 着法记录 ---------- */
+#panel-notes{border:1px solid var(--line);border-radius:14px;background:var(--paper);padding:13px 16px 14px}
+#panel-notes .panel-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+#panel-notes h3{font-size:15px;margin:0}
+#panel-notes .inline-button{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 11px;font-size:12.5px;color:var(--muted);cursor:pointer}
+#panel-notes .inline-button:hover{color:var(--accent);border-color:var(--accent)}
+.move-tape{max-height:190px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;line-height:1.9}
+.move-pair{display:inline-flex;align-items:center;gap:5px;margin:0 9px 3px 0}
+.move-num{color:var(--muted);font-size:12px;min-width:20px;text-align:right}
+.move-token{border:1px solid transparent;background:none;border-radius:6px;padding:2px 7px;font-size:13px;color:var(--ink);cursor:pointer}
+.move-token:hover{background:var(--sub)}
+.move-token.selected{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:650}
+
+/* ---------- 棋盘侧 ---------- */
+.board-actions{flex-wrap:wrap}
+.soft-button{min-height:38px;padding:8px 13px}
+.sound-switch{font-size:12px;min-height:30px}
+.board-feedback{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.move-cue{flex:1 1 auto;min-width:0;font-size:12.5px;color:var(--muted)}
+.board-status{font-size:12.5px;color:var(--muted)}
+
+/* 结算提示：去掉 backdrop-filter，避免每帧重新合成模糊层 */
+.game-result{top:87.5%;bottom:auto;transform:translate(-50%,-50%);background:color-mix(in srgb,var(--paper) 46%,transparent)!important;
+ backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+ border:1px solid color-mix(in srgb,var(--line) 45%,transparent)!important;
+ box-shadow:0 6px 18px rgba(24,24,16,.08)!important;color:var(--ink)!important;
+ pointer-events:none}
+.game-result small{opacity:.72;font-weight:500}
+
+/* ---------- 设置弹窗 ---------- */
+.settings-dialog{border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);
+ padding:0;width:min(460px,calc(100vw - 32px));max-width:calc(100vw - 32px);box-sizing:border-box}
+.settings-dialog::backdrop{background:rgba(28,28,20,.32)}
+.settings-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;border-bottom:1px solid var(--line)}
+.settings-head strong{font-size:16px}
+.settings-head button{border:0;background:none;font-size:21px;line-height:1;color:var(--muted);cursor:pointer;padding:0 4px}
+.settings-head button:hover{color:var(--accent)}
+.settings-body{padding:6px 18px 18px;max-height:min(70vh,560px);overflow:auto}
+.settings-section-title{margin:16px 0 4px;font-size:11.5px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.settings-section-title:first-child{margin-top:8px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}
+.settings-row:last-of-type{border-bottom:0}
+.settings-row label{flex:1;font-size:13.5px;white-space:nowrap}
+.settings-row label small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;white-space:normal}
+/* 设置弹窗内的下拉按整行排布，不受旧版 max-width 限制 */
+.settings-row .atelier-select{flex:0 0 auto;width:auto;min-width:170px;max-width:none}
+.settings-row .atelier-select-trigger{min-height:36px;height:36px;border-radius:9px;padding:0 11px 0 13px}
+.settings-row .atelier-select-trigger .atelier-selected-label{font-size:13px;font-weight:500}
+.settings-row select{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:7px 10px;min-height:36px;font-size:13px;min-width:170px}
+.settings-links{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;padding-top:6px}
+.settings-links a{font-size:13px;color:var(--accent);text-decoration:none}
+.settings-links a:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- 音乐面板：整体高度锁死，任何内容变化都不会让它变大变小 ---------- */
+.music-panel{position:fixed;z-index:60;box-sizing:border-box;
+ top:calc(var(--masthead-h,64px) + 10px);right:20px;
+ width:390px;max-width:calc(100vw - 28px);
+ height:auto;min-height:0;max-height:none;
+ display:flex;flex-direction:column;overflow:hidden;
+ padding:16px 18px 8px;background:var(--paper);border:1px solid var(--line);border-radius:16px;
+ box-shadow:0 18px 48px rgba(20,20,14,.15);animation:none}
+.music-top{display:none!important}
+/* 面板主体在固定高度里垂直居中，底部进度条永远在同一位置 */
+.music-panel .era-bar{flex:none}
+.music-panel .now-playing{flex:none}
+.music-panel .music-title{width:max-content;max-width:none;white-space:nowrap;font-size:14.5px;line-height:22px;transition:none}
+#music-panel .music-fetch-slot,#music-fetch-state{display:none!important}
+
+/* ---------- 加载遮罩与 toast ---------- */
+.loading{display:none}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:90;
+ background:var(--ink);color:var(--paper);border-radius:10px;padding:10px 18px;font-size:13.5px;
+ opacity:0;pointer-events:none;transition:opacity .2s ease;max-width:min(520px,92vw);text-align:center}
+.toast.show{opacity:1}
+.launch-warning{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:95;
+ background:#8a5a3c;color:#fff;border-radius:10px;padding:10px 16px;font-size:13px}
+
+/* ---------- 响应式 ---------- */
+@media(max-width:1080px){
+ .library-list{max-height:min(46vh,400px)}
+ .variation-list{max-height:200px}
+}
+@media(max-width:820px){
+ /* 顶栏在窄屏变成两行网格，图标按钮必须靠右且不被拉伸 */
+ .masthead .top-tools{justify-content:flex-end!important;gap:6px!important}
+ .tool-icon--bare{flex:0 0 36px!important;width:36px!important;height:36px!important}
+ #music-toggle.tool-icon--music{flex:0 0 auto!important;width:auto!important;max-width:none!important;min-width:96px!important;height:36px!important}
+ #music-toggle.tool-icon--music .tool-icon-label{font-size:13px!important}
+}
+@media(max-width:560px){
+ .library-toolbar{gap:6px}
+ .library-toolbar .inline-button{flex:1 1 0;padding:0 8px;font-size:12.5px}
+ .library-toolbar .atelier-select,.library-toolbar #filter-collection{flex:1 1 100%}
+ .library-list{max-height:44vh}
+ .music-panel{right:14px;left:14px;width:auto}
+ .settings-row{flex-direction:column;align-items:stretch;gap:6px}
+ .settings-row select{width:100%}
+ body[data-play-mode="book"] .source-row.duel-config{flex-wrap:wrap;gap:8px}
+ .duel-config .field-small,.duel-config .field-grow{flex:1 1 calc(50% - 4px);width:auto;max-width:none}
+ #duel-start{flex:0 0 auto!important;height:36px!important;max-width:108px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .variation,.toast,.tool-icon{transition:none}
+ .brand-icon.is-flipping .brand-flip{animation:none}
+}
+
+.network-tools,.source-state{display:none!important}
+.atelier-option-group{padding:8px 12px 4px;font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+.music-panel{height:auto!important;min-height:0!important;max-height:none!important;padding:16px 20px 18px!important}
+#music-panel .music-progress,.music-panel .music-progress{display:grid!important;
+ grid-template-columns:40px minmax(0,1fr) 40px!important;
+ width:100%!important;max-width:none!important;
+ margin:10px 0 0!important;
+ padding:0!important;justify-self:stretch!important;align-self:stretch!important;
+ box-sizing:border-box!important;gap:8px!important}
+#music-elapsed{width:40px!important;min-width:40px!important;text-align:left!important}
+#music-duration{width:40px!important;min-width:40px!important;text-align:right!important}
+#music-panel{--seek-fill:color-mix(in srgb,var(--accent) 58%,var(--accent-soft));--seek-track:color-mix(in srgb,var(--accent) 18%,var(--paper))}
+#music-seek{
+ -webkit-appearance:none;appearance:none;
+ background:linear-gradient(to right,var(--seek-fill) 0%,var(--seek-fill) var(--seek-progress,0%),var(--seek-track) var(--seek-progress,0%),var(--seek-track) 100%)!important;
+ opacity:1!important;cursor:pointer!important;caret-color:transparent!important;color:transparent!important;
+ outline:none!important;user-select:none;-webkit-user-select:none}
+#music-seek:focus,#music-seek:focus-visible,#music-seek:active{outline:none!important;caret-color:transparent!important;box-shadow:none!important}
+#music-seek::-webkit-slider-thumb{background:var(--seek-fill)!important;border-color:var(--paper)!important;box-shadow:0 0 0 1px var(--seek-fill)!important;cursor:pointer}
+#music-seek::-moz-range-thumb{background:var(--seek-fill)!important;border-color:var(--paper)!important;cursor:pointer}
+#music-toggle.music-is-playing{background:color-mix(in srgb,var(--accent-soft) 42%,transparent)!important;
+ color:color-mix(in srgb,var(--accent) 70%,var(--muted))!important;
+ border-color:color-mix(in srgb,var(--accent) 22%,var(--line))!important}
+
+/* 打谱 / 对弈：保留外圈边框；内部选中块无边框、略深色 */
+.mode-segment{
+ background:color-mix(in srgb,var(--sub) 88%,var(--line))!important;
+ border:1px solid var(--line)!important;
+ padding:3px!important;gap:0!important;box-shadow:none!important;border-radius:13px!important}
+.mode-segment button{background:transparent!important;background-image:none!important;border:0!important;
+ box-shadow:none!important;color:var(--muted)!important;font-weight:650!important;border-radius:10px!important}
+.mode-segment button:hover:not(.selected){color:var(--ink)!important;background:color-mix(in srgb,var(--paper) 72%,transparent)!important;background-image:none!important;box-shadow:none!important}
+.mode-segment button.selected,
+.mode-segment button.selected:hover,
+.mode-segment button[aria-pressed="true"]{
+ background:color-mix(in srgb,var(--accent) 24%,var(--paper))!important;background-image:none!important;
+ color:var(--accent)!important;font-weight:720!important;border:0!important;box-shadow:none!important}
+
+/* ---------- 合集管理 / 保存棋谱 ---------- */
+.pack-dialog{width:min(520px,calc(100vw - 28px))!important;max-width:calc(100vw - 28px)}
+.pack-create{display:flex;gap:8px;align-items:center;margin:4px 0 10px}
+.pack-create input,.settings-dialog input{
+ flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);
+ border-radius:8px;padding:8px 11px;min-height:36px;font-size:13px}
+.pack-create .inline-button,.pack-games-bar .inline-button{
+ min-height:36px;padding:0 14px;border:1px solid var(--line);border-radius:9px;
+ background:var(--accent);color:#fff;font-size:13px;font-weight:650;cursor:pointer;white-space:nowrap}
+.pack-create .inline-button:hover,.pack-games-bar .inline-button:hover{filter:brightness(1.05)}
+.pack-list{display:flex;flex-direction:column;gap:4px;max-height:220px;overflow:auto;margin:0 0 8px}
+.pack-row{display:flex;align-items:center;gap:4px;border:1px solid transparent;border-radius:10px;padding:2px}
+.pack-row.is-current{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 22%,var(--line))}
+.pack-pick{flex:1;min-width:0;display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+ border:0;background:transparent;text-align:left;padding:8px 10px;cursor:pointer;color:var(--ink);font:inherit}
+.pack-pick b{font-size:13.5px;font-weight:650}
+.pack-pick small{font-size:11.5px;color:var(--muted)}
+.pack-icon{flex:none;width:32px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--paper);
+ color:var(--ink);font-size:13px;cursor:pointer;padding:0}
+.pack-icon:hover:not(:disabled){background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.pack-icon:disabled{opacity:.32;cursor:default}
+.pack-del,.pack-del.is-warn{width:52px;min-width:52px;height:32px;padding:0;font-size:12px;font-weight:650;letter-spacing:.02em}
+.pack-del{background:color-mix(in srgb,var(--paper) 82%,var(--line));color:#8b8f88;border-color:color-mix(in srgb,var(--line) 78%,var(--paper))}
+.pack-del:hover:not(:disabled){background:color-mix(in srgb,var(--paper) 70%,var(--line));color:var(--ink);border-color:var(--line)}
+.pack-del.is-warn{background:color-mix(in srgb,#b45a4a 16%,var(--paper));color:#8a4338;border-color:#c4897c}
+.pack-del.is-warn:hover:not(:disabled){background:color-mix(in srgb,#b45a4a 22%,var(--paper));color:#7a372e;border-color:#b97a6e}
+.pack-note{margin:0 0 12px;font-size:12px;color:var(--muted);line-height:1.5}
+.pack-games-bar{display:flex;justify-content:flex-end;margin:0 0 8px}
+.pack-games{max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--sub)}
+.pack-game{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px}
+.pack-game:last-child{border-bottom:0}
+.pack-game span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pack-games .pack-note{padding:12px;margin:0;border:0}
+.library-row.has-remove::after{display:none}
+.library-row .row-remove{flex:none;width:28px;height:28px;display:grid;place-items:center;border-radius:8px;
+ color:var(--muted);font-size:16px;line-height:1}
+.library-row .row-remove:hover{background:color-mix(in srgb,#b45a4a 14%,var(--paper));color:#8a4338}
+.promo-choice{position:absolute;inset:14px 14px 32px 33px;z-index:8;display:flex;align-items:center;justify-content:center;gap:10px;
+ background:color-mix(in srgb,var(--paper) 82%,transparent);border-radius:12px}
+.promo-choice button{width:64px;height:64px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:6px;cursor:pointer}
+.promo-choice button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.promo-choice .piece-visual,.promo-choice .piece-art-img{width:100%;height:100%}
+#save-dialog .settings-row input,#save-dialog .settings-row select{min-width:170px;max-width:220px}

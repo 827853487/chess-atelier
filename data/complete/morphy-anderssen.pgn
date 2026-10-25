@@ -1,0 +1,252 @@
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.20"]
+[Round "1"]
+[White "Morphy, Paul"]
+[Black "Anderssen, Adolf"]
+[Result "0-1"]
+[ECO "C52"]
+[EventDate "1858.12.20"]
+
+1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Ba5 6.d4 exd4 7.O-O Nf6 8.e5 d5
+9.Bb5 Ne4 10.cxd4 O-O 11.Bxc6 bxc6 12.Qa4 Bb6 13.Qxc6 Bg4 14.Bb2 Bxf3 15.gxf3
+Ng5 16.Nd2 Re8 17.Kh1 Nh3 18.f4 Qh4 19.Qxd5 Nxf2+ 20.Kg1 Nd3 21.Bc3 Nxf4
+22.Qf3 Nh3+ 23.Kh1 Ng5 24.Qg2 Rad8 25.Rg1 h6 26.Raf1 Qh3 27.Qc6 Qd7 28.Qg2
+Bxd4 29.Bxd4 Qxd4 30.Nf3 Qd5 31.h4 Ne6 32.Qg4 Qc6 33.Rg2 Rd3 34.Qf5 Red8
+35.Qf6 Qd5 36.Qf5 Rd1 37.Rxd1 Qxd1+ 38.Kh2 Rd3 39.Rf2 Re3 40.Nd2 Re2 41.Qxf7+
+Kh8 42.Ne4 Rxf2+ 43.Nxf2 Qd5 44.Ng4 Qxa2+ 45.Kg3 Qb3+ 46.Kh2 Qc2+ 47.Kg3 Qc3+
+48.Kh2 Qc6 49.h5 a5 50.Nf6 gxf6 51.Qxf6+ Kg8 52.Qg6+ Kf8 53.Qxh6+ Ke8 54.Qg6+
+Kd7 55.h6 Qd5 56.h7 Qxe5+ 57.Kg1 Ng5 58.h8=Q Qxh8 59.Qxg5 Qd4+ 60.Kf1 a4
+61.Qf5+ Kc6 62.Qc8 Kb5 63.Ke1 c5 64.Qb7+ Kc4 65.Qf7+ Kc3 66.Qf3+ Qd3 67.Qf6+
+Kb3 68.Qb6+ Kc2 69.Qa7 Qc3+ 70.Ke2 a3 71.Qa4+ Kb2 72.Qb5+ Qb3 0-1
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.21"]
+[Round "2"]
+[White "Anderssen, Adolf"]
+[Black "Morphy, Paul"]
+[Result "1/2-1/2"]
+[ECO "C77"]
+[EventDate "1858.12.20"]
+
+1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.d3 Bc5 6.c3 b5 7.Bc2 d5 8.exd5 Nxd5
+9.h3 O-O 10.O-O h6 11.d4 exd4 12.cxd4 Bb6 13.Nc3 Ndb4 14.Bb1 Be6 15.a3 Nd5
+16.Ne2 Nf6 17.Be3 Re8 18.Ng3 Bc4 19.Nf5 Bxf1 20.Qxf1 Ne7 21.N3h4 Nxf5 22.Nxf5
+Qd7 23.Bxh6 gxh6 24.Qc1 Bxd4 25.Qxh6 Re1+ 26.Kh2 Ne4 27.Bxe4 Rxe4 28.Qg5+ Kf8
+29.Qh6+ Ke8 30.Nxd4 Qd6+ 31.Qxd6 cxd6 32.Rd1 Kf8 33.Rd2 Rae8 34.g4 R8e5 35.f3
+Re1 36.h4 Rd5 37.Kg3 a5 38.h5 Kg8 39.Kf2 Re8 40.Kg3 Kh7 41.Kf4 Re7 42.Kg3 f6
+43.Kf4 Re8 44.Kg3 Re7 1/2-1/2
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.22"]
+[Round "3"]
+[White "Morphy, Paul"]
+[Black "Anderssen, Adolf"]
+[Result "1-0"]
+[ECO "C65"]
+[EventDate "1858.12.20"]
+
+1.e4 { Notes by Lowenthal } 1...e5 2.Nf3 Nc6 3.Bb5 Nf6 4.d4 Nxd4 5.Nxd4 exd4
+6.e5 c6 { A weak move and the cause of all subsequent embarrassment. } 7.O-O
+cxb5 8.Bg5 { Much stronger play then taking the Knight at once. } 8...Be7
+{ The only correct reply. If ...h6 White can play either Re1 or exf6 and in
+each case win with ease. } 9.exf6 Bxf6
+{ ...gxf6 would have been equally bad, for White's reply would have been
+Qxd4, with a won game. } 10.Re1+ Kf8 11.Bxf6 Qxf6 12.c3 d5 13.cxd4 Be6 14.Nc3
+a6 15.Re5 Rd8 16.Qb3 Qe7 17.Rae1 { Vigorously and ably followed up. } 17...g5
+{ Apprehensive of the advance of the f pawn. } 18.Qd1 Qf6 19.R1e3 Rg8
+{ Losing the game offhand; it was previously, however, past all recovery. }
+20.Rxe6 1-0
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.23"]
+[Round "5"]
+[White "Morphy, Paul"]
+[Black "Anderssen, Adolf"]
+[Result "1-0"]
+[ECO "B01"]
+[EventDate "1858.12.20"]
+
+1.e4 d5 2.exd5 Nf6 3.d4 Nxd5 4.c4 Nf6 5.Nc3 Bf5 6.Nf3 e6 7.Be3 Bb4 8.Qb3
+Bxc3+ 9.bxc3 Be4 10.Nd2 Bc6 11.Bd3 Nbd7 12.Qc2 h6 13.O-O O-O 14.Rae1 b6 15.h3
+Qc8 16.Kh2 Kh8 17.Rg1 Rg8 18.g4 g5 19.f4 Qf8 20.Rg3 Rd8 21.Nf3 Bxf3 22.Rxf3
+Qd6 23.Kg2 Nh5 24.fxg5 hxg5 25.gxh5 g4 26.hxg4 Rxg4+ 27.Kf1 f5 28.Qf2 Ne5
+29.dxe5 Qxd3+ 30.Qe2 Qe4 31.Bf2 Qc6 32.Rd1 Rxd1+ 33.Qxd1 Qxc4+ 34.Qd3 Qxa2
+35.Rg3 Qc4 36.Qxc4 Rxc4 37.Rg6 Rc6 38.c4 a5 39.Ke2 Rxc4 40.Rxe6 Rc2+ 41.Kf3
+a4 42.Rg6 Rc4 43.Rg1 a3 44.e6 a2 45.Ra1 Re4 46.Rxa2 Rxe6 47.Kf4 Rd6 48.Kxf5
+Rd5+ 49.Kg4 b5 50.Ra8+ Kh7 51.Ra7 Rd7 52.Bg3 Rg7+ 53.Kh4 Rf7 54.Rxc7 1-0
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.23"]
+[Round "4"]
+[White "Anderssen, Adolf"]
+[Black "Morphy, Paul"]
+[Result "0-1"]
+[ECO "C77"]
+[EventDate "1858.12.20"]
+
+1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.d3 Bc5 6.c3 b5 7.Bc2 d5 8.exd5 Nxd5
+9.h3 O-O 10.O-O h6 11.d4 exd4 12.cxd4 Bb6 13.Nc3 Ndb4 14.Bb1 Be6 15.a3 Nd5
+16.Be3 Nf6 17.Qd2 Re8 18.Rd1 Bd5 19.Ne5 Qd6 20.Qc2 Nxd4 21.Bxd4 Bxd4 22.Nxd5
+Qxe5 23.Nxf6+ Qxf6 24.Qh7+ Kf8 25.Be4 Rad8 26.Kh1 Bxb2 27.Rab1 Rxd1+ 28.Rxd1
+Qxf2 29.Qh8+ Ke7 30.Qh7 Be5 31.Bf3 Qg3 32.Kg1 Qg6 33.Qxg6 fxg6 34.Bb7 Rb8
+35.Bxa6 c6 36.Kf2 Bd6 37.Rd3 Kd7 38.Ke2 Ra8 39.Bb7 Rxa3 40.Bc8+ Kc7 41.Rd1
+Ra2+ 42.Kf3 Bc5 43.Be6 Rf2+ 44.Kg3 Rf6 45.Rd7+ Kb6 46.Bg4 Bd6+ 47.Kh4 c5
+48.Bf3 c4 49.Rxg7 Rf4+ 50.Bg4 c3 51.g3 Rxg4+ 0-1
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.24"]
+[Round "6"]
+[White "Anderssen, Adolf"]
+[Black "Morphy, Paul"]
+[Result "0-1"]
+[ECO "A00"]
+[EventDate "1858.12.20"]
+
+1.a3 e5 2.c4 Nf6 3.Nc3 d5 4.cxd5 Nxd5 5.e3 Be6 6.Nf3 Bd6 7.Be2 O-O 8.d4 Nxc3
+9.bxc3 e4 10.Nd2 f5 11.f4 g5 12.Bc4 Bxc4 13.Nxc4 gxf4 14.exf4 Qe8 15.O-O Qc6
+16.Qb3 Qd5 17.Rb1 b6 18.Qa2 c6 19.Qe2 Nd7 20.Ne3 Qe6 21.c4 Nf6 22.Rb3 Kf7
+23.Bb2 Rac8 24.Kh1 Rg8 25.d5 cxd5 26.cxd5 Qd7 27.Nc4 Ke7 28.Bxf6+ Kxf6
+29.Qb2+ Kf7 30.Rh3 Rg7 31.Qd4 Kg8 32.Rh6 Bf8 33.d6 Rf7 34.Rh3 Qa4 35.Rc1 Rc5
+36.Rg3+ Bg7 37.h3 Kh8 38.Rxg7 Rxg7 39.Rc3 e3 40.Rxe3 Rxc4 41.Qf6 Rc1+ 42.Kh2
+Qxf4+ 0-1
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.25"]
+[Round "8"]
+[White "Anderssen, Adolf"]
+[Black "Morphy, Paul"]
+[Result "1/2-1/2"]
+[ECO "A00"]
+[EventDate "1858.12.20"]
+
+1.a3 { Notes by Lowenthal } 1...e5 2.c4 Nf6 3.Nc3 d5 4.cxd5 Nxd5 5.e3 Be6
+6.Nf3 Bd6 7.Be2 O-O 8.d4 Nxc3 9.bxc3 e4 10.Nd2 f5 11.f4
+{ Taking means to stop the further advance of the f pawn, which he
+evidently apprehended might prove objectionable. The range of the adverse
+King's Bishop is also contracted by this move. } 11...Qh4+ 12.g3 Qh3 13.Bf1
+Qh6 14.c4 c6 15.c5 Bc7 16.Bc4 Nd7 17.O-O b5 18.cxb6 axb6 19.Qb3 Rfe8 20.Bb2
+b5 21.Bxe6+ Qxe6 22.Qc2 Qd5 23.Rfc1 Ra6 24.a4 Rea8 25.axb5 Qxb5 26.Qc4+ Qxc4
+27.Nxc4 Rxa1 28.Bxa1 Nf6 29.Bc3 Ra2 30.Bd2 Nd5 31.Kf1 Bd8 32.Ke1 Be7 33.Rb1
+h6 34.Ne5 c5 35.dxc5 Bxc5 36.Rb5 Nxe3 { Very prettily played. } 37.Rxc5 Ng2+
+38.Ke2 { If Kd1, Black would equally have pushed on the e Pawn. } 38...e3
+39.Nf3 g6 40.Rd5 Kf7 41.Rd6 Kg7 42.h4 exd2 43.Rxd2 Ra4
+{ This mode of securing the draw is highly ingenious; his opponent cannot
+prevent it, play as he may. } 44.Kf2 Nxf4 45.gxf4 Rxf4 46.Rd4 Rxd4 47.Nxd4
+Kf6 48.Ke3 g5 49.h5 Ke5 50.Nf3+ Kf6 51.Nd4 1/2-1/2
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.25"]
+[Round "7"]
+[White "Morphy, Paul"]
+[Black "Anderssen, Adolf"]
+[Result "1-0"]
+[ECO "B01"]
+[EventDate "1858.12.20"]
+
+1.e4 { Notes by Lowenthal } 1...d5
+{ We consider this mode of evading an open game as decidedly inferior to
+either ...e6 or ...c5, (the French and Sicilian openings) though but some
+short time ago it was in high repute, and was even adopted by Mr. Staunton at the Birmingham meeting. }
+2.exd5 Qxd5 3.Nc3 Qa5
+{ ...Qd8 is frequently played, but the move in the text is preferable. } 4.d4
+e5 5.dxe5 Qxe5+ 6.Be2 Bb4 7.Nf3
+{ Sacrificing a pawn to obtain a more speedy development of his pieces. }
+7...Bxc3+ 8.bxc3 Qxc3+ 9.Bd2 Qc5 10.Rb1 Nc6 11.O-O Nf6 12.Bf4 O-O
+{ Attempting to defend the c pawn would only have led him into difficulty.
+} 13.Bxc7 Nd4 14.Qxd4 Qxc7 15.Bd3 Bg4 16.Ng5 Rfd8 17.Qb4 Bc8
+{ There appears to be no other mode of saving the pawn; for if ...b6, White
+would have taken the h pawn with the knight, and won a pawn. } 18.Rfe1 a5
+19.Qe7 Qxe7 20.Rxe7 Nd5 { This is an instructive position } 21.Bxh7+ Kh8
+22.Rxf7 Nc3 23.Re1 Nxa2 24.Rf4 Ra6 25.Bd3 1-0
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.27"]
+[Round "10"]
+[White "Anderssen, Adolf"]
+[Black "Morphy, Paul"]
+[Result "1-0"]
+[ECO "A00"]
+[EventDate "1858.12.20"]
+
+1.a3 e5 2.c4 Nf6 3.Nc3 d5 4.cxd5 Nxd5 5.e3 Be6 6.Nf3 Bd6 7.Be2 O-O 8.O-O Nxc3
+9.bxc3 f5 10.d4 e4 11.Nd2 Rf6 12.f4 Rh6 13.g3 Nd7 14.Nc4 Bxc4 15.Bxc4+ Kh8
+16.Ra2 Qe7 17.a4 Nf6 18.Qb3 c6 19.Be6 Re8 20.Bc4 Ng4 21.Rg2 Rb8 22.Be2 Nf6
+23.c4 b6 24.Bb2 Qf7 25.Qc2 Be7 26.Bc3 Rg8 27.a5 Bd6 28.axb6 axb6 29.Ra1 g5
+30.fxg5 Rxg5 31.Ra8+ Rg8 32.Qa4 Rxa8 33.Qxa8+ Qe8 34.Qxe8+ Nxe8 35.c5 Bc7
+36.Bc4 Kg7 37.cxb6 Bxb6 38.Rb2 Bc7 39.Rb7 Kf6 40.Bb4 Rg6 41.Bf8 h5 42.Kf2 h4
+43.gxh4 Rg4 44.h5 Rh4 45.h6 Rxh2+ 46.Kg1 Rh3 47.Bf1 Rg3+ 48.Kf2 Rg4 49.Bc4
+Rh4 50.Bg8 Bd6 51.Bxd6 Nxd6 52.Rd7 Ne8 53.h7 Kg5 54.Re7 Nd6 55.Re6 Nc4
+56.Rxc6 Nd2 57.Ke2 Rh2+ 58.Kd1 Nf3 59.Rc7 Kg6 60.d5 f4 61.exf4 e3 62.Re7 e2+
+63.Rxe2 Rh1+ 64.Kc2 Nd4+ 65.Kd2 Nxe2 66.Kxe2 Kg7 67.Ke3 Re1+ 68.Kd4 Rf1
+69.Ke5 Re1+ 70.Kf5 Rd1 71.Be6 Rd4 72.Ke5 Rd1 73.f5 Rh1 74.f6+ Kxh7 75.Kd6 Ra1
+76.Ke7 Ra7+ 77.Bd7 1-0
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.27"]
+[Round "9"]
+[White "Morphy, Paul"]
+[Black "Anderssen, Adolf"]
+[Result "1-0"]
+[ECO "B44"]
+[EventDate "1858.12.20"]
+
+1.e4 { Notes by Lowenthal } 1...c5 2.d4 cxd4 3.Nf3 Nc6 4.Nxd4 e6 5.Nb5 d6
+{ This is better than ...a6; but even now the King's Bishop is shut in, and
+the Queen's Pawn rendered weak. } 6.Bf4
+{ Correctly played, compelling the advance of the e-Pawn, which leaves the
+Queen's Pawn weak and unsupported. } 6...e5 7.Be3 f5
+{ ...a6 would have been sounder play, but even then the game would have
+been in favor of the first player. } 8.N1c3 { A fine conception. } 8...f4
+{ Had Black played ...a6, White's reply would still have been Nd5, with a
+winning game. } 9.Nd5 fxe3 10.Nbc7+ Kf7 11.Qf3+ Nf6 12.Bc4
+{ The attack is now irresistable. } 12...Nd4 13.Nxf6+ d5
+{ If the Bishop had been interposed, White would have taken it, checking;
+and on Knight retaking have played Nd5 discovering check, and won without
+difficulty. } 14.Bxd5+ Kg6
+{ Had the Queen captured the Bishop, White would have taken with Knight,
+discovering check, and have remained eventually with a Pawn ahead and a
+winning position. } 15.Qh5+ Kxf6 16.fxe3
+{ Ne8+, seemingly a good move, is only in appearance, as Black might have
+taken it when placed there; and on White taking Queen, have answered with
+...Bb4+, obtaining a winning game. } 16...Nxc2+ 17.Ke2 1-0
+
+[Event "Morphy - Anderssen 1858"]
+[Site "Paris, France"]
+[Date "1858.12.28"]
+[Round "11"]
+[White "Morphy, Paul"]
+[Black "Anderssen, Adolf"]
+[Result "1-0"]
+[ECO "C00"]
+[EventDate "1858.12.20"]
+
+1.e4 { Notes by Lowenthal } 1...e6 2.d4 g6 3.Bd3 Bg7 4.Be3
+{ The student cannot fail of observing that in almost every French game Mr.
+Morphy plays his Bishops to e3 and d3, and they appear well placed here,
+and come into efficient action when called upon. It is a novelty, however, in Chess play, and will, doubtless, meet with attention at the hands of
+authors on the game. } 4...c5 5.c3 cxd4 6.cxd4 Nc6 7.Ne2 Nge7 8.O-O O-O
+9.Nbc3 d5 10.e5 f6 11.f4 fxe5 12.fxe5 a6 13.Qd2 Nb4 14.Bg5 Nxd3 15.Qxd3 Bd7
+16.Qh3 Qe8 17.Ng3 Rc8 18.Rxf8+ Qxf8 19.Rf1 Qe8 20.Qh4 Nf5 21.Nxf5 gxf5 22.Rf3
+{ This Rook is now well posted, and ready for effective cO-Operation with
+the rest of the attacking pieces. } 22...Bb5 23.Rg3
+{ Rh3 would have been weak, while by the move in the text White gains an
+undeniable advantage in position. } 23...Rc7 24.Bf6 f4
+{ This, says Mr. Morphy, appears the only move to ward off the attack, if
+24...Kh8 25.Rxg7 Rxg7 26.Nxb5 Qxb5 27.Qh6 Qd7 28.h4 Qf7 29.h5 Qc7 30.a3 Qd7
+31.Kf2 Qf7 32.Kf3 Qc7 33.g3 Qd7 34.Qxg7+ Qxg7 35.h6 Qxf6 36.exf6 Kg8 37.Kf4 Kf7 38.Ke5 and must win. }
+25.Qxf4 Qf8 26.Nxb5 axb5 27.Qh6 Kh8 28.Rxg7 Rxg7 29.Kf2
+{ Contemplating the exchange of pieces, and the bringing of the King to
+attack the isolated Pawns; the game, however, was an easy one to win. }
+29...Kg8 30.Qxg7+ Qxg7 31.Bxg7 Kxg7 32.Kf3 b4 33.g4 b6 34.h4 b5 35.Ke3 b3
+36.a3 1-0
+

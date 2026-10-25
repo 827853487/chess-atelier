@@ -1,0 +1,828 @@
+[Event "World Championship 13th"]
+[Site "Buenos Aires"]
+[Date "1927.??.??"]
+[Round "4"]
+[White "Alekhine, Alexander"]
+[Black "Capablanca, Jose Raul"]
+[Result "1/2-1/2"]
+[ECO "D64"]
+[PlyCount "38"]
+[FEN "6k1/5pp1/p3p2p/1pn5/8/P3P2P/1P2NPP1/6K1 w - - 0 31"]
+[SetUp "1"]
+[SourceEvent "World Championship 13th"]
+[SourceRound "4"]
+[SourceStartPly "60"]
+[Theme "minor-endgames"]
+
+31. Nd4 Kf8 32. b4 Na4 33. Kf1 Nb6 34. Nb3 Nc4 35. Nc5 Nxa3 36. Nxa6 Ke7 37.
+Ke2 Kd6 38. Kd3 Nc4 39. Nc5 f5 40. Kc3 Kd5 41. Na6 Kd6 42. Nc5 Nb6 43. Nd3 e5
+44. Kb3 Nc4 45. Kc3 Kd5 46. Nc5 Nd6 47. Kd3 g5 48. Na6 e4+ 49. Kc3 Kc6 1/2-1/2
+
+[Event "World Championship 13th"]
+[Site "Buenos Aires"]
+[Date "1927.??.??"]
+[Round "17"]
+[White "Capablanca, Jose Raul"]
+[Black "Alekhine, Alexander"]
+[Result "1/2-1/2"]
+[ECO "D63"]
+[PlyCount "41"]
+[FEN "8/1b3p2/5p2/b2p3k/2pN1P2/2N1P3/1P4KP/8 b - - 0 39"]
+[SetUp "1"]
+[SourceEvent "World Championship 13th"]
+[SourceRound "17"]
+[SourceStartPly "77"]
+[Theme "minor-endgames"]
+
+39... Kg4 40. h3+ Kh4 41. Nf5+ Kh5 42. Kg3 Bb4 43. Nd4 Kg6 44. Kg4 f5+ 45. Kg3
+Kf6 46. Nf3 Bc5 47. Kf2 Bb4 48. Ne5 Bd6 49. Nf3 Bb4 50. h4 Kg6 51. Ne2 Bc8 52.
+Ng3 Be6 53. h5+ Kh6 54. Ke2 Be7 55. Kd2 Bd8 56. Nd4 Bc8 57. Kc2 Ba5 58. Kd1
+Bb4 59. Ke2 Bd7 1/2-1/2
+
+[Event "World Championship 13th"]
+[Site "Buenos Aires"]
+[Date "1927.??.??"]
+[Round "18"]
+[White "Alekhine, Alexander"]
+[Black "Capablanca, Jose Raul"]
+[Result "1/2-1/2"]
+[ECO "D67"]
+[PlyCount "7"]
+[FEN "3k4/pb3p2/1p2pnpp/2n5/2B1P3/5NNP/PP2KPP1/8 w - - 0 25"]
+[SetUp "1"]
+[SourceEvent "World Championship 13th"]
+[SourceRound "18"]
+[SourceStartPly "48"]
+[Theme "minor-endgames"]
+
+25. Ne5 Ke7 26. f3 Nfd7 27. Nxd7 Nxd7 28. Kd3 1/2-1/2
+
+[Event "World Championship 13th"]
+[Site "Buenos Aires"]
+[Date "1927.??.??"]
+[Round "29"]
+[White "Capablanca, Jose Raul"]
+[Black "Alekhine, Alexander"]
+[Result "1-0"]
+[ECO "D52"]
+[PlyCount "43"]
+[FEN "8/5pk1/6p1/3P3p/8/2b2NPP/5PK1/8 w - - 0 49"]
+[SetUp "1"]
+[SourceEvent "World Championship 13th"]
+[SourceRound "29"]
+[SourceStartPly "96"]
+[Theme "minor-endgames"]
+
+49. Kf1 Kf6 50. Ke2 Bb4 51. Nd4 Bc5 52. Nc6 Kf5 53. Kf3 Kf6 54. g4 hxg4+ 55.
+hxg4 Kg5 56. Ne5 Bd4 57. Nxf7+ Kf6 58. Nd8 Bb6 59. Nc6 Bc5 60. Kf4 Bxf2 61.
+g5+ Kf7 62. Ne5+ Ke7 63. Nxg6+ Kd6 64. Ke4 Bg3 65. Nf4 Ke7 66. Ke5 Be1 67. d6+
+Kd7 68. g6 Bb4 69. Kd5 Ke8 70. d7+ 1-0
+
+[Event "World Championship 23th"]
+[Site "Moscow"]
+[Date "1960.??.??"]
+[Round "5"]
+[White "Tal, Mihail"]
+[Black "Botvinnik, Mikhail"]
+[Result "1/2-1/2"]
+[ECO "B18"]
+[PlyCount "14"]
+[FEN "8/pp6/2pkp2p/3n1p2/3P3P/2P3P1/PP6/2N1K3 b - - 0 36"]
+[SetUp "1"]
+[SourceEvent "World Championship 23th"]
+[SourceRound "5"]
+[SourceStartPly "71"]
+[Theme "minor-endgames"]
+
+36... c5 37. Kf2 cxd4 38. cxd4 Nf6 39. Ke3 Nh5 40. Ne2 e5 41. a4 Nf6 42. dxe5+
+Kxe5 43. b4 1/2-1/2
+
+[Event "World Championship 23th"]
+[Site "Moscow"]
+[Date "1960.??.??"]
+[Round "7"]
+[White "Tal, Mihail"]
+[Black "Botvinnik, Mikhail"]
+[Result "1-0"]
+[ECO "B18"]
+[PlyCount "6"]
+[FEN "5N2/8/8/2p5/3k4/6P1/1p1NK3/8 b - - 0 49"]
+[SetUp "1"]
+[SourceEvent "World Championship 23th"]
+[SourceRound "7"]
+[SourceStartPly "97"]
+[Theme "minor-endgames"]
+
+49... c4 50. Ne6+ Kd5 51. Nf4+ Kd4 52. Nb1 1-0
+
+[Event "World Championship 23th"]
+[Site "Moscow"]
+[Date "1960.??.??"]
+[Round "9"]
+[White "Tal, Mihail"]
+[Black "Botvinnik, Mikhail"]
+[Result "0-1"]
+[ECO "B18"]
+[PlyCount "52"]
+[FEN "8/pp1k4/3P1np1/8/7P/6P1/PP3KP1/8 w - - 0 33"]
+[SetUp "1"]
+[SourceEvent "World Championship 23th"]
+[SourceRound "9"]
+[SourceStartPly "64"]
+[Theme "minor-endgames"]
+
+33. Kf3 Kxd6 34. Kf4 Ke6 35. g4 Nd5+ 36. Ke4 Nf6+ 37. Kf4 Nd5+ 38. Ke4 Nb4 39.
+a3 Nc6 40. h5 g5 41. h6 Kf6 42. Kd5 Kg6 43. Ke6 Na5 44. a4 Nb3 45. Kd6 a5 46.
+Kd5 Kxh6 47. Kc4 Nc1 48. Kb5 Nd3 49. b3 Nc1 50. Kxa5 Nxb3+ 51. Kb4 Nc1 52. Kc3
+Kg6 53. Kc2 Ne2 54. Kd3 Nc1+ 55. Kc2 Ne2 56. Kd3 Nf4+ 57. Kc4 Kf6 58. g3 Ne2
+0-1
+
+[Event "World Championship 23th"]
+[Site "Moscow"]
+[Date "1960.??.??"]
+[Round "16"]
+[White "Botvinnik, Mikhail"]
+[Black "Tal, Mihail"]
+[Result "1/2-1/2"]
+[ECO "E24"]
+[PlyCount "9"]
+[FEN "7k/pp2Nbpp/8/2P1n3/4p3/P1P5/6PP/5BK1 w - - 0 37"]
+[SetUp "1"]
+[SourceEvent "World Championship 23th"]
+[SourceRound "16"]
+[SourceStartPly "72"]
+[Theme "minor-endgames"]
+
+37. Kf2 Bc4 38. Bxc4 Nxc4 39. c6 bxc6 40. Nxc6 a5 41. a4 1/2-1/2
+
+[Event "World Championship 28th"]
+[Site "Reykjavik"]
+[Date "1972.??.??"]
+[Round "1"]
+[White "Spassky, Boris V"]
+[Black "Fischer, Robert James"]
+[Result "1-0"]
+[WhiteElo "2660"]
+[BlackElo "2785"]
+[ECO "E56"]
+[PlyCount "64"]
+[FEN "5k2/pp2bppp/4p3/8/1P2n3/PN2P3/4KPPP/2B5 b - - 0 24"]
+[SetUp "1"]
+[SourceEvent "World Championship 28th"]
+[SourceRound "1"]
+[SourceStartPly "47"]
+[Theme "minor-endgames"]
+
+24... f6 25. Na5 Nd6 26. Kd3 Bd8 27. Nc4 Bc7 28. Nxd6 Bxd6 29. b5 Bxh2 30. g3
+h5 31. Ke2 h4 32. Kf3 Ke7 33. Kg2 hxg3 34. fxg3 Bxg3 35. Kxg3 Kd6 36. a4 Kd5
+37. Ba3 Ke4 38. Bc5 a6 39. b6 f5 40. Kh4 f4 41. exf4 Kxf4 42. Kh5 Kf5 43. Be3
+Ke4 44. Bf2 Kf5 45. Bh4 e5 46. Bg5 e4 47. Be3 Kf6 48. Kg4 Ke5 49. Kg5 Kd5 50.
+Kf5 a5 51. Bf2 g5 52. Kxg5 Kc4 53. Kf5 Kb4 54. Kxe4 Kxa4 55. Kd5 Kb5 56. Kd6
+1-0
+
+[Event "World Championship 28th"]
+[Site "Reykjavik"]
+[Date "1972.??.??"]
+[Round "4"]
+[White "Fischer, Robert James"]
+[Black "Spassky, Boris V"]
+[Result "1/2-1/2"]
+[WhiteElo "2785"]
+[BlackElo "2660"]
+[ECO "B88"]
+[PlyCount "11"]
+[FEN "8/2b2p2/4pk2/p5pB/8/P6P/2P3P1/5K2 w - - 0 40"]
+[SetUp "1"]
+[SourceEvent "World Championship 28th"]
+[SourceRound "4"]
+[SourceStartPly "78"]
+[Theme "minor-endgames"]
+
+40. a4 Ke7 41. Ke2 f5 42. Kd3 Be5 43. c4 Kd6 44. Bf7 Bg3 45. c5+ 1/2-1/2
+
+[Event "World Championship 28th"]
+[Site "Reykjavik"]
+[Date "1972.??.??"]
+[Round "20"]
+[White "Fischer, Robert James"]
+[Black "Spassky, Boris V"]
+[Result "1/2-1/2"]
+[WhiteElo "2785"]
+[BlackElo "2660"]
+[ECO "B68"]
+[PlyCount "34"]
+[FEN "8/3bk3/4pp2/1p5p/p2n1Pp1/P2N2P1/1PP2N1P/2K5 w - - 0 38"]
+[SetUp "1"]
+[SourceEvent "World Championship 28th"]
+[SourceRound "20"]
+[SourceStartPly "74"]
+[Theme "minor-endgames"]
+
+38. Ne1 e5 39. fxe5 fxe5 40. Kd2 Bf5 41. Nd1 Kd6 42. Ne3 Be6 43. Kd3 Bf7 44.
+Kc3 Kc6 45. Kd3 Kc5 46. Ke4 Kd6 47. Kd3 Bg6+ 48. Kc3 Kc5 49. Nd3+ Kd6 50. Ne1
+Kc6 51. Kd2 Kc5 52. Nd3+ Kd6 53. Ne1 Ne6 54. Kc3 Nd4 1/2-1/2
+
+[Event "World Championship 32th-KK2"]
+[Site "Moscow"]
+[Date "1985.??.??"]
+[Round "20"]
+[White "Karpov, Anatoly"]
+[Black "Kasparov, Gary"]
+[Result "1/2-1/2"]
+[WhiteElo "2720"]
+[BlackElo "2700"]
+[ECO "D35"]
+[PlyCount "87"]
+[FEN "8/3nkp2/1p4p1/p2b3p/3N4/P5PP/1P1KBP2/8 b - - 0 42"]
+[SetUp "1"]
+[SourceEvent "World Championship 32th-KK2"]
+[SourceRound "20"]
+[SourceStartPly "83"]
+[Theme "minor-endgames"]
+
+42... Nc5 43. Nb5 Ne4+ 44. Ke3 Nd6 45. Kd4 Bc6 46. Nxd6 Kxd6 47. Bc4 Be8 48.
+h4 f6 49. Bg8 Kc6 50. Ba2 Kd6 51. Bd5 Ke7 52. Bg8 Kd6 53. Bb3 Ke7 54. Bd1 Kd6
+55. Be2 Bd7 56. Bd3 Be8 57. Bc4 Ke7 58. Be2 Kd6 59. g4 hxg4 60. Bxg4 Bf7 61.
+f4 f5 62. Bd1 Bd5 63. Ba4 Bf3 64. Bb3 Be2 65. Bf7 Bh5 66. Kc4 Be2+ 67. Kc3 Bh5
+68. b4 Ke7 69. Bc4 Kd6 70. bxa5 bxa5 71. Kd4 Bf3 72. Bf1 Bd5 73. Be2 Bb7 74.
+Bd1 Bd5 75. Ke3 Kc5 76. Ba4 Bf7 77. Bd7 Kc4 78. a4 Kc5 79. Bb5 Kd5 80. Kd3 Kc5
+81. Kc3 Kd6 82. Kd4 Bb3 83. Be8 Ke7 84. Bxg6 Bxa4 85. Bxf5 Kf6 1/2-1/2
+
+[Event "World Championship 32th-KK2"]
+[Site "Moscow"]
+[Date "1985.??.??"]
+[Round "21"]
+[White "Kasparov, Gary"]
+[Black "Karpov, Anatoly"]
+[Result "1/2-1/2"]
+[WhiteElo "2700"]
+[BlackElo "2720"]
+[ECO "D31"]
+[PlyCount "14"]
+[FEN "2b4n/pp2k3/2p2p2/3p1Pp1/3P4/1P2PPN1/P2K1N2/8 w - - 0 38"]
+[SetUp "1"]
+[SourceEvent "World Championship 32th-KK2"]
+[SourceRound "21"]
+[SourceStartPly "74"]
+[Theme "minor-endgames"]
+
+38. e4 Nf7 39. Ng4 Nd6 40. Ne3 dxe4 41. fxe4 b6 42. b4 Ba6 43. Ng4 Nb5 44. Kd3
+Na3+ 1/2-1/2
+
+[Event "WCh 2018"]
+[Site "London ENG"]
+[Date "2018.11.12"]
+[Round "3"]
+[White "Caruana, Fabiano"]
+[Black "Carlsen, Magnus"]
+[Result "1/2-1/2"]
+[WhiteElo "2832"]
+[BlackElo "2835"]
+[ECO "B31"]
+[PlyCount "50"]
+[FEN "6k1/3n1pbp/2p3p1/1p2p3/4P3/3P1N1P/1BP2PP1/6K1 b - - 0 24"]
+[SetUp "1"]
+[SourceEvent "WCh 2018"]
+[SourceRound "3"]
+[SourceStartPly "47"]
+[Theme "minor-endgames"]
+
+24... f6 25. Kf1 Kf7 26. Ke2 Nc5 27. Bc3 Ne6 28. g3 Bf8 29. Nd2 Ng5 30. h4 Ne6
+31. Nb3 h5 32. Bd2 Bd6 33. c3 c5 34. Be3 Ke7 35. Kd1 Kd7 36. Kc2 f5 37. Kd1
+fxe4 38. dxe4 c4 39. Nd2 Nc5 40. Bxc5 Bxc5 41. Ke2 Kc6 42. Nf1 b4 43. cxb4
+Bxb4 44. Ne3 Kc5 45. f4 exf4 46. gxf4 Ba5 47. f5 gxf5 48. Nxc4 Kxc4 49. exf5
+1/2-1/2
+
+[Event "WCh 2018"]
+[Site "London ENG"]
+[Date "2018.11.16"]
+[Round "6"]
+[White "Carlsen, Magnus"]
+[Black "Caruana, Fabiano"]
+[Result "1/2-1/2"]
+[WhiteElo "2835"]
+[BlackElo "2832"]
+[ECO "C42"]
+[PlyCount "94"]
+[FEN "2b3k1/pp3pp1/8/1n1p3p/1b1P1B1P/1P3PP1/P4KN1/3B4 w - - 0 34"]
+[SetUp "1"]
+[SourceEvent "WCh 2018"]
+[SourceRound "6"]
+[SourceStartPly "66"]
+[Theme "minor-endgames"]
+
+34. Ne3 Nc3 35. Bc2 Ba3 36. Bb8 a6 37. f4 Bd7 38. f5 Bc6 39. Bd1 Bb2 40. Bxh5
+Ne4+ 41. Kg2 Bxd4 42. Bf4 Bc5 43. Bf3 Nd2 44. Bxd5 Bxe3 45. Bxc6 Bxf4 46. Bxb7
+Bd6 47. Bxa6 Ne4 48. g4 Ba3 49. Bc4 Kf8 50. g5 Nc3 51. b4 Bxb4 52. Kf3 Na4 53.
+Bb5 Nc5 54. a4 f6 55. Kg4 Ne4 56. Kh5 Be1 57. Bd3 Nd6 58. a5 Bxa5 59. gxf6
+gxf6 60. Kg6 Bd8 61. Kh7 Nf7 62. Bc4 Ne5 63. Bd5 Ba5 64. h5 Bd2 65. Ba2 Nf3
+66. Bd5 Nd4 67. Kg6 Bg5 68. Bc4 Nf3 69. Kh7 Ne5 70. Bb3 Ng4 71. Bc4 Ne3 72.
+Bd3 Ng4 73. Bc4 Nh6 74. Kg6 Ke7 75. Bb3 Kd6 76. Bc2 Ke5 77. Bd3 Kf4 78. Bc2
+Ng4 79. Bb3 Ne3 80. h6 Bxh6 1/2-1/2
+
+[Event "WCh 2018"]
+[Site "London ENG"]
+[Date "2018.11.18"]
+[Round "7"]
+[White "Carlsen, Magnus"]
+[Black "Caruana, Fabiano"]
+[Result "1/2-1/2"]
+[WhiteElo "2835"]
+[BlackElo "2832"]
+[ECO "D37"]
+[PlyCount "14"]
+[FEN "6k1/p4pp1/bp1Np1p1/4P3/8/P1P2PP1/6PK/8 b - - 0 33"]
+[SetUp "1"]
+[SourceEvent "WCh 2018"]
+[SourceRound "7"]
+[SourceStartPly "65"]
+[Theme "minor-endgames"]
+
+33... f6 34. f4 Kf8 35. Kg1 Ke7 36. Kf2 Kd7 37. Ke3 Bf1 38. Kf2 Ba6 39. Ke3
+Bf1 40. Kf2 1/2-1/2
+
+[Event "WCh 2018"]
+[Site "London ENG"]
+[Date "2018.11.21"]
+[Round "9"]
+[White "Carlsen, Magnus"]
+[Black "Caruana, Fabiano"]
+[Result "1/2-1/2"]
+[WhiteElo "2835"]
+[BlackElo "2832"]
+[ECO "A29"]
+[PlyCount "34"]
+[FEN "7k/2p4p/8/4b3/P7/8/5P2/3B2K1 w - - 0 40"]
+[SetUp "1"]
+[SourceEvent "WCh 2018"]
+[SourceRound "9"]
+[SourceStartPly "78"]
+[Theme "minor-endgames"]
+
+40. a5 Kg7 41. a6 Bd4 42. Kg2 Kf6 43. f4 Bb6 44. Kf3 h6 45. Ke4 Ba7 46. Bg4
+Bg1 47. Kd5 Bb6 48. Kc6 Be3 49. Kb7 Bb6 50. Bh3 Be3 51. Kc6 Bb6 52. Kd5 Ba7
+53. Ke4 Bb6 54. Bf1 Ke6 55. Bc4+ Kf6 56. Bd3 Ke6 1/2-1/2
+
+[Event "WCh 2018"]
+[Site "London ENG"]
+[Date "2018.11.24"]
+[Round "11"]
+[White "Carlsen, Magnus"]
+[Black "Caruana, Fabiano"]
+[Result "1/2-1/2"]
+[WhiteElo "2835"]
+[BlackElo "2832"]
+[ECO "C42"]
+[PlyCount "59"]
+[FEN "6k1/p4pp1/1p5p/2p5/2b2B2/8/PPPK1PPP/8 b - - 0 26"]
+[SetUp "1"]
+[SourceEvent "WCh 2018"]
+[SourceRound "11"]
+[SourceStartPly "51"]
+[Theme "minor-endgames"]
+
+26... a6 27. a3 Kf8 28. Bc7 b5 29. Bd6+ Ke8 30. Bxc5 h5 31. Ke3 Kd7 32. Kd4 g6
+33. g3 Be2 34. Bf8 Kc6 35. b3 Bd1 36. Kd3 Bg4 37. c4 Be6 38. Kd4 bxc4 39. bxc4
+Bg4 40. c5 Be6 41. Bh6 Bd5 42. Be3 Be6 43. Ke5 Bd5 44. Kf4 Be6 45. Kg5 Bd5 46.
+g4 hxg4 47. Kxg4 Ba2 48. Kg5 Bb3 49. Kf6 Ba2 50. h4 Bb3 51. f4 Ba2 52. Ke7 Bb3
+53. Kf6 Ba2 54. f5 Bb1 55. Bf2 Bc2 1/2-1/2
+
+[Event "WCh 2021"]
+[Site "Dubai UAE"]
+[Date "2021.11.28"]
+[Round "3"]
+[White "Nepomniachtchi,I"]
+[Black "Carlsen,M"]
+[Result "1/2-1/2"]
+[WhiteElo "2782"]
+[BlackElo "2855"]
+[ECO "C88"]
+[PlyCount "18"]
+[FEN "8/5p2/2p1bk1p/p7/P1p5/2P4P/5PP1/1B3K2 b - - 0 32"]
+[SetUp "1"]
+[SourceEvent "WCh 2021"]
+[SourceRound "3"]
+[SourceStartPly "63"]
+[Theme "minor-endgames"]
+
+32... Ke5 33. Ke2 f5 34. Bc2 f4 35. Bb1 c5 36. Bc2 Bd7 37. f3 Kf6 38. h4 Ke5
+39. Kf2 Kf6 40. Ke2 Ke5 41. Kf2 1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "1"]
+[White "Szabo, Laszlo"]
+[Black "Geller, Efim P"]
+[Result "0-1"]
+[ECO "E03"]
+[PlyCount "13"]
+[FEN "8/4k2p/6p1/8/bp2p3/2n1N1P1/3K2BP/8 b - - 0 53"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "1"]
+[SourceStartPly "105"]
+[Theme "minor-endgames"]
+
+53... Kd6 54. Ng4 Kc5 55. h4 Kd4 56. h5 gxh5 57. Ne3 Nb1+ 58. Ke2 Bb5+ 59. Kf2
+b3 0-1
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "2"]
+[White "Smyslov, Vassily"]
+[Black "Szabo, Laszlo"]
+[Result "1/2-1/2"]
+[ECO "A11"]
+[PlyCount "43"]
+[FEN "2b5/p4pkp/1p2p1p1/3pP3/5P2/1P4P1/P3P1BP/6K1 w - - 0 25"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "2"]
+[SourceStartPly "48"]
+[Theme "minor-endgames"]
+
+25. Kf2 Ba6 26. Ke3 h6 27. Bf3 f5 28. exf6+ Kxf6 29. Kd4 g5 30. fxg5+ hxg5 31.
+e4 dxe4 32. Kxe4 Bb5 33. h4 gxh4 34. gxh4 a5 35. Kd4 a4 36. b4 a3 37. Be4 Be8
+38. Bb1 Bf7 39. Kc3 e5 40. b5 Bd5 41. Kb4 e4 42. Kxa3 e3 43. Bd3 Bf3 44. Kb4
+e2 45. Bxe2 Bxe2 46. a4 1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "3"]
+[White "Boleslavsky, Isaak"]
+[Black "Kotov, Alexander"]
+[Result "1-0"]
+[ECO "D28"]
+[PlyCount "36"]
+[FEN "4n2k/6pp/p2B4/1p6/8/1PN2b2/1P3PPP/6K1 w - - 0 25"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "3"]
+[SourceStartPly "48"]
+[Theme "minor-endgames"]
+
+25. Be5 Bc6 26. b4 h5 27. f3 Kh7 28. Ne2 g5 29. Kf2 h4 30. g3 hxg3+ 31. hxg3
+Kg6 32. g4 Bb7 33. Ke3 Bc6 34. Nc3 Bb7 35. Ne4 Bd5 36. Nc5 Kf7 37. Nxa6 Ke6
+38. Bc3 Ba8 39. Nc5+ Kf7 40. Ne4 Kg6 41. Be5 Bd5 42. Nd2 Kf7 1-0
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "6"]
+[White "Gligoric, Svetozar"]
+[Black "Szabo, Laszlo"]
+[Result "0-1"]
+[ECO "C83"]
+[PlyCount "12"]
+[FEN "6k1/2p2pp1/p7/P2pPp2/3P1P2/4B3/5KPP/b7 w - - 0 36"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "6"]
+[SourceStartPly "70"]
+[Theme "minor-endgames"]
+
+36. Ke2 Bc3 37. Kd3 Bxa5 38. h3 Be1 39. g4 g6 40. Kc2 Kf8 41. Kd1 Bg3 0-1
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "10"]
+[White "Petrosian, Tigran V"]
+[Black "Euwe, Max"]
+[Result "1-0"]
+[ECO "A07"]
+[PlyCount "7"]
+[FEN "3k4/1p3b2/2p1p2p/2P4P/3B1PP1/6K1/8/8 w - - 0 59"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "10"]
+[SourceStartPly "116"]
+[Theme "minor-endgames"]
+
+59. Bg7 Kc7 60. Bxh6 b6 61. cxb6+ Kxb6 62. Kh4 1-0
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "11"]
+[White "Euwe, Max"]
+[Black "Averbakh, Yuri L"]
+[Result "0-1"]
+[ECO "E58"]
+[PlyCount "18"]
+[FEN "7k/4n1pp/8/3p1n1N/p1pP4/PpP2P2/1B4PP/6K1 w - - 0 31"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "11"]
+[SourceStartPly "60"]
+[Theme "minor-endgames"]
+
+31. Kf2 Kg8 32. g4 Nd6 33. Ke3 Nb5 34. f4 Nc8 35. f5 Ncd6 36. Nf4 Nxa3 37.
+Bxa3 Nb5 38. Bc1 Nxc3 39. Ne2 Nb1 0-1
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "11"]
+[White "Boleslavsky, Isaak"]
+[Black "Najdorf, Miguel"]
+[Result "1/2-1/2"]
+[ECO "E85"]
+[PlyCount "15"]
+[FEN "8/pp3k1p/4n1p1/3Np3/3bPp2/5P2/PP4PP/2B2K2 b - - 0 25"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "11"]
+[SourceStartPly "49"]
+[Theme "minor-endgames"]
+
+25... g5 26. Ke2 h5 27. h3 Nf8 28. b3 Ng6 29. Bd2 Ke6 30. Be1 Ne7 31. Nxe7
+Kxe7 32. Kd3 b5 1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "12"]
+[White "Gligoric, Svetozar"]
+[Black "Smyslov, Vassily"]
+[Result "0-1"]
+[ECO "A30"]
+[PlyCount "12"]
+[FEN "8/p4p2/1p2pk2/7p/2PpP1n1/1PN3P1/P3K3/8 w - - 0 36"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "12"]
+[SourceStartPly "70"]
+[Theme "minor-endgames"]
+
+36. Nb5 Ke5 37. Nxa7 Kxe4 38. Nc8 d3+ 39. Kd2 Kd4 40. c5 bxc5 41. Nd6 Ne5 0-1
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "14"]
+[White "Bronstein, David I"]
+[Black "Najdorf, Miguel"]
+[Result "1/2-1/2"]
+[ECO "E70"]
+[PlyCount "13"]
+[FEN "nb4k1/4p3/5pp1/2pP4/2P4B/2Np1K1P/6P1/8 w - - 0 35"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "14"]
+[SourceStartPly "68"]
+[Theme "minor-endgames"]
+
+35. Na4 Bd6 36. Bf2 Kf7 37. Ke3 Nc7 38. Kxd3 Na6 39. Ke4 f5+ 40. Kf3 e6 41.
+Nb6 1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "15"]
+[White "Bronstein, David I"]
+[Black "Gligoric, Svetozar"]
+[Result "1-0"]
+[ECO "E71"]
+[PlyCount "38"]
+[FEN "6k1/3n2b1/n2p2p1/3Pp3/pp2P3/6N1/PP2KP2/1NB5 b - - 0 38"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "15"]
+[SourceStartPly "75"]
+[Theme "minor-endgames"]
+
+38... Nac5 39. Be3 Kf7 40. Nd2 Nb6 41. Bxc5 dxc5 42. Kd3 Kf6 43. Nc4 Nd7 44.
+Nf1 Kg5 45. Ke3 Bh6 46. Nh2 Kf6+ 47. Ke2 Bf4 48. Ng4+ Ke7 49. Kd3 Kd8 50. Nd6
+Kc7 51. Nf7 a3 52. bxa3 bxa3 53. Kc4 Kb6 54. Kb3 Ka5 55. Nd6 Bc1 56. Nc4+ Kb5
+57. Ngxe5 1-0
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "16"]
+[White "Geller, Efim P"]
+[Black "Szabo, Laszlo"]
+[Result "1/2-1/2"]
+[ECO "E53"]
+[PlyCount "62"]
+[FEN "5k2/6p1/2K1Pn2/pB5p/7P/8/6P1/8 b - - 0 47"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "16"]
+[SourceStartPly "93"]
+[Theme "minor-endgames"]
+
+47... Ke7 48. Bc4 Ne4 49. Kb6 a4 50. Ka5 Nd6 51. Bd5 Nf5 52. Kxa4 Nxh4 53. Kb3
+Nf5 54. Kc3 Kf6 55. Bf3 h4 56. Kd3 Kxe6 57. Ke4 Kf6 58. Bg4 Nh6 59. Bd7 Kg5
+60. Kf3 Nf7 61. Bc8 Ne5+ 62. Ke4 Nc4 63. Kf3 Ne5+ 64. Ke4 Kf6 65. Kf4 g6 66.
+Ke4 g5 67. Ke3 Kg6 68. Ke4 Nc4 69. Kf3 Nd2+ 70. Ke3 Nf1+ 71. Kf2 Ng3 72. Kf3
+Kf6 73. Kg4 Nf1 74. Ba6 Ne3+ 75. Kh3 Nf5 76. Bd3 Ng3 77. Kg4 Nh1 78. Bc2
+1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "16"]
+[White "Kotov, Alexander"]
+[Black "Euwe, Max"]
+[Result "1/2-1/2"]
+[ECO "A13"]
+[PlyCount "26"]
+[FEN "2n1b1k1/2p2ppp/4p1n1/1pN3B1/4P3/P4PP1/7P/5BK1 w - - 0 24"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "16"]
+[SourceStartPly "46"]
+[Theme "minor-endgames"]
+
+24. Bd8 c6 25. f4 e5 26. f5 Nf8 27. Kf2 Nd7 28. Nb7 f6 29. Ke3 Kf8 30. h3 Bf7
+31. Ba5 Ke8 32. g4 Ndb6 33. Bb4 Bc4 34. Bg2 Ba2 35. Bf1 Bc4 36. Bg2 Ba2
+1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "18"]
+[White "Keres, Paul"]
+[Black "Szabo, Laszlo"]
+[Result "1/2-1/2"]
+[ECO "B92"]
+[PlyCount "24"]
+[FEN "8/5p1p/p2k4/P1N2p2/7K/7P/6P1/8 b - - 0 45"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "18"]
+[SourceStartPly "89"]
+[Theme "minor-endgames"]
+
+45... Kxc5 46. Kg5 Kb5 47. Kh6 Kxa5 48. Kxh7 Kb4 49. h4 a5 50. h5 a4 51. h6 a3
+52. Kg8 a2 53. h7 a1=Q 54. h8=Q Qa8+ 55. Kh7 Qxg2 56. Qd4+ Kb3 57. Qd3+
+1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "18"]
+[White "Smyslov, Vassily"]
+[Black "Euwe, Max"]
+[Result "1-0"]
+[ECO "A07"]
+[PlyCount "52"]
+[FEN "2n5/p4b2/k1B3pp/2B5/2P5/1P4P1/5P2/6K1 b - - 0 42"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "18"]
+[SourceStartPly "83"]
+[Theme "minor-endgames"]
+
+42... Nb6 43. Kf1 Be6 44. Ke2 Nd7 45. Bd4 Ka5 46. Bc3+ Kb6 47. Be4 g5 48. Bd4+
+Ka5 49. Bxa7 Kb4 50. Bc2 Kc3 51. Bd1 Ne5 52. Ke3 Nc6 53. Bb6 g4 54. Kf4 h5 55.
+Be3 Na5 56. Ke5 Bc8 57. c5 Nxb3 58. Be2 Na5 59. Bb5 Nc4+ 60. Kf4 Nxe3 61. fxe3
+Kb4 62. Be8 h4 63. gxh4 Kxc5 64. h5 g3 65. Kxg3 Kd5 66. h6 Bf5 67. Kf4 Bh7 68.
+Kg5 1-0
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "19"]
+[White "Najdorf, Miguel"]
+[Black "Taimanov, Mark E"]
+[Result "1/2-1/2"]
+[ECO "E55"]
+[PlyCount "10"]
+[FEN "2b3k1/5pp1/p6n/1p1p3p/5P1P/P1BB2P1/1P3K2/8 b - - 0 40"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "19"]
+[SourceStartPly "79"]
+[Theme "minor-endgames"]
+
+40... Bf5 41. Be2 g6 42. a4 bxa4 43. Bxa6 Bc2 44. Bc8 Kf8 45. Bb4+ 1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "20"]
+[White "Geller, Efim P"]
+[Black "Kotov, Alexander"]
+[Result "0-1"]
+[ECO "E59"]
+[PlyCount "17"]
+[FEN "5k2/pp3bpp/5p2/2p5/2P4P/P3BP2/6P1/6K1 b - - 0 34"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "20"]
+[SourceStartPly "67"]
+[Theme "minor-endgames"]
+
+34... b6 35. a4 Ke7 36. a5 Bxc4 37. axb6 axb6 38. Kf2 Kd6 39. Bf4+ Kc6 40. Ke3
+Bf7 41. g4 b5 42. h5 b4 0-1
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "20"]
+[White "Gligoric, Svetozar"]
+[Black "Averbakh, Yuri L"]
+[Result "1/2-1/2"]
+[ECO "B67"]
+[PlyCount "23"]
+[FEN "8/1pk2p2/p1n1p3/5p1p/5P2/P1N1K1P1/1PP4P/8 b - - 0 31"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "20"]
+[SourceStartPly "61"]
+[Theme "minor-endgames"]
+
+31... Kd6 32. Nd1 f6 33. Kd3 Ne7 34. c4 h4 35. b4 hxg3 36. hxg3 b6 37. Ne3 Nc6
+38. Nc2 a5 39. Kc3 axb4+ 40. axb4 Nb8 41. Nd4 Na6 42. Kb3 Nc7 1/2-1/2
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "22"]
+[White "Smyslov, Vassily"]
+[Black "Geller, Efim P"]
+[Result "1-0"]
+[ECO "E94"]
+[PlyCount "14"]
+[FEN "5b2/1p3k2/2p1b1pP/6P1/p1P1pP2/P7/1P1B1K2/5B2 b - - 0 37"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "22"]
+[SourceStartPly "73"]
+[Theme "minor-endgames"]
+
+37... Bc5+ 38. Be3 Bd6 39. Bd4 Kg8 40. Ke3 Bf5 41. c5 Bc7 42. Be2 Ba5 43. Bd1
+Be1 44. Bxa4 1-0
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "23"]
+[White "Kotov, Alexander"]
+[Black "Reshevsky, Samuel Herman"]
+[Result "1-0"]
+[ECO "E14"]
+[PlyCount "38"]
+[FEN "8/4k1p1/1p2pn2/p4p1p/2P2P2/PP1N2PP/6K1/8 b - - 0 48"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "23"]
+[SourceStartPly "95"]
+[Theme "minor-endgames"]
+
+48... Ne4 49. b4 Kd6 50. Ne5 a4 51. Kf3 g5 52. Ke3 g4 53. hxg4 hxg4 54. Nxg4
+Nc3 55. Ne5 Nb1 56. Kd3 Nxa3 57. b5 Nxb5 58. cxb5 Kc5 59. Nf3 Kxb5 60. Nd4+
+Kb4 61. Kc2 e5 62. fxe5 Kc5 63. e6 Kd6 64. Kc3 b5 65. Kb4 Ke7 66. Kc5 a3 67.
+Kd5 1-0
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "24"]
+[White "Taimanov, Mark E"]
+[Black "Stahlberg, Gideon"]
+[Result "1-0"]
+[ECO "A13"]
+[PlyCount "61"]
+[FEN "8/4npk1/6p1/4P2p/4NP2/6P1/5K1P/8 w - - 0 44"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "24"]
+[SourceStartPly "86"]
+[Theme "minor-endgames"]
+
+44. Kf3 Kf8 45. Nd6 Nc6 46. Ke4 Ke7 47. f5 Nb4 48. f6+ Kf8 49. Nb7 Na6 50. Kd5
+Nc7+ 51. Kd6 Nb5+ 52. Kd7 Nd4 53. Nc5 Nf5 54. Kd8 Nd4 55. Nd7+ Kg8 56. Ke8 Ne6
+57. Ke7 g5 58. Ke8 Nc7+ 59. Kd8 Ne6+ 60. Ke7 Nd4 61. Nc5 Nc6+ 62. Kd6 Na5 63.
+e6 fxe6 64. Ke7 Nc6+ 65. Ke8 Ne5 66. Nxe6 Nf7 67. Ke7 g4 68. Ng7 Nh6 69. Nxh5
+Nf5+ 70. Ke8 Nd6+ 71. Kd7 Nf5 72. Ng7 Nh6 73. Ke7 Nf7 74. Nf5 1-0
+
+[Event "Candidats Tournament"]
+[Site "Zuerich"]
+[Date "1953.??.??"]
+[Round "25"]
+[White "Boleslavsky, Isaak"]
+[Black "Taimanov, Mark E"]
+[Result "1/2-1/2"]
+[ECO "E19"]
+[PlyCount "68"]
+[FEN "5k2/pb5p/1pp5/8/4p3/1P4P1/P5BP/6K1 w - - 0 27"]
+[SetUp "1"]
+[SourceEvent "Candidats Tournament"]
+[SourceRound "25"]
+[SourceStartPly "52"]
+[Theme "minor-endgames"]
+
+27. Bxe4 h6 28. Kf2 Ke7 29. Kf3 a5 30. Kg4 Bc8+ 31. Kh5 c5 32. Kxh6 Kf6 33.
+Bf3 a4 34. bxa4 c4 35. g4 c3 36. g5+ Ke5 37. Bd1 Bg4 38. Bc2 Bf5 39. g6 Bxc2
+40. g7 Bh7 41. Kxh7 c2 42. g8=Q c1=Q 43. Qb8+ Kd5 44. Qb7+ Ke5 45. Qg7+ Kd5
+46. Qf7+ Ke5 47. h4 Qc2+ 48. Kg7 Qxa4 49. Qf6+ Ke4 50. Qe6+ Kf4 51. h5 Kg5 52.
+Qe5+ Kg4 53. h6 Qd7+ 54. Kf6 Qd8+ 55. Kf7 Qd7+ 56. Qe7 Qd3 57. Qe6+ Kh5 58.
+Ke8 b5 59. Ke7 b4 60. Ke8 Qg6+ 1/2-1/2
+

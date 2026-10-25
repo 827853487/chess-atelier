@@ -1,0 +1,3 @@
+本目录已放入官方 Stockfish（GPLv3，见 Copying.txt）。
+文件名需为 stockfish.exe。人机对弈与引擎分析都通过「启动网站.bat」调用它。
+官网：https://stockfishchess.org/download/

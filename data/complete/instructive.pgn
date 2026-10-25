@@ -1,0 +1,290 @@
+[Event "1. Rook on the Seventh Rank"]
+[Site "New York"]
+[Date "1924.03.23"]
+[Round "6"]
+[White "J. R. Capablanca"]
+[Black "S. Tartakover"]
+[Result "1-0"]
+[ECO "A84"]
+[EventDate "1924.??.??"]
+
+1.d4 f5 2.Nf3 e6 3.c4 Nf6 4.Bg5 Be7 5.Nc3 O-O 6.e3 b6 7.Bd3 Bb7 8.O-O Qe8
+9.Qe2 Ne4 10.Bxe7 Nxc3 11.bxc3 Qxe7 12.a4 Bxf3 13.Qxf3 Nc6 14.Rfb1 Rae8
+15.Qh3 Rf6 16.f4 $1 Na5 17.Qf3 d6 18.Re1 Qd7 { [diagram] } 19.e4 $1 fxe4
+20.Qxe4 g6 21.g3 Kf8 22.Kg2 Rf7 23.h4 d5 24.cxd5 exd5 25.Qxe8+ Qxe8 26.Rxe8+
+Kxe8 27.h5 $1 Rf6 28.hxg6 hxg6 29.Rh1 Kf8 30.Rh7 Rc6 31.g4 Nc4 32.g5 Ne3+
+33.Kf3 Nf5 34.Bxf5 gxf5 { [diagram] } 35.Kg3 $1 Rxc3+ 36.Kh4 Rf3 37.g6 Rxf4+
+38.Kg5 Re4 39.Kf6 $1 Kg8 40.Rg7+ Kh8 41.Rxc7 Re8 42.Kxf5 Re4 43.Kf6 Rf4+
+44.Ke5 Rg4 45.g7+ Kg8 46.Rxa7 Rg1 47.Kxd5 Rc1 48.Kd6 Rc2 49.d5 Rc1 50.Rc7 Ra1
+51.Kc6 Rxa4 52.d6 { black resigns [diagram] } 1-0
+
+[Event "2. The King Is a Strong Piece – USSR Championship"]
+[Site "Leningrad"]
+[Date "1956.01.28"]
+[Round "11"]
+[White "M. Tal"]
+[Black "G. Lissitzin"]
+[Result "1-0"]
+[ECO "B71"]
+[EventDate "1956.??.??"]
+
+1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.f4 Nc6 ( 6...Bg7 $6 7.e5
+dxe5 8.fxe5 Ng4 9.Bb5+ Kf8 ( 9...Nc6 10.Nxc6 ) 10.Ne6+ ) 7.Nxc6 bxc6
+{ [diagram] } 8.e5 { beautiful! } 8...Nd7 9.exd6 exd6 10.Be3 Be7 11.Qf3 d5
+12.O-O-O Bf6 13.Bd4 O-O 14.h4
+{ potentially leading to 15. ... h5 with the intention of opening the
+h-file } 14...Rb8 { [diagram] } ( 14...Bxh4 $6 15.Qh3 g5 16.g3 ) 15.Qf2
+{ [diagram] } ( 15.g3 $2 Bxd4 16.Rxd4 Qb6
+{ attacking b2 and winning the rook } ) 15...Rb4 16.Bxf6 Nxf6 17.a3 ( 
+17.Qxa7 $2 Qd6 18.g3 Rxb2 19.Kxb2 Qb4+ 20.Kc1 Qxc3 ) 17...Qb6 18.Qxb6 Rxb6
+{ [diagram] } 19.Na4 $1 Rb7 20.Bd3 Nh5 21.Rhf1 Re7 22.f5 $1
+{ "a fine positional sacrifice" i.chernev } 22...gxf5
+{ "black is hypnotized into taking the pawn, and that leads to his ruin."
+i.chernev } 23.Rfe1 $1 { disputing control of the open e-file } 23...Rfe8
+24.Rxe7 Rxe7 { [diagram] } 25.Kd2 $1 Ng3 26.Kc3 f4 27.Kd4 Bf5 28.Rd2 Re6
+29.Nc5 Rh6 30.Ke5 Bxd3 31.cxd3 Rxh4 32.Kd6 Rh6+ 33.Kc7
+{ "despite the fact that he is two pawns down, white's chances are vetter
+in the ending. his king is so sonderfully active, and black's so woefully
+passive, that he is in effect a king ahead!" i.chernev } 33...Nf5 34.Kb7 Nd4
+{ freeing the rook and threatening 35. ... Rh2 followed by 36. ... f3
+winning another pawn } 35.Rf2 a5 36.Rxf4 Ne6 37.Rg4+ Kf8
+{ given the activitiy of white's queen, this would not have been a good
+position to exchange rooks, followed immediately by an exchange of knights.
+a white queen would be promoted soon enough. } 38.Kxc6 Nxc5+ 39.Kxc5 Re6
+40.Kxd5
+{ "(one must resolutely avoid the impulse to say, 'the pawns fall like ripe
+apples.')" i.chernev } 40...Rb6 41.b4 axb4 42.axb4 Ke7 43.Kc5 Rf6 44.Rd4
+{ cuts off the black king from the queen side } 44...Rf5+ 45.Kb6 ( 45.Rd5 $2
+Rf4 { threatening 46. ... Rg5 counter-play attacking the g-pawn } ) 45...Rf6+
+46.Kc7 Rf5 47.Re4+ Kf6 48.Kc6 Rf2 49.g4 h5 50.gxh5 Kg5 51.b5 f5 52.Rb4 f4
+53.b6 f3 54.b7 { black resigns [diagram] } 1-0
+
+[Event "3. Knight Outpost at d5 – USSR Championship"]
+[Site "Moscow"]
+[Date "1956.02.01"]
+[Round "13"]
+[White "I. Boleskavsky"]
+[Black "G. Lissitzin"]
+[Result "1-0"]
+[ECO "B76"]
+[EventDate "1956.??.??"]
+
+1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6 6.Be3 Bg7 7.f3 O-O 8.Qd2 Nc6
+9.O-O-O { [diagram] } 9...Nxd4 ( 9...d5 $6 10.Nxc6 bxc6 11.exd5 cxd5 12.Nxd5
+Nxd5 13.Qxd5 Qc7
+{ 13...Qc7 is +0.00/41 on Stockfish 9. 14.Qxa8 (exchanging the Queen for
+the Rooks) loses too much tempo for the gain in material. 14.Qc5 is
+preferred by the engine. } ) 10.Bxd4 Qa5 11.Kb1 e5 12.Be3 Be6 13.a3 Rfd8
+{ [diagram] } 14.Nb5 $1 Qa4
+{ [diagram] Stockfish 9 much prefers 14...Qxd2 (+0.57/40) here exchanging
+the Queens to 14...Qa4 (+2.55/40) } ( 14...Qxd2 15.Rxd2
+{ is better for Lissitzin } ) 15.c4 $3
+{ [diagram] beautiful move!! Boleskavsky is threatening to prevent ... d5,
+freeing the position for Lissitzin and threatening to establish the d5
+square as an outpost for the Knight. } ( 15.Nxd6 $2
+{ the d-pawn is under a lot of pressure, but capturing may not be safe. }
+15...Ne8 16.Bc5 Nxd6 17.Bxd6 Bf8 18.Qb4 Rxd6 19.Rxd6 ( 19.Qxa4 $4 Rxd1# )
+19...Qxb4 20.axb4 Bxd6 { with Lissitzin winning a piece } ) 15...Bxc4 16.Nc3
+Qb3 17.Bxc4
+{ getting rid of the Lissitzin's Bishop protecting the d5 square } 17...Qxc4
+18.Bg5 $1
+{ pinning the Knight ensuring that the last threat to Nd5 can be eliminated
+(if desired) } 18...Qe6 19.Bxf6 Qxf6 20.Nd5
+{ [diagram] successfully posting the Knight on a safe outpost on d5 now
+that the Lissitzin's Bishop and Knight have systematically been removed.
+Boleskavsky has chosen to sacrifice the c-pawn in return for being able to safely place a Knight (that cannot be driven off) on d5. }
+20...Qh4 21.Qe2 $1 Bf8 22.Qf1 $1
+{ preventing ... Qh3, blocking the h-pawn, after 23.g3 } 22...Rac8 23.g3 Qg5
+24.h4 $1
+{ another gorgeous move here pushing the pawns on the kingside. superb. }
+24...Qh6 ( 24...Qxg3 $2 25.Rh3 { (+7.54/40) and Lissitzin loses the Queen } )
+25.g4 $1
+{ threatening to push the g-pawn to g5 making it difficult for Lissitzin to
+protect his Queen } 25...g5 ( 25...Bg7 26.g5 Qh5 27.Nf6+ ) ( 25...Qg7 )
+26.hxg5 Qxg5 27.Rh5 Qg6 { [diagram] } 28.g5 $1
+{ threatening 29.Nf6+ forcing the exchange of Lissitzin's Queen after
+30.Rxh7+ } 28...h6 ( 28...Qxh5 $4 29.Nf6+ Kh8 30.Nxh5
+{ losing Lissitzin's Queen } ) ( 28...Bg7 $4 29.Ne7+
+{ also results in the loss of the Queen } ) 29.Rxh6 $1 Qxg5 30.Rh5 $1
+{ [diagram] Lissitzin resigns (#15/51 according to Stockfish 9 – starting
+with 30...Qxh5 losing the Queen for a Rook) } 1-0
+
+[Event "4. Aggressive Rook in the Ending – Manchester Tournament"]
+[Site "Manchester, England"]
+[Date "1890.09.02"]
+[Round "12"]
+[White "Siegbert Tarrasch"]
+[Black "Edmund Thorold"]
+[Result "1-0"]
+[ECO "C07"]
+[EventDate "1890.??.??"]
+
+1.e4 e6 2.d4 d5 3.Nd2 c5 4.exd5 Qxd5 ( 4...cxd4 5.Bb5+ Bd7 6.dxe6 Bxb5 7.Qh5
+{ threatening 8.Qxf7# } 7...Qe7 8.Qxb5+
+{ "...and White enjoys a pleasant initiative" I.Chervev } ) 5.Ngf3
+{ sacrificing a pawn for development } 5...cxd4 6.Bc4 Qh5 7.O-O { [diagram] }
+7...Nc6 ( 7...e5 $4 8.Nxe5 Qxd1 ( 8...Qxe5 $4 9.Re1 { loses the Queen } )
+9.Bxf7+ Ke7 10.Rxd1 { and Black is down two pawns } ) 8.Nb3
+{ overloading the d-pawn } 8...e5 { [diagram] } 9.Nxe5 $1 Qxd1 10.Rxd1 Nxe5
+11.Re1
+{ pinning the Knight on e5, to be followed by 12.f4 forcing the exchange of
+the Knight for the d-pawn } 11...f6 12.f4 Bb4 { [diagram] } 13.Bd2 ( 13.Re2
+$2 Bg4 14.Re4 Bf5
+{ threatening perpetual attacks on the Rook and a draw or, otherwise, the
+loss of the Bishop on c4 if the Rook leaves the e-file } ) 13...Bxd2 14.Nxd2
+Bf5 15.fxe5 O-O-O 16.Bd3 Bxd3 17.cxd3 fxe5 { [diagram] } 18.Rac1+ $1
+{ preventing the Black King from entering the fight at the center of the
+board } 18...Kb8 19.Rxe5 Nf6 20.Rce1 Rhe8 $2 21.Rxe8 Nxe8 { [diagram] } ( 
+21...Rxe8 $2 22.Rxe8+ Nxe8 23.Nb3
+{ and White wins the d4 pawn (and likely the game) } ) 22.Re7 $1 a6 23.Nb3 b6
+24.Nxd4 Rxd4 25.Rxe8+ Kc7 { [diagram] } 26.Re3 $1 Kd7 27.Kf2 g6 28.Rh3 $1 h5
+{ [diagram] } 29.Ke3 $1
+{ protecting the d-pawn, freeing the White Rook from its defense, and
+driving off the Black Rook allowing the pawn room to advance } 29...Rd6 30.d4
+Re6+ 31.Kd3 Re1 32.Rg3 Re6 33.Re3 Rd6
+{ Black cannot afford to exchange Rooks in this situation because the
+additional passed d-pawn offers a winning position for White } 34.Re5 Rf6
+{ [diagram] } 35.a4 { White moves to better protect the Queen-side pawns }
+35...Rf2 36.Re2 Rf6 37.b4 Rf1 38.Re5 Rf2 39.Rg5 Rf6 $1 40.h3 Kd6 41.Ke4 Re6+
+42.Re5 Rf6 { [diagram] } 43.d5 $1 Kd7 44.Rg5 $1
+{ clearing the e5 square for the King to advance and preparing for 45.Rg3
+then 46. Rf3 again encouraging the exchange of the Rooks, driving the Black
+Rook off the open f-file } 44...Kd6 45.Rg3 Ke7 46.Rf3 Rd6 { [diagram] }
+47.Ke5 $1
+{ threatening a forced Rook exchange with 48.Rf7+, winning the game }
+47...Rd8 { [diagram] } 48.d6+ $1
+{ if 48...Rxd6, then 49.Rf7+ again forces the exchange of the Rooks, and
+the White King easily supports one of the Queen-side pawns to promotion }
+48...Kd7 ( 48...Rxd6 $2 49.Rf7+ Kxf7 50.Kxd6 ) ( 48...Ke8 $2 49.Ke6 g5 50.d7+
+Rxd7 51.Rf8+
+{ forcing to the exchange of Rooks followed by the advance of the
+Queen-side pawns } ) 49.Rf7+ Kc8 ( 49...Kc6 $4 50.Rc7# ) 50.Rc7+ Kb8 51.Rc2
+Re8+ 52.Kf6 b5 53.d7 Rh8 54.Ke7 Rh7+ 55.Kd6 Rh8 56.Re2
+{ [diagram] Thorold resigns } 1-0
+
+[Event "5. The Passed Pawn"]
+[Site "Vienna"]
+[Date "1908.??.??"]
+[Round "?"]
+[White "A.Reubenstein"]
+[Black "O.Duras"]
+[Result "*"]
+[ECO "D02"]
+
+1.d4 d5 2.Nf3 c5 3.e3 Nf6 4.dxc5 { [diagram] } 4...Qa5+
+{ "The Queen should not come into play so soon. A safer way to regain the
+Pawn is bby the simple 4...e6." I.Chernev (Stockfish 9:+0.30/26) } ( 4...e6
+{ (Stockfish 9:0.00/34) } 5.b4 a5 6.c3 axb4 7.cxb4 b6 { [diagram] } 8.Ba3 $2
+{ (Stockfish 9:-1.01/30) } ( 8.Bb2 { (Stockfish 9:-0.21/35) } ) 8...bxc5
+9.bxc5 Rxa3 10.Nxa3 Qa5+
+{ [diagram] winning two of White's minor pieces for the Rook (Stockfish
+9:-1.42/33) } ) 5.Nbd2 Qxc5 6.a3 Qc7 7.c4 dxc4 $6
+{ "This move not only surrenders the center, but helps White develop his
+pieces." I.Chernev (Stockfish 9:+0.74/46) } ( 7...e6
+{ (Stockfish 9:+0.49/46) } ) 8.Nxc4 Bg4 9.b4 Nc6 10.Bb2 b5
+{ [diagram] ...attacking the Knight. "[The Knight's] next move initiates a
+spectacular combination." I.Chernev } 11.Nce5 $1 Nxe5 12.Nxe5 Bxd1 13.Bxb5+
+Nd7 ( 13...Kd8 $2 14.Rxd1+ Kc8 15.Ba6+ Kb8 16.Nc6+ Qxc6 17.Be5+ Qd6 18.Rc1
+{ [diagram] "The consummation of an eloquent mating song follows on the
+next move after 18...Qxe5 or 18...Qc7." D.Edmonds } ) 14.Bxd7+ Qxd7 ( 
+14...Kd8 15.Rxd1 { [diagram] (Stockfish 9:?) } ) 15.Nxd7 Bh5 16.Ne5 Rc8 17.g4
+Bg6 { [diagram] } 18.Nxg6
+{ "The two Bishops might enable Black to put up a good deal of resistance,
+so Rubinstein removes one of them. In return, Black gets an open file for
+his Rook." I.Chernev } 18...hxg6 19.Bd4 a6 20.Kd2
+{ "The King moves toward the center to take an active part in the endgame."
+I.Chernev } 20...f6
+{ [diagram] "Preparing to evict the Bishop by 21...e5 from its strong
+position in the middle of the board [on d4]." I.Chernev } 21.Rac1 $1
+{ "[Black] must either exchange Rooks or abbandon control of the open
+[c-]file." I.Chernev } 21...Rxc1 22.Rxc1 $1 *
+
+[Event "7. Finesse in the Ending"]
+[Site "Rosas, Spain"]
+[Date "1935.06.??"]
+[Round "?"]
+[White "Rafael Domenech"]
+[Black "Salomon Flohr"]
+[Result "0-1"]
+[Annotator "Irving Chernev, \"Most Instructive Games Ever Played\""]
+[ECO "B40"]
+[EventDate "1935.06.??"]
+
+
+{ "Who but Flohr would interrupt a series of exchanges, force an
+irreparabble weakness, and then proceed to complete the exchanges?"
+I.Chernev, "Most Instructive Games Ever Played" } 1.e4 c5 2.Nf3 e6 3.c4
+{ [diagram] An attempt to get the Maroczy Bind, which is no improvement on
+teh usual 3.d4. A move has been wasted that should have been devoted to
+straightforward development, while the pawn at c4 restricts the scope of White's King Bishop. }
+3...Nc6 4.d4 cxd4 5.Nxd4 Nf6 6.Nxc6 dxc6 $1
+{ [diagram] Geniuses do not have to capture toward the center! Black wants
+the d-file open so that he can exert pressure on White's d3 and d4 squares,
+both of these squares having been weakened by White's premature third move [3.c4]. 
+
+These weakenesses are almost imperceptible, and it is difficult at this
+early stage to see how Flohr can possibbbly exploit them, but he does so – and beautifully! }
+7.Qxd8+ Kxd8
+{ Black has lost the priviledge of castling, but it is of no consequence.
+The King is more useful in the center than hidden away in a corner. With
+Queens off the board, there is little danger of the King running into a mating attack. }
+8.f3
+{ This saves the e-pawn, but it limits still more the scope of White's King
+Bishop. } ( 8.e5 Ng4 { [%csl Ye5] } 9.Bf4 Bc5
+{ [%csl Yf2][%cal Yg4f2,Yc5f2] } 10.Bg3 Bd4
+{ [%csl Yb2,Ye5][%cal Yd4e5,Yd4b2,Yg4e5]and Black wins a pawn. } ) 8...e5 $1
+{ [diagram] A little move, but it accomplishes a great deal... 
+
+(a) It releases the Queen Bishop, which will assume a strong attacking
+position at e6. 
+
+(b) It fixes White's e-pawn at e4, preventing it from advancing to e5. 
+
+(c) It exerts pressure on d4, one of teh weak squares in White's position. }
+9.Be3 Kc7 10.a3
+{ [diagram] White's idea may have been to prevent 10...Bb4+, but time is
+wasted and another weakness created – a 'hole' at b3. } 10...Nd7 $1
+{ The point of this is that it will enable Black to play ...Bc5, and force
+an exchange of Bishops. This would eliminate White's good Bishop, and leave
+him with the one that is ineffectual. } 11.Nd2 a5 $1
+{ The pawn is to advance to a4, where it will have a crippling effect on
+White's queen side. } 12.Be2 a4 $1 13.Kf2 { [diagram] } 13...Bc5 $1 14.Bxc5
+Nxc5 15.Rac1 Be6
+{ [diagram] This Bishop is aggressive, White's Bishop is passive. } 16.Rhd1
+Rhd8 { [diagram] Intending to double Rooks on the d-file. } 17.Ke3 ( 
+{ If White tries to dispute control of the file, this is what might happen.
+} 17.Nf1 Nb3 18.Rxd8 Rxd8 19.Rd1 Rxd1 20.Bxd1 Bxc4
+{ and White has lost a pawn. } ) 17...Rd7 18.g3
+{ The purpose of this move and White's next, is to place some pawns on
+black squrares, thereby allowing his pieces (notably the Bishop) more
+freedom of movement. } 18...Rad8 19.f4
+{ A perfectly natural move, but it opens the door to a surprising
+delayed-action combination. It is one that is unique, so far as I know, in
+the literature of chess. [diagram] } 19...exf4+ 20.gxf4 Rd3+ $1 21.Bxd3 Rxd3+
+{ [diagram] } 22.Kf2 ( 22.Ke2 Bg4+ 23.Ke1 Bxd1 24.Rxd1 Nxe4 25.Nxe4 Re3+
+{ [%csl Ge4][%cal Ge3e4,Ge3e1] [diagram] and Black wins another pawn and
+the game. } ) 22...Bg4 { [diagram] White is practically in zugzwang. } 23.e5
+( 23.-- Bxd1 24.Rxd1 Rxd2+ 25.Rxd2 Nxe4+ 26.Ke1 Nxd2 27.Kxd2 $19
+{ [diagram] Diagram 01 (Stockfish 10:-13.88/40) } ) ( 23.Re1 Rxd2+ ) ( 
+23.Nf3 Rxf3+ ) ( 23.Rb1 Bxd1 24.Rxd1 Rxd2+ 25.Rxd2 Nxe4+ 26.Ke1 Nxd2 27.Kxd2
+$19 { Identical postition to Diagram 01 } ) 23...Bxd1 24.Rxd1 Ne6 $1
+{ [%cal Ge6f4][diagram] } ( { One would now expect Flohr to continue by }
+24...Nb3 25.Ke2 Rxd2+ 26.Rxd2 Nxd2 27.Kxd2 $10
+{ leaving him with a slightly superior position. Whether Flohr could
+squeeze a win out of it is doubtful, skilled though he is in the endgame.
+Diagram 02 (Stockfish 10:0.00/49) – Compare with Diagram 01 
+
+Flohr does bring the Knight to b3. Flohr does clear away all the pieces. But
+first his Knight will make two moves that will create irreparable weaknesses in White's pawn position. }
+) 25.f5 Nd4 $1 { [%cal Gd4f5] } 26.f6 gxf6 27.exf6 { [diagram] } 27...Nb3 $1
+28.Ke2 Rxd2+ 29.Rxd2 Nxd2 30.Kxd2 Kd6 $19
+{ [diagram] Domenech resigns. 
+
+The rest is a matter of counting moves. In order that White may Queen a
+pawn, he must capture the b and c-pawns, move his King aside, and advance the c-pawn (eleven moves). 
+
+Black meanwhile, captures the f-pawn, moves his King aside, and advances the
+f-pawn (eight moves). Resignation for White was clearly in order. 
+
+(Stockfish 10:-59.49/38) } 0-1
+
