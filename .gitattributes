@@ -9,3 +9,5 @@
 *.svg text eol=lf
 *.wasm binary
 *.tar.gz binary
+# Preserve upstream release bytes, including license text covered by SHA-256.
+vendor/stockfish/** -text
