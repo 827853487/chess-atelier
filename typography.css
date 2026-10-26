@@ -74,5 +74,7 @@ button,input,select,textarea{font-family:inherit}
 #music-panel #music-artist{font-weight:400!important}
 .music-credit-text{display:inline-block;vertical-align:top;width:max-content;max-width:none;white-space:nowrap;transform:translateX(0)}
 #music-panel .music-composer,#music-panel .music-performer{font-weight:400;color:inherit}
-#music-panel .music-controls{height:54px!important;min-height:54px!important;margin:2px auto 4px!important}
+#music-panel .music-controls{height:54px!important;min-height:54px!important;margin:2px auto 10px!important}
 #music-panel .music-progress{margin-top:0!important;padding-top:0!important}
+
+#music-panel{padding-bottom:14px!important}
