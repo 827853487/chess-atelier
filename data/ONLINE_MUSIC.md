@@ -54,6 +54,8 @@ iiprop=url|size|mime|mediatype|metadata|extmetadata
 
 Internet Archive 参考：[Item Metadata API](https://archive.org/developers/md-read.html)。长期扩充优先维护“人工核对的本地精选 + 后台自动连接的分页在线目录”，把质量、网络、许可和缓存边界清楚区分。
 
-### 录音封面
+### 首字母封面与署名
 
-播放器只解析当前录音自带的ID3 APIC、FLAC PICTURE、Vorbis/Opus METADATA_BLOCK_PICTURE等图片；本地转码无图片时可读取已登记的同一原始录音。不使用仅按标题匹配到的其他专辑封面。无封面保持中性图标。元信息接口参考 [MediaWiki imageinfo](https://www.mediawiki.org/wiki/API:Imageinfo) 与 [TimedMediaHandler API](https://www.mediawiki.org/wiki/Extension:TimedMediaHandler/API)；这些接口不保证每个录音都有专辑图片。当前界面固定随机播放，已移除随机/顺序开关。
+播放器不再请求或解析专辑图片。封面使用作曲家姓氏的拉丁字母首字母（例如巴赫/Bach → B），已知中文姓名通过 `music-order.js` 中的别名表转换；未知姓名按原文提取，无姓名时显示音符。切曲时仅在字母不同的情况下交叉淡入淡出，沿用浮层的180/160ms生命周期与减少动态效果设置。
+
+作曲家与演奏者均使用普通字重，以空格连接；去除 `by`、`played by`、`player` 等元数据前缀及旧占位文本，只保留实际姓名。没有演奏者资料时留空，不推测身份。署名保留当前录音来源页链接。标题及署名溢出时，在各自裁切区域内以约18px/s缓慢往返滚动，初次停留1.6秒；暂停位置后关闭面板，退出完成才取消动画，减少动态效果时只渐隐裁切。随机播放、当前曲目及三首候选预载不变。

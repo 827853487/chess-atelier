@@ -1,0 +1,23 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true}),page=await browser.newPage(),checks=[],errors=[];page.on('pageerror',e=>errors.push(e.message));
+ try{
+  await page.route('**/api/analyze',r=>r.fulfill({contentType:'text/event-stream',body:'data: '+JSON.stringify({available:true,complete:true,source:'stockfish',pvs:[{moves:'e2e4 e7e5',depth:12,cp:20,wdl:[250,600,150]},{moves:'d2d4 d7d5',depth:12,cp:10,wdl:[200,600,200]},{moves:'g1f3 d7d5',depth:12,cp:0,wdl:[180,600,220]}]})+'\n\n'}));
+  await page.goto(process.env.CHESS_TEST_URL||'http://127.0.0.1:18765');await page.waitForFunction(()=>!!globalThis.ChessSurfaces);
+  const idle=()=>page.waitForFunction(()=>!document.querySelector('#board.is-opening,.appearance-ghost,.floating-piece'));
+  for(const viewport of [{width:1920,height:1080},{width:1440,height:1000},{width:1440,height:720},{width:1051,height:900},{width:820,height:900},{width:390,height:844},{width:320,height:700}]){
+   await page.setViewportSize(viewport);
+   for(const mode of ['free','book']){
+    await page.locator(`#mode-segment [data-play-mode=${mode}]`).click();await idle();await page.evaluate(()=>{scrollTo(0,0);document.querySelector('.right').scrollTop=0;});await page.waitForTimeout(70);
+    const m=await page.evaluate(()=>{const rect=s=>document.querySelector(s).getBoundingClientRect(),font=s=>getComputedStyle(document.querySelector(s)).fontSize,b=rect('.board-frame'),a=rect('.coach-card'),h=rect('.board-heading'),r=rect('.section-top'),mode=rect('#mode-segment'),row=rect('.play-mode-bar'),badge=rect('#side-badge'),name=rect('.engine-connection'),controls=rect('.engine-controls'),style=getComputedStyle(document.querySelector('.analysis-heading'));return {board:b.top,analysis:a.top,headings:[h.top,r.top],analysisFont:style.fontSize,pageFont:font('.board-heading h1'),modeCenter:Math.abs((mode.left+mode.right-row.left-row.right)/2),modeGap:badge.left-mode.right,engineGap:controls.left-name.right,bodyOverflow:document.documentElement.scrollWidth>innerWidth,fonts:['#reset','#undo','#flip','#save','#mode-segment button','#category-masters','.engine-toggle','.era-btn','.inline-button','.atelier-selected-label','#filter-collection'].map(s=>[s,font(s)]),bottom:rect('.board-actions').bottom};});
+    assert.equal(m.analysisFont,'14px');assert.ok(parseFloat(m.pageFont)>14);assert.ok(m.fonts.every(([,size])=>size==='13px'),JSON.stringify(m.fonts));assert.ok(m.modeCenter<1&&m.modeGap>=3&&m.engineGap>=5&&!m.bodyOverflow,JSON.stringify(m));
+    if(viewport.width>=1051){assert.ok(Math.abs(m.board-m.analysis)<.6&&Math.abs(m.headings[0]-m.headings[1])<.6);assert.ok(m.bottom<viewport.height-8);}
+    if(mode==='free'){const fields=await page.locator('.library-toolbar').evaluate(n=>{const a=n.querySelector('.atelier-select-trigger').getBoundingClientRect(),b=n.querySelector('input').getBoundingClientRect();return {top:Math.abs(a.top-b.top),height:Math.abs(a.height-b.height),fit:[...document.querySelectorAll('.library-categories button')].every(x=>{const range=document.createRange();range.selectNodeContents(x.firstChild);return range.getBoundingClientRect().width<x.clientWidth-3;})};});assert.ok(fields.top<1&&fields.height<1&&fields.fit);}
+    checks.push({viewport,mode,...m});
+    if((viewport.width===1440&&viewport.height===1000)||viewport.width===390)await page.screenshot({path:path.resolve(__dirname,`../test-results/type-layout-${viewport.width}-${mode}.png`),fullPage:viewport.width<700});
+   }
+  }
+  await page.locator('#settings-toggle').click();await page.waitForTimeout(210);const settings=await page.locator('#settings-dialog').evaluate(n=>[...n.querySelectorAll('.settings-row>label,.atelier-selected-label')].map(x=>getComputedStyle(x).fontSize));assert.ok(settings.every(x=>x==='13px'));await page.locator('#settings-close').click();await page.waitForTimeout(190);
+  await page.locator('#music-toggle').click();await page.waitForTimeout(210);assert.ok(await page.locator('.era-btn').evaluateAll(ns=>ns.every(n=>getComputedStyle(n).fontSize==='13px')));assert.deepEqual(errors,[]);
+  fs.writeFileSync(path.resolve(__dirname,'../test-results/typography-layout.json'),JSON.stringify({passed:true,checks},null,2));console.log('PASS: shared typography, aligned desktop frames/headings, study/duel, compact desktop/tablet/mobile, matched fields, readable categories and settings/music controls');
+ }finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -487,12 +487,9 @@ button:focus-visible:not(.square),select:focus-visible{outline:none!important;bo
 /* Cover and playing indicator are separately allocated; never overlap. */
 .music-panel .now-playing{display:grid!important;grid-template-columns:56px minmax(0,1fr) 17px!important;gap:13px!important;align-items:center!important;min-height:74px!important;height:74px!important;margin:0 0 12px!important;padding:2px 0!important;overflow:hidden!important}
 .music-panel .now-art{display:grid!important;place-items:center!important;width:56px!important;height:56px!important;min-width:56px!important;min-height:56px!important;flex:none!important;border-radius:14px!important;background:linear-gradient(145deg,var(--accent-soft),var(--sub))!important;overflow:hidden!important}
-.music-panel .now-art .music-art-icon{width:29px!important;height:29px!important;min-width:29px!important;max-width:29px!important;stroke:var(--accent)!important;stroke-width:1.6!important;fill:none!important;display:block!important;aspect-ratio:1!important}
 .music-panel .now-text{min-width:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:4px!important;height:64px!important}
 .music-panel .music-title-viewport{width:100%;height:24px;position:relative;overflow:hidden;mask-image:linear-gradient(90deg,black 0%,black 90%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,black 0%,black 90%,transparent 100%)}
 .music-panel .music-title{display:block!important;max-height:none!important;white-space:nowrap!important;overflow:visible!important;width:max-content!important;max-width:none!important;font-size:15px!important;font-weight:700!important;line-height:24px!important;letter-spacing:.005em!important;transform:translateX(0)}
-.music-panel .music-title.title-scroll{animation:atelier-track-scroll 13s linear 1.7s infinite alternate}
-@keyframes atelier-track-scroll{0%,10%{transform:translateX(0)}85%,100%{transform:translateX(var(--track-shift,0px))}}
 .music-panel .now-playing .muted-info{font-size:13px!important;line-height:19px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;margin:0!important}
 .music-panel .wave-bars{position:static!important;width:17px!important;height:18px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:2px!important;flex:0 0 17px!important;overflow:hidden!important;opacity:0!important;transition:opacity .22s var(--atelier-ease)!important}
 .music-panel.is-playing .wave-bars{opacity:.75!important}
@@ -511,7 +508,6 @@ button:focus-visible:not(.square),select:focus-visible{outline:none!important;bo
 /* Remove former separator strokes throughout music controls. */
 .music-panel .music-top,.music-panel .era-bar,.music-panel .music-controls,.music-panel .music-progress,.music-panel .now-playing{border-top:0!important;border-bottom:0!important}
 @media(max-width:600px){.masthead .top-tools{gap:6px!important}.top-tools .select-label{gap:4px!important}#music-toggle{min-width:0!important}.music-panel{right:6px!important;top:70px!important;padding:16px!important}.music-panel .era-btn{font-size:12px!important}.music-panel .music-controls{column-gap:6px!important}}
-@media(prefers-reduced-motion:reduce){.music-title.title-scroll{animation:none!important}.music-panel .wave-bars i{animation:none!important}}
 
 
 /* from v1.2.css */

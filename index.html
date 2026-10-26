@@ -5,7 +5,7 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=68" rel="stylesheet"/><link href="./engine-ui.css?v=68" rel="stylesheet"/><link href="./library-ui.css?v=68" rel="stylesheet"/>
+<link href="./app.css?v=69" rel="stylesheet"/><link href="./engine-ui.css?v=69" rel="stylesheet"/><link href="./library-ui.css?v=69" rel="stylesheet"/><link href="./typography.css?v=69" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
@@ -58,7 +58,7 @@
 <button class="era-btn" data-era="romantic">浪漫</button>
 <button class="era-btn" data-era="modern">近现代</button>
 </div>
-<div class="now-playing"><div aria-hidden="true" class="now-art"><svg class="music-art-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><path d="M9 18V5l11-2v13"></path><circle cx="6" cy="18" r="2.5"></circle><circle cx="17.5" cy="16" r="2.5"></circle></svg></div><div class="now-text"><div class="music-title-viewport" id="music-copy" role="button" tabindex="0" aria-label="复制当前曲目完整名称"><div class="music-title" id="music-title">选择时期后播放</div></div><a class="muted-info" id="music-artist" href="https://commons.wikimedia.org/" target="_blank" rel="noopener noreferrer">钢琴与管弦乐</a><span class="music-copy-toast" id="music-copy-toast" role="status" hidden>已复制</span></div><span aria-hidden="true" class="wave-bars"><i></i><i></i><i></i><i></i><i></i></span></div>
+<div class="now-playing"><div aria-hidden="true" class="now-art"><span class="composer-monogram" data-current="true">♪</span></div><div class="now-text"><div class="music-title-viewport" id="music-copy" role="button" tabindex="0" aria-label="复制当前曲目完整名称"><div class="music-title" id="music-title">选择时期后播放</div></div><a class="muted-info" id="music-artist" href="https://commons.wikimedia.org/" target="_blank" rel="noopener noreferrer">钢琴与管弦乐</a><span class="music-copy-toast" id="music-copy-toast" role="status" hidden>已复制</span></div><span aria-hidden="true" class="wave-bars"><i></i><i></i><i></i><i></i><i></i></span></div>
 <div class="music-controls"><div class="music-main-controls"><button aria-label="上一首" id="music-prev" title="上一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 5v14M18 6 10 12l8 6V6z"></path></svg></button><button aria-label="播放" class="music-play-primary" id="music-play" title="播放"></button><button aria-label="下一首" id="music-next" title="下一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19 5v14M6 6l8 6-8 6V6z"></path></svg></button></div></div>
 <div class="music-progress"><span id="music-elapsed">0:00</span><input aria-label="进度" id="music-seek" max="1000" min="0" type="range" value="0"/><span id="music-duration">0:00</span></div>
 <audio id="music-audio" preload="auto"></audio><audio id="music-next-audio" preload="auto"></audio>
@@ -89,6 +89,6 @@
 <div class="pack-create"><span></span><button class="inline-button" id="save-confirm" type="button">保存</button></div>
 </div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=68" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=68" defer></script>
+<script src="./app.bundle.js?v=69" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=69" defer></script>
 </body>
 </html>

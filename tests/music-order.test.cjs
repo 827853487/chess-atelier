@@ -29,3 +29,18 @@ test('Commons performer fields precede generic artist fields without losing vali
  page.imageinfo[0].extmetadata.Performer={value:'John Harrison'};assert.equal(track(page,'baroque',['Johann Sebastian Bach','巴赫',/Bach/]).performer,'John Harrison');
  delete page.imageinfo[0].extmetadata.Performer;page.imageinfo[0].extmetadata.Artist={value:'Johann Sebastian Bach'};assert.equal(track(page,'baroque',['Johann Sebastian Bach','巴赫',/Bach/]).performer,'');
 });
+
+
+test('credit prefixes and player placeholders are removed without damaging names',()=>{
+ const performer=vm.runInContext('musicPerformer',context);
+ for(const text of ['player','by','player by','Performed by','Artist: Unknown'])assert.equal(performer({performer:text}),'');
+ assert.equal(performer({performer:'player by John Harrison'}),'John Harrison');
+ assert.equal(performer({performer:'Performed by Randolph Hokanson'}),'Randolph Hokanson');
+ assert.equal(performer({performer:'by Byron Janis'}),'Byron Janis');
+ assert.equal(performer({performer:'John Player'}),'John Player');
+});
+
+test('composer monograms use known surname initials with safe local fallback',()=>{
+ const initial=vm.runInContext('musicComposerInitial',context);
+ assert.equal(initial({composer:'巴赫'}),'B');assert.equal(initial({composer:'莫扎特'}),'M');assert.equal(initial({composer:'肖邦'}),'C');assert.equal(initial({composer:'Ludwig van Beethoven'}),'B');assert.equal(initial({composer:'Chopin, Frédéric'}),'C');assert.equal(initial({composer:'未知作曲家'}),'未');assert.equal(initial({}),'♪');
+});

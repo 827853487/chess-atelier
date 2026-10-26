@@ -20,8 +20,13 @@ export function musicDisplayTitle(track){
  return title||track.title||track.file||'';
 }
 export function musicCopyTitle(track){return [track?.composer,musicDisplayTitle(track)].filter(Boolean).join(' - ');}
+function cleanMusicCredit(value){
+ let text=String(value||'').replace(/\s+/g,' ').trim();
+ for(let i=0;i<3;i++)text=text.replace(/^(?:(?:played|performed|recorded|composed|written|arranged|performance|music)\s+by\b|(?:player|performer|artist|composer)\b\s*(?:by\b|[:：-])?|by\b)\s*[:：-]?\s*/i,'').trim();
+ return text;
+}
 export function musicPerformer(track){
- let value=String(track?.performer||'').replace(/\s+/g,' ').trim();
+ let value=cleanMusicCredit(track?.performer);
  // Old cached Commons entries used these UI placeholders as artist metadata.
  if(/^(?:演奏者|演奏者信息)?\s*(?:见|详见|参见).*(?:来源|详情|页面|网页)|^(?:unknown|not specified|n\/a)$/i.test(value))return '';
  const names=[track?.composer,...(COMPOSER_ALIASES[track?.composer]||[])].filter(Boolean).sort((a,b)=>b.length-a.length);
@@ -33,5 +38,11 @@ export function musicPerformer(track){
    if(/^[\s·:：|,;；–—-]+/.test(rest)){value=rest.replace(/^[\s·:：|,;；–—-]+/,'');break;}
   }
  }
- return value;
+ value=cleanMusicCredit(value);
+ return /^(?:player|performer|artist|by)$/i.test(value)?'':value;
+}
+export function musicComposerInitial(track){
+ const composer=cleanMusicCredit(track?.composer),name=COMPOSER_ALIASES[composer]?.[0]||composer;
+ const family=name.split(',')[0].trim(),words=family.match(/\p{L}[\p{L}\p{M}'’–-]*/gu);
+ return words?.at(-1)?.[0]?.toLocaleUpperCase()||'♪';
 }

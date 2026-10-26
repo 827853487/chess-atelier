@@ -1,0 +1,78 @@
+/* Shared text roles and workspace rhythm. Keep this after the legacy UI layers. */
+:root{
+ --type-page:22px;--type-section:14px;--type-body:14px;
+ --type-control:13px;--type-small:12px;--type-micro:11px;
+ --workspace-heading:32px;--workspace-heading-gap:10px;
+ --workspace-toolbar:44px;--workspace-content-gap:10px;--card-gap:16px;
+}
+body{font-size:var(--type-body);line-height:1.6}
+button,input,select,textarea{font-family:inherit}
+
+/* Both columns use the same heading + toolbar rows, so their frames align. */
+.board-heading,.section-top{height:var(--workspace-heading);min-height:var(--workspace-heading)!important;margin:0 0 var(--workspace-heading-gap)!important;align-items:center!important}
+.board-heading h1,.section-top h2{font-size:var(--type-page)!important;font-weight:650!important;line-height:var(--workspace-heading)!important;letter-spacing:0!important}
+.play-mode-bar{height:var(--workspace-toolbar);min-height:var(--workspace-toolbar)!important;margin:0 0 var(--workspace-content-gap)!important}
+#mode-segment{box-sizing:border-box;min-width:0!important;height:40px;padding:3px!important}
+#mode-segment button{height:32px;min-height:32px!important;padding:4px 10px!important}
+.right{gap:0!important}
+.right>:not(.section-top){margin-top:0!important;margin-bottom:var(--card-gap)!important}
+.right>:last-child{margin-bottom:0!important}
+.analysis-card-wrap>.coach-card{margin:0!important}
+.analysis-heading{font-size:var(--type-section)!important;font-weight:600;line-height:22px;margin:0 0 8px 2px}
+@media(min-width:1051px){
+ .analysis-heading{display:flex;align-items:center;height:var(--workspace-toolbar);min-height:var(--workspace-toolbar);margin:0 0 var(--workspace-content-gap) 2px}
+ body[data-layout=stack] .analysis-heading{height:auto;min-height:0;margin-bottom:8px}
+}
+
+/* Text controls share a size and baseline; icons keep their own footprints. */
+#mode-segment button,.board-actions .soft-button,.duel-start,.inline-button,
+.library-categories [role=tab],#music-panel .era-btn,.atelier-option{
+ font-size:var(--type-control)!important;line-height:20px!important;font-weight:500;
+}
+#mode-segment button.selected,.library-categories [role=tab][aria-selected=true],.era-btn.selected{font-weight:650!important}
+.board-actions .soft-button,.duel-start{font-weight:550}
+.board-actions .soft-button{height:40px!important;min-height:40px!important}
+.library-categories [role=tab]{min-height:50px;gap:2px}
+.category-count{font-size:var(--type-micro);line-height:13px;font-weight:400}
+.library-actions .inline-button{padding-inline:9px}
+#music-toggle.tool-icon--music .tool-icon-label{font-size:var(--type-control)!important;line-height:20px;font-weight:550!important}
+.atelier-select-trigger,.atelier-selected-label,.settings-row>label,
+.library-toolbar #filter-collection{font-size:var(--type-control)!important;line-height:20px!important}
+.atelier-select-trigger .atelier-selected-label{font-size:var(--type-control)!important}
+.library-toolbar{align-items:center}
+.library-toolbar #filter-collection,.library-toolbar .atelier-select-trigger{height:40px!important;min-height:40px!important}
+.library-summary .library-meta,.collection-guide{font-size:var(--type-small)}
+.panel-heading{align-items:center;min-height:28px;gap:12px}
+.panel-heading h3{font-size:var(--type-section)!important;font-weight:600;line-height:22px}
+.settings-head>strong{font-size:16px;font-weight:650;line-height:24px}
+
+/* Analysis is a quiet secondary card, with readable moves and explanations. */
+.engine-connection{font-size:var(--type-control)!important;line-height:20px}
+.engine-connection strong{font-weight:600}
+.engine-toggle{font-size:var(--type-control)!important;line-height:20px;font-weight:500}
+.engine-controls{gap:14px}
+.engine-pv{font-size:var(--type-control);line-height:20px;min-height:36px}
+.engine-pv strong{font-weight:600}
+.engine-pv-line,.engine-odds-labels{font-size:var(--type-small)}
+.post-review strong{font-size:var(--type-section);font-weight:600;line-height:22px}
+.post-review{font-size:var(--type-control);line-height:1.7}
+.post-review p{line-height:1.75}
+.side-badge{font-weight:500}
+
+@media(max-width:700px){
+ :root{--type-page:20px;--workspace-heading:30px}
+ .engine-controls{gap:12px}
+}
+@media(max-width:360px){.engine-controls{gap:8px}}
+@media(min-width:1051px) and (max-height:730px){
+ .board-actions .soft-button{height:36px!important;min-height:36px!important}
+}
+
+/* Local composer monograms and calm, readable music metadata. */
+#music-panel .now-art{position:relative;border:1px solid color-mix(in srgb,var(--accent) 16%,var(--line))}
+.composer-monogram{position:absolute;inset:0;display:grid;place-items:center;font:400 48px/1 Georgia,'Times New Roman',serif;color:color-mix(in srgb,var(--accent) 80%,var(--ink));transform-origin:center;pointer-events:none}
+#music-panel #music-artist{font-weight:400!important}
+.music-credit-text{display:inline-block;vertical-align:top;width:max-content;max-width:none;white-space:nowrap;transform:translateX(0)}
+#music-panel .music-composer,#music-panel .music-performer{font-weight:400;color:inherit}
+#music-panel .music-controls{height:54px!important;min-height:54px!important;margin:2px auto 4px!important}
+#music-panel .music-progress{margin-top:0!important;padding-top:0!important}

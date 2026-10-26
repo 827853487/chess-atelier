@@ -119,7 +119,7 @@
 
 .source-external{display:inline-block;margin-left:3px;font-size:10px;line-height:1;vertical-align:super;opacity:.75}
 #music-panel #music-artist{display:block;min-width:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:clip!important;text-decoration:none;cursor:pointer;user-select:none;-webkit-user-select:none}
-#music-artist .music-composer{font-weight:700;color:var(--ink)}
+#music-artist .music-composer{font-weight:400;color:inherit}
 #music-artist .music-performer{font-weight:400}
 #music-artist.is-overflowing{mask-image:linear-gradient(90deg,#000 0%,#000 calc(100% - 20px),transparent 100%);-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 calc(100% - 20px),transparent 100%)}
 #music-artist:hover{text-decoration:underline;text-underline-offset:2px}
@@ -202,7 +202,7 @@ dialog[data-surface-state=closing]::backdrop{animation:surface-backdrop-out 160m
 #music-panel .wave-bars{width:30px!important;flex-basis:30px!important;height:30px!important;gap:3px!important;align-items:center!important;justify-content:center!important;overflow:visible!important}
 #music-panel .wave-bars i,#music-panel.is-playing .wave-bars i{display:block!important;flex:0 0 3px!important;width:3px!important;min-width:3px!important;max-width:3px!important;height:24px!important;max-height:24px!important;border-radius:999px!important;transform-origin:center!important;transition:transform 75ms linear!important;will-change:transform}
 #music-panel .now-art{position:relative}
-#music-panel .now-art img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+
 @media(prefers-reduced-motion:reduce){dialog[data-surface-state=closing]::backdrop{animation:none!important}}
 
 #board.is-changing-art>.square>.piece{will-change:transform,opacity;backface-visibility:hidden}

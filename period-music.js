@@ -1,8 +1,7 @@
 import { showSurface, hideSurface, surfaceOpen } from './surface-motion.js';
-import { readMusicCover } from './music-cover.js';
 import { MUSIC_SEED } from './music-library.js';
 import { LOCAL_MUSIC } from './local-music.js';
-import { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer } from './music-order.js';
+import { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer, musicComposerInitial } from './music-order.js';
 import { discoverMusic } from './online-music.js';
 const ERAS={baroque:'巴洛克',classical:'古典',romantic:'浪漫',modern:'近现代'};
 const $=id=>document.getElementById(id),audio=$('music-audio');
@@ -10,15 +9,23 @@ const local=LOCAL_MUSIC.map(track=>({...track,id:'local:'+track.file,localUrl:'.
 const remoteSeed=MUSIC_SEED.map(([file,title,composer])=>({id:'seed:'+file,file,title,composer,era:/巴赫|亨德尔|维瓦尔第|斯卡拉蒂/.test(composer)?'baroque':/莫扎特|贝多芬|海顿/.test(composer)?'classical':/德彪西|拉威尔|萨蒂/.test(composer)?'modern':'romantic',sourceUrl:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file)}));
 const state={era:'all',onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
 const source=track=>track.localUrl||track.remoteUrl||'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(track.file).replace(/%20/g,'_');
-const coverCache=new Map();let coverCacheBytes=0;
-function cacheCover(id,cover){coverCacheBytes-=coverCache.get(id)?.bytes.length||0;coverCache.set(id,cover);coverCacheBytes+=cover?.bytes.length||0;while(coverCache.size>24||coverCacheBytes>6*1024*1024){const first=coverCache.keys().next().value;coverCacheBytes-=coverCache.get(first)?.bytes.length||0;coverCache.delete(first);}}
-let coverController=null,coverSequence=0;
-function updateCover(track){
- const sequence=++coverSequence;coverController?.abort();coverController=new AbortController();
- const box=document.querySelector('.now-art');for(const old of box.querySelectorAll('img'))hideSurface(old,()=>{URL.revokeObjectURL(old.src);old.remove();});
- const controller=coverController,timeout=setTimeout(()=>controller.abort(),8000),signal=controller.signal;
- const load=coverCache.has(track.id)?Promise.resolve(coverCache.get(track.id)):(async()=>{const cover=await readMusicCover(source(track),{signal,blob:state.buffers.get(track.id)?.blob});if(cover||signal.aborted||!track.localUrl||!track.downloadUrl?.startsWith('https://upload.wikimedia.org/'))return cover;return readMusicCover(track.downloadUrl,{signal});})();
- load.then(async cover=>{clearTimeout(timeout);if(signal.aborted||sequence!==coverSequence)return;cacheCover(track.id,cover);if(!cover)return;const img=new Image();img.alt='';img.title='当前录音内嵌封面';img.src=URL.createObjectURL(new Blob([cover.bytes],{type:cover.mime}));try{await img.decode();if(sequence!==coverSequence){URL.revokeObjectURL(img.src);return;}box.append(img);img.hidden=true;showSurface(img);}catch{URL.revokeObjectURL(img.src);}}).catch(()=>clearTimeout(timeout));
+function updateMonogram(track){
+ const box=document.querySelector('.now-art'),initial=musicComposerInitial(track),current=box.querySelector('[data-current=true]');
+ box.title=track?.composer||'';
+ if(current?.textContent===initial)return;
+ for(const old of box.querySelectorAll('.composer-monogram')){delete old.dataset.current;hideSurface(old,()=>old.remove());}
+ const letter=document.createElement('span');letter.className='composer-monogram';letter.dataset.current='true';letter.textContent=initial;letter.hidden=true;box.append(letter);showSurface(letter);
+}
+const labelScrolls=new Map();let labelFrame=0;
+function cancelLabelScroll(node){const previous=labelScrolls.get(node);previous?.animation?.cancel();labelScrolls.delete(node);}
+function scrollMusicLabel(node,viewport,key){
+ if(!node||!viewport)return;
+ const distance=Math.max(0,node.scrollWidth-viewport.clientWidth+12),overflow=node.scrollWidth>viewport.clientWidth+2,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const previous=labelScrolls.get(node),signature=JSON.stringify([key,Math.round(distance),reduced,overflow]);
+ if(previous?.signature===signature)return;
+ cancelLabelScroll(node);let animation=null;
+ if(overflow&&!reduced){const end=`translateX(${-distance}px)`;animation=node.animate([{transform:'translateX(0)',offset:0},{transform:'translateX(0)',offset:.1},{transform:end,offset:.9},{transform:end,offset:1}],{duration:Math.max(8500,distance/18*1000+2400),delay:1600,iterations:Infinity,direction:'alternate',easing:'linear',fill:'both'});}
+ labelScrolls.set(node,{signature,animation});viewport.classList.toggle('is-overflowing',overflow);
 }
 let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0;
 audio.crossOrigin='anonymous';
@@ -41,7 +48,13 @@ function tracks(){
 }
 function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:true,direction});}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
-function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');const artist=$('music-artist');artist.classList.toggle('is-overflowing',artist.scrollWidth>artist.clientWidth+1);}
+function updateTrackOverflow(){
+ if(!surfaceOpen($('music-panel')))return;
+ const title=$('music-title'),artist=$('music-artist'),credit=artist.querySelector('.music-credit-text'),key=state.track?.id||'';
+ scrollMusicLabel(title,title.closest('.music-title-viewport'),key);scrollMusicLabel(credit,artist,key);
+}
+function scheduleTrackOverflow(){if(labelFrame)return;labelFrame=requestAnimationFrame(()=>{labelFrame=0;updateTrackOverflow();});}
+
 function syncPanelAnchor(){
  const root=document.documentElement,header=document.querySelector('.masthead'),button=$('music-toggle').getBoundingClientRect(),viewport=window.visualViewport;
  const width=viewport?.width||root.clientWidth,height=viewport?.height||innerHeight,x=viewport?.offsetLeft||0,y=viewport?.offsetTop||0;
@@ -58,20 +71,20 @@ function render(){
  const playing=state.playing&&!audio.paused;
  $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
  const button=$('music-play'),icon=playing?'pause':'play';if(button.dataset.icon!==icon){button.dataset.icon=icon;button.innerHTML=playing?pauseIcon:playIcon;button.setAttribute('aria-label',playing?'暂停':'播放');button.title=playing?'暂停':'播放';}
- $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';
+ const title=$('music-title'),titleText=state.track?musicDisplayTitle(state.track):'选择时期即播放';if(title.textContent!==titleText){cancelLabelScroll(title);title.textContent=titleText;}
  const artist=$('music-artist'),composer=state.track?.composer||'',performer=musicPerformer(state.track),creditKey=JSON.stringify([composer,performer]);
  if(artist.dataset.creditKey!==creditKey){
-  artist.dataset.creditKey=creditKey;artist.replaceChildren();
-  if(composer){const name=document.createElement('strong');name.className='music-composer';name.textContent=composer;artist.append(name);}
-  if(performer){if(composer)artist.append(document.createTextNode(' '));const name=document.createElement('span');name.className='music-performer';name.textContent=performer;artist.append(name);}
-  if(!composer&&!performer)artist.textContent='本地精选与在线曲库';
+  artist.dataset.creditKey=creditKey;cancelLabelScroll(artist.querySelector('.music-credit-text'));const text=document.createElement('span');text.className='music-credit-text';artist.replaceChildren(text);
+  if(composer){const name=document.createElement('span');name.className='music-composer';name.textContent=composer;text.append(name);}
+  if(performer){if(composer)text.append(document.createTextNode(' '));const name=document.createElement('span');name.className='music-performer';name.textContent=performer;text.append(name);}
+  if(!composer&&!performer)text.textContent='本地精选与在线曲库';
  }
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
  // Recording attribution remains on the compact artist line; no controls or
  // web prompts are inserted below the progress bar.
  artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[[composer,performer].filter(Boolean).join(' '),[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
  button.title=state.status||(playing?'暂停':'播放');$('music-panel').dataset.onlineCount=String(state.onlineTracks.length);$('music-panel').dataset.discovering=String(state.discovering);
- requestAnimationFrame(updateTrackOverflow);
+ scheduleTrackOverflow();
 }
 function disposeBuffer(id){const entry=state.buffers.get(id);if(!entry)return;entry.controller.abort();if(entry.url)URL.revokeObjectURL(entry.url);state.buffers.delete(id);}
 function bufferTrack(track){
@@ -84,7 +97,7 @@ function bufferTrack(track){
   const reader=response.body.getReader(),chunks=[];let size=0;
   while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>8_000_000){entry.status='stream';await reader.cancel();return;}chunks.push(value);}
   if(state.buffers.get(track.id)!==entry)return;
-  entry.blob=new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'});entry.url=URL.createObjectURL(entry.blob);entry.status='ready';
+  entry.url=URL.createObjectURL(new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'}));entry.status='ready';
  })().catch(()=>{if(entry.status==='loading')entry.status='failed';}).finally(()=>{
   $('music-panel').dataset.buffered=String([...state.buffers.values()].filter(value=>value.status==='ready').length);
  });
@@ -103,7 +116,7 @@ function start(track){
  if(!track)return;
  ensureSpectrum();
  const serial=++state.serial;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
- updateCover(track);state.history.push(track.id);if(state.history.length>32)state.history.shift();
+ updateMonogram(track);state.history.push(track.id);if(state.history.length>32)state.history.shift();
  audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
  // play() stays in the user's click stack, including on iPhone. Do not await a manifest/fetch first.
  const request=audio.play();render();prefetch();
@@ -133,7 +146,12 @@ async function expandOnline(){
  }catch{state.onlineBackoffUntil=Date.now()+30000;}
  finally{state.discovering=false;render();if(state.era!==era)expandOnline();}
 }
-function closePanel(){hideSurface($('music-panel'));$('music-toggle').setAttribute('aria-expanded','false');stopSpectrum();}
+function closePanel(){
+ const panel=$('music-panel');if(!surfaceOpen(panel))return;
+ for(const entry of labelScrolls.values())entry.animation?.pause();
+ hideSurface(panel).then(()=>{if(!surfaceOpen(panel))for(const node of labelScrolls.keys())cancelLabelScroll(node);});
+ $('music-toggle').setAttribute('aria-expanded','false');stopSpectrum();
+}
 export function setupPeriodMusic(){
  let copyTimer;
  const copyTitle=async()=>{if(!state.track)return;const label=musicCopyTitle(state.track),toast=$('music-copy-toast');try{await navigator.clipboard.writeText(label);toast.textContent='已复制';}catch{toast.textContent='复制失败，请允许剪贴板权限';}clearTimeout(copyTimer);showSurface(toast);copyTimer=setTimeout(()=>hideSurface(toast),1400);};
@@ -145,7 +163,7 @@ export function setupPeriodMusic(){
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
  audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
- $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));for(const entry of labelScrolls.values())entry.animation?.play();scheduleTrackOverflow();}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
  $('music-close').addEventListener('click',closePanel);
  document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&surfaceOpen($('music-panel'))){event.preventDefault();closePanel();$('music-toggle').focus({preventScroll:true});}});
@@ -160,6 +178,8 @@ export function setupPeriodMusic(){
  addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});const anchorObserver=new ResizeObserver(schedulePanelAnchor);anchorObserver.observe(document.querySelector('.masthead'));anchorObserver.observe($('music-toggle'));
  addEventListener('scroll',()=>{if(surfaceOpen($('music-panel')))schedulePanelAnchor();},{passive:true});
  window.visualViewport?.addEventListener('resize',schedulePanelAnchor,{passive:true});window.visualViewport?.addEventListener('scroll',schedulePanelAnchor,{passive:true});
- addEventListener('pagehide',()=>{audio.pause();stopSpectrum();coverController?.abort();for(const img of document.querySelectorAll('.now-art img'))URL.revokeObjectURL(img.src);spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
+ addEventListener('pagehide',()=>{audio.pause();stopSpectrum();for(const node of labelScrolls.keys())cancelLabelScroll(node);cancelAnimationFrame(labelFrame);labelFrame=0;spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
+ addEventListener('pageshow',scheduleTrackOverflow);
+ matchMedia('(prefers-reduced-motion: reduce)').addEventListener?.('change',scheduleTrackOverflow);
  syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();if(!state.track)expandOnline();},2500);
 }

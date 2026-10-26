@@ -44,76 +44,6 @@ globalThis.ChessSurfaces={show:showSurface,hide:hideSurface,isOpen:surfaceOpen};
 
 return { surfaceOpen, showSurface, hideSurface, installDialogMotion };
 })();
-const { extractEmbeddedCover, readMusicCover }=(()=>{
-// Read artwork from THIS recording, never guess an album by composer/title.
-// ID3 APIC, FLAC PICTURE and Vorbis/Opus METADATA_BLOCK_PICTURE are supported.
-const COVER_LIMIT=2*1024*1024;
-const coverAscii=(b,a,n)=>String.fromCharCode(...b.subarray(a,a+n));
-function coverImage(bytes){
- if(bytes.length<12||bytes.length>COVER_LIMIT)return null;
- const mime=bytes[0]===255&&bytes[1]===216?'image/jpeg':coverAscii(bytes,1,3)==='PNG'?'image/png':coverAscii(bytes,0,4)==='RIFF'&&coverAscii(bytes,8,4)==='WEBP'?'image/webp':null;
- return mime?{mime,bytes:bytes.slice()}:null;
-}
-function flacPicture(bytes){
- const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);let at=0;
- const uint=()=>{if(at+4>bytes.length)throw Error('Short picture');const value=view.getUint32(at);at+=4;return value;};
- try{const type=uint(),mimeLength=uint();at+=mimeLength;const descriptionLength=uint();at+=descriptionLength;for(let i=0;i<4;i++)uint();const size=uint();if(size>COVER_LIMIT||at+size>bytes.length)return null;const image=coverImage(bytes.subarray(at,at+size));return image?{...image,type}:null;}catch{return null;}
-}
-function coverBase64(text){try{if(text.length>COVER_LIMIT*1.4)return null;return Uint8Array.from(atob(text),c=>c.charCodeAt(0));}catch{return null;}}
-function commentCover(packet){
- const offset=coverAscii(packet,0,8)==='OpusTags'?8:packet[0]===3&&coverAscii(packet,1,6)==='vorbis'?7:-1;if(offset<0)return null;
- const view=new DataView(packet.buffer,packet.byteOffset,packet.byteLength);let at=offset;
- const uint=()=>{if(at+4>packet.length)throw Error('Short comment');const value=view.getUint32(at,true);at+=4;return value;};
- try{const vendor=uint();at+=vendor;const count=Math.min(256,uint());for(let i=0;i<count;i++){const size=uint();if(size>COVER_LIMIT*1.4||at+size>packet.length)return null;const text=new TextDecoder().decode(packet.subarray(at,at+size));at+=size;const eq=text.indexOf('='),name=text.slice(0,eq).toUpperCase(),value=text.slice(eq+1);if(name==='METADATA_BLOCK_PICTURE'){const b=coverBase64(value),image=b&&flacPicture(b);if(image)return image;}if(name==='COVERART'){const b=coverBase64(value),image=b&&coverImage(b);if(image)return image;}}}catch{}return null;
-}
-function extractEmbeddedCover(input){
- const bytes=input instanceof Uint8Array?input:new Uint8Array(input);if(bytes.length<10||bytes.length>COVER_LIMIT)return null;
- const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),sync=at=>((bytes[at]&127)<<21)|((bytes[at+1]&127)<<14)|((bytes[at+2]&127)<<7)|(bytes[at+3]&127);
- if(coverAscii(bytes,0,3)==='ID3'&&[3,4].includes(bytes[3])){
-  const version=bytes[3],end=Math.min(bytes.length,10+sync(6));let at=10,fallback=null;
-  if(bytes[5]&64){if(at+4>end)return null;at+=version===4?sync(at):4+view.getUint32(at);}
-  for(let n=0;n<128&&at+10<=end;n++){
-   const id=coverAscii(bytes,at,4),size=version===4?sync(at+4):view.getUint32(at+4),flags=bytes[at+9];at+=10;
-   if(!size||size>COVER_LIMIT||at+size>end)break;
-   if(id==='APIC'&&!(flags&(version===4?12:192))){
-    let data=bytes.subarray(at,at+size);
-    if((bytes[5]&128)||(version===4&&(flags&2))){const clean=[];for(let i=0;i<data.length;i++){clean.push(data[i]);if(data[i]===255&&data[i+1]===0)i++;}data=Uint8Array.from(clean);}
-    const encoding=data[0];let pos=1;while(pos<data.length&&data[pos])pos++;const type=data[++pos];pos++;
-    if(encoding===1||encoding===2){while(pos+1<data.length&&(data[pos]||data[pos+1]))pos+=2;pos+=2;}else{while(pos<data.length&&data[pos])pos++;pos++;}
-    const image=coverImage(data.subarray(pos));if(image){if(type===3)return image;fallback=image;}
-   }at+=size;
-  }return fallback;
- }
- if(coverAscii(bytes,0,4)==='fLaC'){
-  for(let at=4,n=0;n<128&&at+4<=bytes.length;n++){
-   const type=bytes[at]&127,last=!!(bytes[at]&128),size=(bytes[at+1]<<16)|(bytes[at+2]<<8)|bytes[at+3];at+=4;if(at+size>bytes.length)break;
-   if(type===6){const image=flacPicture(bytes.subarray(at,at+size));if(image)return image;}at+=size;if(last)break;
-  }
- }
- if(coverAscii(bytes,0,4)==='OggS'){
-  let parts=[],length=0;
-  for(let at=0,n=0;n<64&&at+27<=bytes.length;n++){
-   if(coverAscii(bytes,at,4)!=='OggS')break;const count=bytes[at+26],start=at+27+count;if(start>bytes.length)break;let data=start;
-   for(let i=0;i<count;i++){const size=bytes[at+27+i];if(data+size>bytes.length)return null;parts.push(bytes.subarray(data,data+size));length+=size;data+=size;if(size<255){const packet=new Uint8Array(length);let p=0;for(const part of parts){packet.set(part,p);p+=part.length;}const image=commentCover(packet);if(image)return image;parts=[];length=0;}}
-   at=data;
-  }
- }return null;
-}
-async function readMusicCover(url,{signal,blob}={}){
- try{
-  if(blob)return extractEmbeddedCover(await blob.slice(0,COVER_LIMIT).arrayBuffer());
-  const response=await fetch(url,{signal,headers:{Range:`bytes=0-${COVER_LIMIT-1}`},credentials:'omit',cache:'force-cache'});if(!response.ok)return null;
-  const reader=response.body.getReader(),parts=[];let size=0;
-  let required=COVER_LIMIT;
-  try{while(size<required){const row=await reader.read();if(row.done)break;const part=row.value.subarray(0,COVER_LIMIT-size);parts.push(part);size+=part.length;
-   if(parts.length===1&&part.length>=10&&coverAscii(part,0,3)==='ID3')required=Math.min(COVER_LIMIT,10+((part[6]&127)<<21)+((part[7]&127)<<14)+((part[8]&127)<<7)+(part[9]&127));
-  }}finally{await reader.cancel().catch(()=>{});}
-  const data=new Uint8Array(size);let at=0;for(const part of parts){data.set(part,at);at+=part.length;}return extractEmbeddedCover(data);
- }catch{return null;}
-}
-
-return { extractEmbeddedCover, readMusicCover };
-})();
 const { Chess }=(()=>{
 /* Chess Atelier bundled chess rules: complete legal move generation, SAN and PGN.
    Designed to initialize and operate without CDN/network availability. */
@@ -2138,7 +2068,7 @@ const LOCAL_MUSIC = [{"file": "baroque-01.mp3", "title": "巴赫 · 三部创意
 
 return { LOCAL_MUSIC };
 })();
-const { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer }=(()=>{
+const { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer, musicComposerInitial }=(()=>{
 // Pure selection logic shared by playback and its tests.
 function selectMusicTrack(pool,{currentId=null,recent=[],shuffle=true,direction=1,rng=Math.random}={}){
  if(!pool.length)return null;
@@ -2161,8 +2091,13 @@ function musicDisplayTitle(track){
  return title||track.title||track.file||'';
 }
 function musicCopyTitle(track){return [track?.composer,musicDisplayTitle(track)].filter(Boolean).join(' - ');}
+function cleanMusicCredit(value){
+ let text=String(value||'').replace(/\s+/g,' ').trim();
+ for(let i=0;i<3;i++)text=text.replace(/^(?:(?:played|performed|recorded|composed|written|arranged|performance|music)\s+by\b|(?:player|performer|artist|composer)\b\s*(?:by\b|[:：-])?|by\b)\s*[:：-]?\s*/i,'').trim();
+ return text;
+}
 function musicPerformer(track){
- let value=String(track?.performer||'').replace(/\s+/g,' ').trim();
+ let value=cleanMusicCredit(track?.performer);
  // Old cached Commons entries used these UI placeholders as artist metadata.
  if(/^(?:演奏者|演奏者信息)?\s*(?:见|详见|参见).*(?:来源|详情|页面|网页)|^(?:unknown|not specified|n\/a)$/i.test(value))return '';
  const names=[track?.composer,...(COMPOSER_ALIASES[track?.composer]||[])].filter(Boolean).sort((a,b)=>b.length-a.length);
@@ -2174,10 +2109,16 @@ function musicPerformer(track){
    if(/^[\s·:：|,;；–—-]+/.test(rest)){value=rest.replace(/^[\s·:：|,;；–—-]+/,'');break;}
   }
  }
- return value;
+ value=cleanMusicCredit(value);
+ return /^(?:player|performer|artist|by)$/i.test(value)?'':value;
+}
+function musicComposerInitial(track){
+ const composer=cleanMusicCredit(track?.composer),name=COMPOSER_ALIASES[composer]?.[0]||composer;
+ const family=name.split(',')[0].trim(),words=family.match(/\p{L}[\p{L}\p{M}'’–-]*/gu);
+ return words?.at(-1)?.[0]?.toLocaleUpperCase()||'♪';
 }
 
-return { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer };
+return { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer, musicComposerInitial };
 })();
 const { discoverMusic }=(()=>{
 
@@ -2347,22 +2288,29 @@ const { setupPeriodMusic }=(()=>{
 
 
 
-
 const ERAS={baroque:'巴洛克',classical:'古典',romantic:'浪漫',modern:'近现代'};
 const $=id=>document.getElementById(id),audio=$('music-audio');
 const local=LOCAL_MUSIC.map(track=>({...track,id:'local:'+track.file,localUrl:'./assets/music/'+encodeURIComponent(track.file)}));
 const remoteSeed=MUSIC_SEED.map(([file,title,composer])=>({id:'seed:'+file,file,title,composer,era:/巴赫|亨德尔|维瓦尔第|斯卡拉蒂/.test(composer)?'baroque':/莫扎特|贝多芬|海顿/.test(composer)?'classical':/德彪西|拉威尔|萨蒂/.test(composer)?'modern':'romantic',sourceUrl:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file)}));
 const state={era:'all',onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
 const source=track=>track.localUrl||track.remoteUrl||'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(track.file).replace(/%20/g,'_');
-const coverCache=new Map();let coverCacheBytes=0;
-function cacheCover(id,cover){coverCacheBytes-=coverCache.get(id)?.bytes.length||0;coverCache.set(id,cover);coverCacheBytes+=cover?.bytes.length||0;while(coverCache.size>24||coverCacheBytes>6*1024*1024){const first=coverCache.keys().next().value;coverCacheBytes-=coverCache.get(first)?.bytes.length||0;coverCache.delete(first);}}
-let coverController=null,coverSequence=0;
-function updateCover(track){
- const sequence=++coverSequence;coverController?.abort();coverController=new AbortController();
- const box=document.querySelector('.now-art');for(const old of box.querySelectorAll('img'))hideSurface(old,()=>{URL.revokeObjectURL(old.src);old.remove();});
- const controller=coverController,timeout=setTimeout(()=>controller.abort(),8000),signal=controller.signal;
- const load=coverCache.has(track.id)?Promise.resolve(coverCache.get(track.id)):(async()=>{const cover=await readMusicCover(source(track),{signal,blob:state.buffers.get(track.id)?.blob});if(cover||signal.aborted||!track.localUrl||!track.downloadUrl?.startsWith('https://upload.wikimedia.org/'))return cover;return readMusicCover(track.downloadUrl,{signal});})();
- load.then(async cover=>{clearTimeout(timeout);if(signal.aborted||sequence!==coverSequence)return;cacheCover(track.id,cover);if(!cover)return;const img=new Image();img.alt='';img.title='当前录音内嵌封面';img.src=URL.createObjectURL(new Blob([cover.bytes],{type:cover.mime}));try{await img.decode();if(sequence!==coverSequence){URL.revokeObjectURL(img.src);return;}box.append(img);img.hidden=true;showSurface(img);}catch{URL.revokeObjectURL(img.src);}}).catch(()=>clearTimeout(timeout));
+function updateMonogram(track){
+ const box=document.querySelector('.now-art'),initial=musicComposerInitial(track),current=box.querySelector('[data-current=true]');
+ box.title=track?.composer||'';
+ if(current?.textContent===initial)return;
+ for(const old of box.querySelectorAll('.composer-monogram')){delete old.dataset.current;hideSurface(old,()=>old.remove());}
+ const letter=document.createElement('span');letter.className='composer-monogram';letter.dataset.current='true';letter.textContent=initial;letter.hidden=true;box.append(letter);showSurface(letter);
+}
+const labelScrolls=new Map();let labelFrame=0;
+function cancelLabelScroll(node){const previous=labelScrolls.get(node);previous?.animation?.cancel();labelScrolls.delete(node);}
+function scrollMusicLabel(node,viewport,key){
+ if(!node||!viewport)return;
+ const distance=Math.max(0,node.scrollWidth-viewport.clientWidth+12),overflow=node.scrollWidth>viewport.clientWidth+2,reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const previous=labelScrolls.get(node),signature=JSON.stringify([key,Math.round(distance),reduced,overflow]);
+ if(previous?.signature===signature)return;
+ cancelLabelScroll(node);let animation=null;
+ if(overflow&&!reduced){const end=`translateX(${-distance}px)`;animation=node.animate([{transform:'translateX(0)',offset:0},{transform:'translateX(0)',offset:.1},{transform:end,offset:.9},{transform:end,offset:1}],{duration:Math.max(8500,distance/18*1000+2400),delay:1600,iterations:Infinity,direction:'alternate',easing:'linear',fill:'both'});}
+ labelScrolls.set(node,{signature,animation});viewport.classList.toggle('is-overflowing',overflow);
 }
 let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0;
 audio.crossOrigin='anonymous';
@@ -2385,7 +2333,13 @@ function tracks(){
 }
 function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:true,direction});}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
-function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');const artist=$('music-artist');artist.classList.toggle('is-overflowing',artist.scrollWidth>artist.clientWidth+1);}
+function updateTrackOverflow(){
+ if(!surfaceOpen($('music-panel')))return;
+ const title=$('music-title'),artist=$('music-artist'),credit=artist.querySelector('.music-credit-text'),key=state.track?.id||'';
+ scrollMusicLabel(title,title.closest('.music-title-viewport'),key);scrollMusicLabel(credit,artist,key);
+}
+function scheduleTrackOverflow(){if(labelFrame)return;labelFrame=requestAnimationFrame(()=>{labelFrame=0;updateTrackOverflow();});}
+
 function syncPanelAnchor(){
  const root=document.documentElement,header=document.querySelector('.masthead'),button=$('music-toggle').getBoundingClientRect(),viewport=window.visualViewport;
  const width=viewport?.width||root.clientWidth,height=viewport?.height||innerHeight,x=viewport?.offsetLeft||0,y=viewport?.offsetTop||0;
@@ -2402,20 +2356,20 @@ function render(){
  const playing=state.playing&&!audio.paused;
  $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
  const button=$('music-play'),icon=playing?'pause':'play';if(button.dataset.icon!==icon){button.dataset.icon=icon;button.innerHTML=playing?pauseIcon:playIcon;button.setAttribute('aria-label',playing?'暂停':'播放');button.title=playing?'暂停':'播放';}
- $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';
+ const title=$('music-title'),titleText=state.track?musicDisplayTitle(state.track):'选择时期即播放';if(title.textContent!==titleText){cancelLabelScroll(title);title.textContent=titleText;}
  const artist=$('music-artist'),composer=state.track?.composer||'',performer=musicPerformer(state.track),creditKey=JSON.stringify([composer,performer]);
  if(artist.dataset.creditKey!==creditKey){
-  artist.dataset.creditKey=creditKey;artist.replaceChildren();
-  if(composer){const name=document.createElement('strong');name.className='music-composer';name.textContent=composer;artist.append(name);}
-  if(performer){if(composer)artist.append(document.createTextNode(' '));const name=document.createElement('span');name.className='music-performer';name.textContent=performer;artist.append(name);}
-  if(!composer&&!performer)artist.textContent='本地精选与在线曲库';
+  artist.dataset.creditKey=creditKey;cancelLabelScroll(artist.querySelector('.music-credit-text'));const text=document.createElement('span');text.className='music-credit-text';artist.replaceChildren(text);
+  if(composer){const name=document.createElement('span');name.className='music-composer';name.textContent=composer;text.append(name);}
+  if(performer){if(composer)text.append(document.createTextNode(' '));const name=document.createElement('span');name.className='music-performer';name.textContent=performer;text.append(name);}
+  if(!composer&&!performer)text.textContent='本地精选与在线曲库';
  }
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
  // Recording attribution remains on the compact artist line; no controls or
  // web prompts are inserted below the progress bar.
  artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[[composer,performer].filter(Boolean).join(' '),[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
  button.title=state.status||(playing?'暂停':'播放');$('music-panel').dataset.onlineCount=String(state.onlineTracks.length);$('music-panel').dataset.discovering=String(state.discovering);
- requestAnimationFrame(updateTrackOverflow);
+ scheduleTrackOverflow();
 }
 function disposeBuffer(id){const entry=state.buffers.get(id);if(!entry)return;entry.controller.abort();if(entry.url)URL.revokeObjectURL(entry.url);state.buffers.delete(id);}
 function bufferTrack(track){
@@ -2428,7 +2382,7 @@ function bufferTrack(track){
   const reader=response.body.getReader(),chunks=[];let size=0;
   while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>8_000_000){entry.status='stream';await reader.cancel();return;}chunks.push(value);}
   if(state.buffers.get(track.id)!==entry)return;
-  entry.blob=new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'});entry.url=URL.createObjectURL(entry.blob);entry.status='ready';
+  entry.url=URL.createObjectURL(new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'}));entry.status='ready';
  })().catch(()=>{if(entry.status==='loading')entry.status='failed';}).finally(()=>{
   $('music-panel').dataset.buffered=String([...state.buffers.values()].filter(value=>value.status==='ready').length);
  });
@@ -2447,7 +2401,7 @@ function start(track){
  if(!track)return;
  ensureSpectrum();
  const serial=++state.serial;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
- updateCover(track);state.history.push(track.id);if(state.history.length>32)state.history.shift();
+ updateMonogram(track);state.history.push(track.id);if(state.history.length>32)state.history.shift();
  audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
  // play() stays in the user's click stack, including on iPhone. Do not await a manifest/fetch first.
  const request=audio.play();render();prefetch();
@@ -2477,7 +2431,12 @@ async function expandOnline(){
  }catch{state.onlineBackoffUntil=Date.now()+30000;}
  finally{state.discovering=false;render();if(state.era!==era)expandOnline();}
 }
-function closePanel(){hideSurface($('music-panel'));$('music-toggle').setAttribute('aria-expanded','false');stopSpectrum();}
+function closePanel(){
+ const panel=$('music-panel');if(!surfaceOpen(panel))return;
+ for(const entry of labelScrolls.values())entry.animation?.pause();
+ hideSurface(panel).then(()=>{if(!surfaceOpen(panel))for(const node of labelScrolls.keys())cancelLabelScroll(node);});
+ $('music-toggle').setAttribute('aria-expanded','false');stopSpectrum();
+}
 function setupPeriodMusic(){
  let copyTimer;
  const copyTitle=async()=>{if(!state.track)return;const label=musicCopyTitle(state.track),toast=$('music-copy-toast');try{await navigator.clipboard.writeText(label);toast.textContent='已复制';}catch{toast.textContent='复制失败，请允许剪贴板权限';}clearTimeout(copyTimer);showSurface(toast);copyTimer=setTimeout(()=>hideSurface(toast),1400);};
@@ -2489,7 +2448,7 @@ function setupPeriodMusic(){
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
  audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
- $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));for(const entry of labelScrolls.values())entry.animation?.play();scheduleTrackOverflow();}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
  $('music-close').addEventListener('click',closePanel);
  document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&surfaceOpen($('music-panel'))){event.preventDefault();closePanel();$('music-toggle').focus({preventScroll:true});}});
@@ -2504,7 +2463,9 @@ function setupPeriodMusic(){
  addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});const anchorObserver=new ResizeObserver(schedulePanelAnchor);anchorObserver.observe(document.querySelector('.masthead'));anchorObserver.observe($('music-toggle'));
  addEventListener('scroll',()=>{if(surfaceOpen($('music-panel')))schedulePanelAnchor();},{passive:true});
  window.visualViewport?.addEventListener('resize',schedulePanelAnchor,{passive:true});window.visualViewport?.addEventListener('scroll',schedulePanelAnchor,{passive:true});
- addEventListener('pagehide',()=>{audio.pause();stopSpectrum();coverController?.abort();for(const img of document.querySelectorAll('.now-art img'))URL.revokeObjectURL(img.src);spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
+ addEventListener('pagehide',()=>{audio.pause();stopSpectrum();for(const node of labelScrolls.keys())cancelLabelScroll(node);cancelAnimationFrame(labelFrame);labelFrame=0;spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
+ addEventListener('pageshow',scheduleTrackOverflow);
+ matchMedia('(prefers-reduced-motion: reduce)').addEventListener?.('change',scheduleTrackOverflow);
  syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();if(!state.track)expandOnline();},2500);
 }
 
