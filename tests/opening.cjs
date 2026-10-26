@@ -41,8 +41,8 @@ const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18765',output=path.reso
   await page.locator('#reset').click();await page.locator('#reset').click();await idle();await initial();
   // An intentional board interaction finishes the intro and remains usable immediately.
   await page.locator('#reset').click();await move('e2','e4');assert.equal(await page.locator('#movelist [data-ply]').count(),1);
-  await page.locator('#settings-toggle').click();await select('piece-style','chessnut');
-  await page.waitForFunction(()=>document.documentElement.dataset.pieceStyle==='chessnut'&&document.querySelector('.appearance-ghost'));
+  await page.locator('#settings-toggle').click();await select('piece-style','mpchess');
+  await page.waitForFunction(()=>document.documentElement.dataset.pieceStyle==='mpchess'&&document.querySelector('.appearance-ghost'));
   assert.equal(await page.locator('#board > .square > .piece:not(.appearance-ghost)').first().evaluate(n=>n.getAnimations()[0].effect.getTiming().duration),480);
   await page.waitForFunction(()=>!document.querySelector('.appearance-ghost'));await page.locator('#settings-close').click();
   // Computer-first games wait for the opening instead of cancelling or overlapping it.

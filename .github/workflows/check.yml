@@ -23,7 +23,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Unit checks
-        run: node --test tests/records.test.cjs tests/library.test.cjs tests/chess-notes.test.cjs tests/music-order.test.cjs
+        run: |
+          node --test tests/records.test.cjs tests/library.test.cjs tests/chess-notes.test.cjs tests/music-order.test.cjs
+          python tests/piece_assets.py
       - name: Build browser application
         run: |
           python build_bundle.py

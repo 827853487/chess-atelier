@@ -247,27 +247,6 @@ class Handler(SimpleHTTPRequestHandler):
             return self.payload({'message':str(exc)},400)
         return self.engine_request(data,play=path=='/api/play')
 
-    def serve_piece(self,path):
-        match=re.fullmatch(r'/assets/pieces/(atelier|chessnut|rhosgfx|fantasy)/(w|b)(K|Q|R|B|N|P)\.svg',path)
-        if not match:return self.payload('Not Found',404,'text/plain; charset=utf-8')
-        style,color,pc=match.groups()
-        name=color+pc+'.svg'
-        folder=ROOT/'assets'/'pieces'/style
-        dest=folder/name
-        if dest.exists() and dest.stat().st_size>200:
-            return self.payload(dest.read_bytes(),200,'image/svg+xml')
-        if style=='atelier':return self.payload('Missing bundled piece',404,'text/plain; charset=utf-8')
-        raw_path=f'https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/{style}/{name}'
-        try:
-            data,ct=upstream(raw_path,cap=150_000,timeout=7)
-            if not (data.lstrip().startswith(b'<svg') or b'<svg' in data[:300]):raise ValueError('不是 SVG 棋子')
-            folder.mkdir(parents=True,exist_ok=True)
-            dest.write_bytes(data)
-            return self.payload(data,200,'image/svg+xml')
-        except Exception as exc:
-            return self.payload('棋子素材暂不可用',503,'text/plain; charset=utf-8')
-
-
     dbfile:Path|None=None
     def __init__(self,*args,**kwargs):
         super().__init__(*args,directory=str(ROOT),**kwargs)
@@ -401,7 +380,6 @@ class Handler(SimpleHTTPRequestHandler):
             self.log_error('Commons streaming error: %s',type(exc).__name__)
             return self.payload({'error':'公开录音无法读取','details':str(exc)[:160]},502)
     def do_GET(self):
-        if self.path.startswith("/assets/pieces/"):return self.serve_piece(urlsplit(self.path).path)
         parts=urlsplit(self.path);path=parts.path;q=parse_qs(parts.query)
         if path=='/api/library/status':
             with LIBRARY_PROGRESS_LOCK:progress=LIBRARY_PROGRESS.copy()

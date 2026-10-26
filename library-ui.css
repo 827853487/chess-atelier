@@ -121,3 +121,8 @@
 #music-copy:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:3px}
 .music-copy-toast{position:absolute;top:-25px;right:0;z-index:4;padding:3px 8px;border-radius:6px;background:var(--accent);color:var(--paper);font-size:11px;white-space:nowrap;pointer-events:none;box-shadow:0 2px 8px #30251b15}
 .music-copy-toast[hidden]{display:none}
+
+/* Original Lichess drawings already include their own viewBox margins. */
+.piece-visual>.piece-art-img,.floating-piece .piece-visual>.piece-art-img{width:94%!important;height:94%!important;max-width:94%!important;max-height:94%!important}
+.piece-missing{grid-area:1/1;color:var(--ink);font:600 22px/1 system-ui}
+.piece-missing[hidden]{display:none}

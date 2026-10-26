@@ -12,3 +12,6 @@
 *.tar.gz binary
 # Preserve upstream release bytes, including license text covered by SHA-256.
 vendor/stockfish/** -text
+
+# Unmodified Lichess source artwork and included license bytes.
+assets/pieces/** -text

@@ -25,6 +25,8 @@ def main():
         'data/LIBRARY_SOURCES.md', 'data/library-sources.json', 'data/training-source-rows.csv']]
     files += list(ROOT.glob('*.css'))
     files += list((ROOT / 'assets').rglob('*.svg'))
+    files += [p for p in (ROOT/'assets/pieces').iterdir() if p.is_file() and p.suffix in ('.md','.json','.txt')]
+    files += [ROOT/'assets/pieces-themed/manifest.json',ROOT/'scripts/build_piece_themes.py',ROOT/'scripts/import_lichess_pieces.py']
     files += [ROOT / 'assets/music/playlist.json']
     playlist=json.loads((ROOT / 'assets/music/playlist.json').read_text(encoding='utf-8'))
     for track in playlist:

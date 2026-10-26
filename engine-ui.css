@@ -48,7 +48,7 @@ html[data-theme=sage]{--engine-opponent:#b98750}html[data-theme=slate]{--engine-
 .engine-footer .inline-button{font-size:11px;min-height:24px}
 .difficulty-note{font-size:11px;line-height:1.7;color:var(--muted);margin:8px 2px 12px}
 /* Interpolate inherited theme colors once at the root, including gradient consumers. */
-html.appearance-ready{transition:--bg .32s ease,--paper .32s ease,--sub .32s ease,--ink .32s ease,--muted .32s ease,--line .32s ease,--accent .32s ease,--accent-soft .32s ease,--gold .32s ease,--light .32s ease,--dark .32s ease,--w .32s ease,--d .32s ease,--b .32s ease,--white-piece .32s ease,--white-outline .32s ease,--black-piece .32s ease,--capture-color .32s ease,--move-color .32s ease,--engine-opponent .32s ease}
+html.appearance-ready{transition:--bg .32s ease,--paper .32s ease,--sub .32s ease,--ink .32s ease,--muted .32s ease,--line .32s ease,--accent .32s ease,--accent-soft .32s ease,--gold .32s ease,--light .32s ease,--dark .32s ease,--w .32s ease,--d .32s ease,--b .32s ease,--capture-color .32s ease,--move-color .32s ease,--engine-opponent .32s ease}
 .piece-visual>.piece-art-img{transition:none!important}
 .square>.appearance-ghost{pointer-events:none;z-index:4}
 @media(prefers-reduced-motion:reduce){html.appearance-ready{transition:none}}

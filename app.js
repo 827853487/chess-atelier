@@ -117,7 +117,7 @@ function drawBoard(){
  }
  const cells=b.querySelectorAll(':scope > .square');
  // 棋子样式与主题在一次绘制内是常量，提到循环外避免 64 次 DOM 读取
- const artKey=document.documentElement.dataset.pieceStyle||'rhosgfx',themeKey=document.documentElement.dataset.theme||'walnut';
+ const artKey=document.documentElement.dataset.pieceStyle||'cburnett',themeKey=document.documentElement.dataset.theme||'walnut';
  // 一次绘制内，合法着法终点 / 被将军的王 / 终局状态都是常量，提前算一次
  const legalTargets=new Set(),legalCaptures=new Set();
  if(state.hintsEnabled!==false){
@@ -986,7 +986,7 @@ function animateOpening(update,{animate=true}={}){
  Promise.all(active.animations.map(animation=>animation.finished.catch(()=>{}))).then(()=>{if(openingMotion===active)clearOpeningMotion();});
  return done;
 }
-let requestedTheme='walnut',requestedPieceStyle='rhosgfx',appearanceSequence=0,appearanceMotion=[];
+let requestedTheme='walnut',requestedPieceStyle='cburnett',appearanceSequence=0,appearanceMotion=[];
 function clearAppearanceMotion(){
  for(const {animation,ghost} of appearanceMotion){animation.cancel();ghost?.remove();}
  appearanceMotion=[];
@@ -1003,7 +1003,7 @@ function appearanceAnimation(node,frames,duration,ghost=null,startTime=null,easi
 async function changeAppearance(animate){
  const sequence=++appearanceSequence,theme=requestedTheme,style=requestedPieceStyle,root=document.documentElement;
  clearOpeningMotion();clearAppearanceMotion();
- const themeChanged=root.dataset.theme!==theme,styleChanged=(root.dataset.pieceStyle||'rhosgfx')!==style;
+ const themeChanged=root.dataset.theme!==theme,styleChanged=(root.dataset.pieceStyle||'cburnett')!==style;
  if(!themeChanged&&!styleChanged){setPieceStyle(style);return;}
  const prepared=animate?await preparePieceArt(theme,style):[];
  if(sequence!==appearanceSequence)return;
@@ -1034,9 +1034,9 @@ async function changeAppearance(animate){
  }
 }
 function applyPieceStyle(value,{animate=true}={}){
- requestedPieceStyle=['fantasy','rhosgfx','chessnut'].includes(value)?value:'rhosgfx';
+ requestedPieceStyle=['cburnett','maestro','mpchess','totoy'].includes(value)?value:'cburnett';
  $('#piece-style').value=requestedPieceStyle;
- try{localStorage.setItem('ChessAtelierPieceStyleV2',requestedPieceStyle);}catch{}
+ try{localStorage.setItem('ChessAtelierPieceStyleV3',requestedPieceStyle);}catch{}
  return changeAppearance(animate);
 }
 function applyTheme(value,{animate=true}={}){
@@ -1047,7 +1047,7 @@ function applyTheme(value,{animate=true}={}){
 }
 function initializeThemeMotion(){
  const root=document.documentElement,computed=getComputedStyle(root);
- if(window.CSS?.registerProperty)for(const name of ['bg','paper','sub','ink','muted','line','accent','accent-soft','gold','light','dark','w','d','b','white-piece','white-outline','black-piece','capture-color','move-color','engine-opponent']){
+ if(window.CSS?.registerProperty)for(const name of ['bg','paper','sub','ink','muted','line','accent','accent-soft','gold','light','dark','w','d','b','capture-color','move-color','engine-opponent']){
   try{CSS.registerProperty({name:'--'+name,syntax:'<color>',inherits:true,initialValue:computed.getPropertyValue('--'+name).trim()});}catch{}
  }
  root.classList.add('appearance-ready');
@@ -1239,7 +1239,7 @@ function setupEvents(){
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)||document.querySelector('dialog[open]'))return;if(e.key==='ArrowLeft'){e.preventDefault();stopPlayback();goto(state.view-1);}if(e.key==='ArrowRight'){e.preventDefault();stopPlayback();goto(state.view+1);}});
 }
 initializeArchives();setupEvents();setupLogoEasterEgg();setupPeriodMusic();try{applyTheme(localStorage.getItem('ChessAtelierTheme'),{animate:false});}catch{applyTheme('walnut',{animate:false});}
-try{const stored=localStorage.getItem('ChessAtelierPieceStyleV2');applyPieceStyle(['fantasy','rhosgfx','chessnut'].includes(stored)?stored:'rhosgfx',{animate:false});}catch{applyPieceStyle('rhosgfx',{animate:false});}
+try{const stored=localStorage.getItem('ChessAtelierPieceStyleV3');applyPieceStyle(['cburnett','maestro','mpchess','totoy'].includes(stored)?stored:'cburnett',{animate:false});}catch{applyPieceStyle('cburnett',{animate:false});}
 initializeThemeMotion();
 // 先把棋子图片全部预热成「已解码」的备用节点，之后任何一次落子都只是搬一个现成节点，
 // 不会再出现新 <img> 等 onload 的那一次淡入。

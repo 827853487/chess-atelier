@@ -1,7 +1,7 @@
 # 素材、代码与外部数据来源
 
-- **本地字形棋子 SVG（经典、简约共 24 枚）**：提取 DejaVu Sans（Bitstream Vera / DejaVu 字体授权）、FreeSerif（GNU GPL 及字体例外）、Noto Sans Symbols 2（SIL Open Font License 1.1）中现有国际象棋 Unicode 字形的矢量轮廓，重新标准化 SVG 画布与尺寸。经典与简约白子采用相应实心字形轮廓，重新设置近白填充和深色描边；六套主题为配色衍生版本。包内不包含原始字体文件；原著作者及适用的源字体许可继续有效。界面风格名称及素材目录标识不表示对其他人同名 Chessnut 等棋子原作品的重分发。
-- **备用棋子**：Font Awesome Free（CC BY 4.0），https://fontawesome.com/license/free 。
+- **Lichess 四套原始 SVG 棋子**：来自 [lichess-org/lila](https://github.com/lichess-org/lila/tree/e1ebe0e4b25bbd83c4524fbb3207c5dad6ff688a/public/piece)，固定提交 `e1ebe0e4b25bbd83c4524fbb3207c5dad6ff688a`。经典 Cburnett：Colin M. L. Burnett，GPL-2.0-or-later；拟真 Maestro：sadsnake1，CC BY-NC-SA 4.0（非商业、署名、相同方式共享）；极简 Mpchess：Maxime Chupin，GPL-3.0-or-later；抽象 Totoy：Kosal Sen，CC BY 4.0。48 枚原图原样保留，288 枚六主题衍生图仅调整颜色，保留路径、描边、渐变与过滤器，逐图标注修改。原图摘要、上游授权与许可全文见 [棋子来源说明](assets/pieces/README.md)。Logo 为 Cburnett 马的两个外轮廓路径组成的纯色剪影，移除内部亮色细节，沿用其许可。已移除旧字体字形、备用图标和重建描边代码。
+
 - **浏览器棋规**：项目内置的 `vendor/chess.js`，提供合法着法、SAN 与 PGN；本次修正了 FEN 起始回合、PGN 转义和结果处理。
 - **本地棋规及 UCI 桥接**：python-chess，GPL-3.0-or-later，https://github.com/niklasf/python-chess 。通过 Python 依赖安装，不从 CDN 加载。
 - **本地分析和人机对弈**：Stockfish 19，GPLv3，https://stockfishchess.org/ ，https://github.com/official-stockfish/Stockfish 。使用用户提供的官方 Windows universal 程序，未修改引擎；`engines/Copying.txt`、`engines/AUTHORS`、`engines/Stockfish-README.md` 保留许可和署名。项目根目录原始 `stockfish-windows-x86-64-universal.zip` 包含对应源码 `stockfish/src/`、编译脚本及说明，分发本软件时请一并保留。
@@ -20,5 +20,3 @@
 - **视觉原则**：参考 Google Material Design 3 的布局、触控目标及状态反馈原则，但没有声称由 Google 设计或使用其官方组件库。
 
 - **本地音乐目录**：`assets/music/playlist.json` 收录四时期共 16 首录音及其独立许可，原始 Commons 元数据保存在 source-metadata.json。
-
-- **雅致 SVG 棋子**：沿用早前版本项目内的 Fantasy 棋子素材，白子改用同套实心轮廓与浅色填充；其原始文件应按项目所列来源和适用许可使用。

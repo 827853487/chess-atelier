@@ -1,0 +1,1182 @@
+{
+  "palettes": {
+    "walnut": [
+      "#30241d",
+      "#fffaf2"
+    ],
+    "sage": [
+      "#20382a",
+      "#f8fff5"
+    ],
+    "slate": [
+      "#203640",
+      "#f5fcff"
+    ],
+    "oat": [
+      "#323025",
+      "#fffdf2"
+    ],
+    "blush": [
+      "#38262f",
+      "#fff7fb"
+    ],
+    "mist": [
+      "#29323c",
+      "#f8fbff"
+    ]
+  },
+  "files": {
+    "walnut/cburnett/wP.svg": {
+      "sha256": "3d5d537621591a84756c890132b57c395cbd88e9db82bad0fc2e302056938c7a",
+      "source": "cburnett/wP.svg"
+    },
+    "walnut/cburnett/wN.svg": {
+      "sha256": "988c075ea1cd1da592879a77e7d3824b4895df5d060d2918bc563bc9f7bf569a",
+      "source": "cburnett/wN.svg"
+    },
+    "walnut/cburnett/wB.svg": {
+      "sha256": "14011f076747d34e8c15f4d672187b4dbf41d09e53e9140dd38feb9654ee8c6d",
+      "source": "cburnett/wB.svg"
+    },
+    "walnut/cburnett/wR.svg": {
+      "sha256": "3d9572d4d869eeb4399c17bb217bb4b8dace370d4113702e93a2751738cd939b",
+      "source": "cburnett/wR.svg"
+    },
+    "walnut/cburnett/wQ.svg": {
+      "sha256": "787d520b0428fee32b84f48a905954cb07c8e0d0aa34b429f602c70bf3066de6",
+      "source": "cburnett/wQ.svg"
+    },
+    "walnut/cburnett/wK.svg": {
+      "sha256": "4974d413e267c449a5a33647352f733c9b4fb7d213b167bd3cf650869be4bbc1",
+      "source": "cburnett/wK.svg"
+    },
+    "walnut/cburnett/bP.svg": {
+      "sha256": "f71bacc5c42ee32cc127678027d67d8966ccf365196be41ce0e359285d7c78e5",
+      "source": "cburnett/bP.svg"
+    },
+    "walnut/cburnett/bN.svg": {
+      "sha256": "dc49034f18f8baadf797d59b85268a00700ddcb0c313c410d74c139ce7d9591e",
+      "source": "cburnett/bN.svg"
+    },
+    "walnut/cburnett/bB.svg": {
+      "sha256": "727ec190c5a061c1cf0d7e41d51c66590c4797815d0d7623cf89f68611e5729c",
+      "source": "cburnett/bB.svg"
+    },
+    "walnut/cburnett/bR.svg": {
+      "sha256": "01f4da71d4c3850f74814e59bf42e5cd90a493f9cf22224a3b1b67718e7b57fe",
+      "source": "cburnett/bR.svg"
+    },
+    "walnut/cburnett/bQ.svg": {
+      "sha256": "1eea1419463bffd39d8022895bd2822457309c30bab3313ad28ccf53f55b0960",
+      "source": "cburnett/bQ.svg"
+    },
+    "walnut/cburnett/bK.svg": {
+      "sha256": "2ffab8a5a4db58fe1eeba0f29089735fd1421407b560d3d97cd8fd3d34c8edd9",
+      "source": "cburnett/bK.svg"
+    },
+    "walnut/maestro/wP.svg": {
+      "sha256": "d0b6c311c1387e8df5c10f0938a06711ecd4303742c513857923e6d6fb6de99e",
+      "source": "maestro/wP.svg"
+    },
+    "walnut/maestro/wN.svg": {
+      "sha256": "2cb21c64438ecc7f39ce799e50a744366f4fd291edcbb606ff07d669d9fb28d4",
+      "source": "maestro/wN.svg"
+    },
+    "walnut/maestro/wB.svg": {
+      "sha256": "071af21cc96c274baa66c30a8e07d97e89454866d7eb384ee047df8dcb665c1b",
+      "source": "maestro/wB.svg"
+    },
+    "walnut/maestro/wR.svg": {
+      "sha256": "55d25b1c0ed622854cdbf24eeca8d38fd4eed2d48d477719a2e026fc379df98c",
+      "source": "maestro/wR.svg"
+    },
+    "walnut/maestro/wQ.svg": {
+      "sha256": "077f7da4a57e42a741530c878b264bdc92aa296adefc70c418a149a911e51224",
+      "source": "maestro/wQ.svg"
+    },
+    "walnut/maestro/wK.svg": {
+      "sha256": "d4e0c8fb3ff24b9dddfedf1a2626aad07b1a0e2a2dec5120178bed2fcd7ab432",
+      "source": "maestro/wK.svg"
+    },
+    "walnut/maestro/bP.svg": {
+      "sha256": "22fea876c5fde0590237f90decf3f5f0f7dd9a08924d82b0f07475baead1af31",
+      "source": "maestro/bP.svg"
+    },
+    "walnut/maestro/bN.svg": {
+      "sha256": "ee4ed60bc60aa8d43ef91bafb986a4889bc8c6c4045f07268dede2d45a55558c",
+      "source": "maestro/bN.svg"
+    },
+    "walnut/maestro/bB.svg": {
+      "sha256": "2a0beb9fffb78fd6751dd7176ad044240fd7c095c4c56d55ad1628bf40178e72",
+      "source": "maestro/bB.svg"
+    },
+    "walnut/maestro/bR.svg": {
+      "sha256": "35cedd331882dd59223f196d9cae5f47fbdfb12cd653f649c7fe7ef7e51cc16a",
+      "source": "maestro/bR.svg"
+    },
+    "walnut/maestro/bQ.svg": {
+      "sha256": "efc5e830b8a949eb881f2bade9d1318c8960e7e34f55f1e16929ba08bd7eb523",
+      "source": "maestro/bQ.svg"
+    },
+    "walnut/maestro/bK.svg": {
+      "sha256": "ff1734249e25a2c0f13569f6cfa1b6332379a3d9a46e8bbeaf827ba506e00394",
+      "source": "maestro/bK.svg"
+    },
+    "walnut/mpchess/wP.svg": {
+      "sha256": "28b3d5905778661aad77b089cf5b3e6112a547b56289724fe46c38dd7eeb9f71",
+      "source": "mpchess/wP.svg"
+    },
+    "walnut/mpchess/wN.svg": {
+      "sha256": "91ca1b7068a684e0d291ec689e3182230296981228762b482bbbe72f33179a1c",
+      "source": "mpchess/wN.svg"
+    },
+    "walnut/mpchess/wB.svg": {
+      "sha256": "46004a52a6e5a2b0d32bd0e58bb8b136e224acaf284e1b37c9ca405432690ebf",
+      "source": "mpchess/wB.svg"
+    },
+    "walnut/mpchess/wR.svg": {
+      "sha256": "52918f1f336cd73252b5d550fd69c47632c70969d5b5993dc80c71518e179ac5",
+      "source": "mpchess/wR.svg"
+    },
+    "walnut/mpchess/wQ.svg": {
+      "sha256": "5cb5d4d98022590baab624ef5cace00c238b9a819fd0dd522a5affc40cadadea",
+      "source": "mpchess/wQ.svg"
+    },
+    "walnut/mpchess/wK.svg": {
+      "sha256": "176e49bc896d6724ad153e92ddee58c9994823a7db360c525924e738ee378a58",
+      "source": "mpchess/wK.svg"
+    },
+    "walnut/mpchess/bP.svg": {
+      "sha256": "2005ab87a6a6fdf3f6bf3da6152da6598a092cb5763fa9d5835ce5df95d6b531",
+      "source": "mpchess/bP.svg"
+    },
+    "walnut/mpchess/bN.svg": {
+      "sha256": "2b8abca1bdf2aeef16a0def122e190dcff2e32f317c917c8114877b70a3d1ddb",
+      "source": "mpchess/bN.svg"
+    },
+    "walnut/mpchess/bB.svg": {
+      "sha256": "00d2b0ad1dacf3123c8a9f87464f6d4f24fd8702e5bd5819a113a08a430e3cef",
+      "source": "mpchess/bB.svg"
+    },
+    "walnut/mpchess/bR.svg": {
+      "sha256": "c215755581a6e7548a2508613830bbd59648ae8c7ad2aa64a26920ff0d7c9209",
+      "source": "mpchess/bR.svg"
+    },
+    "walnut/mpchess/bQ.svg": {
+      "sha256": "4ac1d29fa20ed9558e0921221bc2f8dd363e7e6c972b0f51bd331b5506c32855",
+      "source": "mpchess/bQ.svg"
+    },
+    "walnut/mpchess/bK.svg": {
+      "sha256": "426fb99139746b6c6ca006ffcaa832c0d6b04819bc372251bc42f09e50983bf6",
+      "source": "mpchess/bK.svg"
+    },
+    "walnut/totoy/wP.svg": {
+      "sha256": "afdee7d3dc645a6cd6e93e76925cf2875f98e80cb14ec559ac13e3d2f91de747",
+      "source": "totoy/wP.svg"
+    },
+    "walnut/totoy/wN.svg": {
+      "sha256": "2defa4bb9b07e4c281be2f2d20f953d9818112ee252c353bd423511e03d94220",
+      "source": "totoy/wN.svg"
+    },
+    "walnut/totoy/wB.svg": {
+      "sha256": "d9319508fae962d06091e861c0f8856a1779770d2cdee4b917e033f4f3553222",
+      "source": "totoy/wB.svg"
+    },
+    "walnut/totoy/wR.svg": {
+      "sha256": "b56f290a7ff306b8eb562450e0c2a84da1732e7bb9cdf1e7eb71ce95a148b9d1",
+      "source": "totoy/wR.svg"
+    },
+    "walnut/totoy/wQ.svg": {
+      "sha256": "9b0d21b873e7451c14371cdd14a6e01e4d7e44a31ab5e77f70ee9754cfc4824d",
+      "source": "totoy/wQ.svg"
+    },
+    "walnut/totoy/wK.svg": {
+      "sha256": "c8074d2eef88b481a2224975a3d3f2bebf19eb4392a67e513693b8034bc05c8a",
+      "source": "totoy/wK.svg"
+    },
+    "walnut/totoy/bP.svg": {
+      "sha256": "ee4bbfc16408ee9dca0f3a56d7e318992d9ae00412c137cbfe0d235891a8af25",
+      "source": "totoy/bP.svg"
+    },
+    "walnut/totoy/bN.svg": {
+      "sha256": "c77560ee7ff8a9a8332d7ff63549b90bac7b4a7754a56de9a165b0107c5d6a6f",
+      "source": "totoy/bN.svg"
+    },
+    "walnut/totoy/bB.svg": {
+      "sha256": "5f0740002c630af5fd0a180e65b5c3c6bd4b8ee5119bab1ddfe51463d79f3ad4",
+      "source": "totoy/bB.svg"
+    },
+    "walnut/totoy/bR.svg": {
+      "sha256": "ab7b1fa2f2ec292fc0588af1509fff495d1fa4d3a16d25d317147dd00f6dcefe",
+      "source": "totoy/bR.svg"
+    },
+    "walnut/totoy/bQ.svg": {
+      "sha256": "45df89fa734cbf785d2e849b27f3f46db5044f77f67510aa220d574879a7a7c6",
+      "source": "totoy/bQ.svg"
+    },
+    "walnut/totoy/bK.svg": {
+      "sha256": "c2432a105a973dc9a9fff3f4cbd13fd3ae63e6e170a967fc3e4a29992ec0030a",
+      "source": "totoy/bK.svg"
+    },
+    "sage/cburnett/wP.svg": {
+      "sha256": "07c97cbd7025b3ff68491218e5b0ec0ac14cdd4e16414442d5a693972c473b9b",
+      "source": "cburnett/wP.svg"
+    },
+    "sage/cburnett/wN.svg": {
+      "sha256": "15775af81b30197e54ef2ad9b9c96d3d04a2a46c25a9ed60a452995842917203",
+      "source": "cburnett/wN.svg"
+    },
+    "sage/cburnett/wB.svg": {
+      "sha256": "bb077959d5d8e739c9ebadea0a30c648b6d78f0ba22d81d7b0ca1868e92bd992",
+      "source": "cburnett/wB.svg"
+    },
+    "sage/cburnett/wR.svg": {
+      "sha256": "649a47f391d56572b3e3ece8c7279bdc3dd45144be211a0e1d059f841ae75146",
+      "source": "cburnett/wR.svg"
+    },
+    "sage/cburnett/wQ.svg": {
+      "sha256": "c538a8cdab4ec69289a7de0fdbf880b9ebb4c0b8b12f71ed47067270d11ea3a3",
+      "source": "cburnett/wQ.svg"
+    },
+    "sage/cburnett/wK.svg": {
+      "sha256": "5c9e1578137388ccb6e47a412043c87ca3fefca1cef0adb8c77b105f6dd9ff55",
+      "source": "cburnett/wK.svg"
+    },
+    "sage/cburnett/bP.svg": {
+      "sha256": "d92ba47cdfd8940b70d373f384c38e6af4eb97939e399ebadd2b5029e87d91bd",
+      "source": "cburnett/bP.svg"
+    },
+    "sage/cburnett/bN.svg": {
+      "sha256": "2a582dc8c043bf47f3787e6e43aff30348907d96f1da1f42710e090e589d1c6c",
+      "source": "cburnett/bN.svg"
+    },
+    "sage/cburnett/bB.svg": {
+      "sha256": "ec481b9b27cf35917f83142402a8e7820e56cf396e98444a099897f089ea2f23",
+      "source": "cburnett/bB.svg"
+    },
+    "sage/cburnett/bR.svg": {
+      "sha256": "4032684b4a96bdb7090b570cf944b43800c8fd7ffb792551e00aad8527548722",
+      "source": "cburnett/bR.svg"
+    },
+    "sage/cburnett/bQ.svg": {
+      "sha256": "44fb4fde51687dc9f342ebc726001fd1405b589f923616b7bc0e12ba75bf1e31",
+      "source": "cburnett/bQ.svg"
+    },
+    "sage/cburnett/bK.svg": {
+      "sha256": "95cdd425002afceb6911cdf30b0516eaee7b1303a3fe50ee22247f90e6826850",
+      "source": "cburnett/bK.svg"
+    },
+    "sage/maestro/wP.svg": {
+      "sha256": "f6d72e2f7e3c3e55065e204c71c589cbaffeec1c270c45fd0591e9a7edca321d",
+      "source": "maestro/wP.svg"
+    },
+    "sage/maestro/wN.svg": {
+      "sha256": "58b382a148c256e928a339427472de2e8f682e6a9c4c5c43003ad44cde51c024",
+      "source": "maestro/wN.svg"
+    },
+    "sage/maestro/wB.svg": {
+      "sha256": "3068b54eb38c0a25c13fed02220f312274046b85edf7d72a85e21b247a25c24a",
+      "source": "maestro/wB.svg"
+    },
+    "sage/maestro/wR.svg": {
+      "sha256": "9d1c2c735e6d18493e7c4aa4bc62a5b4623205070e96592aa4305ca16d0a8537",
+      "source": "maestro/wR.svg"
+    },
+    "sage/maestro/wQ.svg": {
+      "sha256": "9fbdd3ea371690727c04cf800632021d46d41f6eff0f78c33f92a86784362d41",
+      "source": "maestro/wQ.svg"
+    },
+    "sage/maestro/wK.svg": {
+      "sha256": "cf603fb77fd851917ba92022b9161af8d2b59d8a1d069a611618ffe1afabbc2a",
+      "source": "maestro/wK.svg"
+    },
+    "sage/maestro/bP.svg": {
+      "sha256": "9a1d1c305ecdeb0c7313a7a5a92c40258b9d38bdd54c707b1177d770384c4e3e",
+      "source": "maestro/bP.svg"
+    },
+    "sage/maestro/bN.svg": {
+      "sha256": "37fcf3be1e030ae6ab5df9f2e3e1a8cc1960baa788c781d5cd7e19ce5e10ef5e",
+      "source": "maestro/bN.svg"
+    },
+    "sage/maestro/bB.svg": {
+      "sha256": "4bb59192af2ecc1a76db14cd1d47dd374de649345aed5865e29c16934518d80c",
+      "source": "maestro/bB.svg"
+    },
+    "sage/maestro/bR.svg": {
+      "sha256": "7c87eea08ab64aaef22ccd8e8667589cfe7f9c90a9a6cbf9c369e73cd33be17a",
+      "source": "maestro/bR.svg"
+    },
+    "sage/maestro/bQ.svg": {
+      "sha256": "cd9a119327501ae6f7f78ac42b601bff2dc4c68435c070be67ed5dbc87fd632a",
+      "source": "maestro/bQ.svg"
+    },
+    "sage/maestro/bK.svg": {
+      "sha256": "f005f9c854c537c3d68db63589a8359737291020258208c2d29c55e4aa3d2cd9",
+      "source": "maestro/bK.svg"
+    },
+    "sage/mpchess/wP.svg": {
+      "sha256": "9f79237962fba9d03732525b642c16aa5cf390794803231a6a8184e8f67e6943",
+      "source": "mpchess/wP.svg"
+    },
+    "sage/mpchess/wN.svg": {
+      "sha256": "fa95827f79f2e6473ceeb63f23775c8d9b68e6f8a38f7c8b2f4b088fe73fab8a",
+      "source": "mpchess/wN.svg"
+    },
+    "sage/mpchess/wB.svg": {
+      "sha256": "b0a81a07ae6f9abb28f47431976d59547e77a832f5d514dd2ee2d740cee5a255",
+      "source": "mpchess/wB.svg"
+    },
+    "sage/mpchess/wR.svg": {
+      "sha256": "822050e81012a3e96646fedd70ef1075a81c6a5935cfa67250e0d075ae67f432",
+      "source": "mpchess/wR.svg"
+    },
+    "sage/mpchess/wQ.svg": {
+      "sha256": "602462d2f1da23bc45d9f1dc860ab94ddab47e1479db88ea7ea7ac97fb4810b3",
+      "source": "mpchess/wQ.svg"
+    },
+    "sage/mpchess/wK.svg": {
+      "sha256": "d402fb0498ab95e4e670ff4d5b92d78420a55ad4f49e1e130553ed7a56e20dae",
+      "source": "mpchess/wK.svg"
+    },
+    "sage/mpchess/bP.svg": {
+      "sha256": "0e7fe6794c07c7c62aa3d50babaecadbb1f118e850dcd63bab74500c2931246d",
+      "source": "mpchess/bP.svg"
+    },
+    "sage/mpchess/bN.svg": {
+      "sha256": "9292f17e3ee2e2be84712756b2eceb2f4708bf43edfade515b7f617590adf710",
+      "source": "mpchess/bN.svg"
+    },
+    "sage/mpchess/bB.svg": {
+      "sha256": "e2d09ba550392818e91210c47bb39fa1f31372eaad7f7fa11053c63bd03726f6",
+      "source": "mpchess/bB.svg"
+    },
+    "sage/mpchess/bR.svg": {
+      "sha256": "2339576188433f254176fbc397e6b16efdfda472c9580e698eba184b27aee44b",
+      "source": "mpchess/bR.svg"
+    },
+    "sage/mpchess/bQ.svg": {
+      "sha256": "1c803a74e24256b700f769fadf92023a8440737ee6e23c91bae6e77709a01cd7",
+      "source": "mpchess/bQ.svg"
+    },
+    "sage/mpchess/bK.svg": {
+      "sha256": "cb40728167f8ea851b13f80338688fb4a2a0b63961fa829dae6a8d91ea4d6a51",
+      "source": "mpchess/bK.svg"
+    },
+    "sage/totoy/wP.svg": {
+      "sha256": "b5edbb78cbba982cab359687e5aa8e47eefda7f7b398ab550261f96cd61bb4ae",
+      "source": "totoy/wP.svg"
+    },
+    "sage/totoy/wN.svg": {
+      "sha256": "bd9ebc61c4894eea93abf3c7ae095259417e1c47e256d22a22f9233bdcfba8e5",
+      "source": "totoy/wN.svg"
+    },
+    "sage/totoy/wB.svg": {
+      "sha256": "3445ece144aa89301b5ed258f16f4412705d8fc15d8284edbccaf391dbb5cb11",
+      "source": "totoy/wB.svg"
+    },
+    "sage/totoy/wR.svg": {
+      "sha256": "91531be25e8e02a8d359598efb0cdf5b867c2592aa8a56fd1adcf4197889c138",
+      "source": "totoy/wR.svg"
+    },
+    "sage/totoy/wQ.svg": {
+      "sha256": "5b25f06545ec94b6a183a41619850cf7526491803423984d90b5bc8b80e7da22",
+      "source": "totoy/wQ.svg"
+    },
+    "sage/totoy/wK.svg": {
+      "sha256": "c4e9df9b1c7fed30f1efc2a6c4bcbcc3f5226469a822a0d048fad562ab7c2c1b",
+      "source": "totoy/wK.svg"
+    },
+    "sage/totoy/bP.svg": {
+      "sha256": "e4f3f45bf6a76a31ae2906b0cfb538804a1f07b923ecacda502a6c7855c72ec6",
+      "source": "totoy/bP.svg"
+    },
+    "sage/totoy/bN.svg": {
+      "sha256": "c183c33cba50a5f91ce2e1dd004e3e272af0443f365c98392f90ed5a98f59017",
+      "source": "totoy/bN.svg"
+    },
+    "sage/totoy/bB.svg": {
+      "sha256": "509d2613376d68dfd2f987ebcf918454e176969480f14cde8956b07cb214fd19",
+      "source": "totoy/bB.svg"
+    },
+    "sage/totoy/bR.svg": {
+      "sha256": "03b98490b6c75c270f8cfe948b5341baffcbfd0429c552e3bb63b9277585fc29",
+      "source": "totoy/bR.svg"
+    },
+    "sage/totoy/bQ.svg": {
+      "sha256": "fca91f57ff13f5273a98341c84c9713f292d35f47de673400bf8c3f4c8bafb49",
+      "source": "totoy/bQ.svg"
+    },
+    "sage/totoy/bK.svg": {
+      "sha256": "8cec0b63851e568d5a9059195db1b1ef2a1b081ef600c9c777e062e20558b53c",
+      "source": "totoy/bK.svg"
+    },
+    "slate/cburnett/wP.svg": {
+      "sha256": "6a8099b40074b9036dc2231457666a617b981eab494343e85f78415fe9b66e22",
+      "source": "cburnett/wP.svg"
+    },
+    "slate/cburnett/wN.svg": {
+      "sha256": "702697cfbaa5429debae5f0fec8ae45bed19a888881ead00d229b6e2ed502e3d",
+      "source": "cburnett/wN.svg"
+    },
+    "slate/cburnett/wB.svg": {
+      "sha256": "a2fec76000e7e8c2c8a1b8ebf8c8e2df8b7516b4d39da1b5b310c46d391a060a",
+      "source": "cburnett/wB.svg"
+    },
+    "slate/cburnett/wR.svg": {
+      "sha256": "f719fefeca9fbcdec01db4a577af661cca33fa511fc0ba53079bc7f0ad852bea",
+      "source": "cburnett/wR.svg"
+    },
+    "slate/cburnett/wQ.svg": {
+      "sha256": "00a1c813a7542e27ab44cf376a31e7608bb0f9f9a7ace8b4b99143be66d6da30",
+      "source": "cburnett/wQ.svg"
+    },
+    "slate/cburnett/wK.svg": {
+      "sha256": "51920ca2278ce7bf3e706915214e76ab10844857d58f8cac20eff03511f2ba08",
+      "source": "cburnett/wK.svg"
+    },
+    "slate/cburnett/bP.svg": {
+      "sha256": "9ede35c9c27fc8ba51a2cce783dee175bfdd8412c7c98f7913a5ccf9099283b4",
+      "source": "cburnett/bP.svg"
+    },
+    "slate/cburnett/bN.svg": {
+      "sha256": "063832521b9400d2c0ed5a8ab0aaf280a2775679361568b7253af3ffde6c7274",
+      "source": "cburnett/bN.svg"
+    },
+    "slate/cburnett/bB.svg": {
+      "sha256": "faae98a0e63c0c1e31e60b2c986a5529c533da83ef830d807cf51765e5812154",
+      "source": "cburnett/bB.svg"
+    },
+    "slate/cburnett/bR.svg": {
+      "sha256": "fbdb74d89a71242e8b7233e6ed182b44317d44a896e45af78af2d543349ddf04",
+      "source": "cburnett/bR.svg"
+    },
+    "slate/cburnett/bQ.svg": {
+      "sha256": "3f52fa7588b5422c4ac25e71d8f3f2860179ceb6e6e2e7c0e1e63966ae3e6f99",
+      "source": "cburnett/bQ.svg"
+    },
+    "slate/cburnett/bK.svg": {
+      "sha256": "be7ec86b780409fd3b8eeeea1ebb8f56a7312949d5875c69b687b86589f9a72c",
+      "source": "cburnett/bK.svg"
+    },
+    "slate/maestro/wP.svg": {
+      "sha256": "224cd68cb264ece10eab1196fada0529034a31630245026e46ea37aca6c60f3e",
+      "source": "maestro/wP.svg"
+    },
+    "slate/maestro/wN.svg": {
+      "sha256": "1784299493818884b80b615ca8875675eedadbfb2fade240fbe62ac25e06702a",
+      "source": "maestro/wN.svg"
+    },
+    "slate/maestro/wB.svg": {
+      "sha256": "e4cdad5f408b0e92f28dfe89562be7da567f431619c05131447026feed44bd7c",
+      "source": "maestro/wB.svg"
+    },
+    "slate/maestro/wR.svg": {
+      "sha256": "9d22eab65862d9dde028dcda8e9e295430a30b6aae2f60819574d56a95fb86b7",
+      "source": "maestro/wR.svg"
+    },
+    "slate/maestro/wQ.svg": {
+      "sha256": "cc1d2cf4e4d48062544b3309be2bbbcdec2866f9b3558a3c954dce1792a9b94c",
+      "source": "maestro/wQ.svg"
+    },
+    "slate/maestro/wK.svg": {
+      "sha256": "88bcfe29e6ca55b42190335717d04de0b51fa2a24eb607f2d10d5f7dd94abfb6",
+      "source": "maestro/wK.svg"
+    },
+    "slate/maestro/bP.svg": {
+      "sha256": "a887ab6af5c6b8a33561990008675e7e604815fc6a53192df4f396c6210673c4",
+      "source": "maestro/bP.svg"
+    },
+    "slate/maestro/bN.svg": {
+      "sha256": "8e8c31c5fde83dfc42d5e26552dae1584179c7742a2ae75f761c3ecc89c0d160",
+      "source": "maestro/bN.svg"
+    },
+    "slate/maestro/bB.svg": {
+      "sha256": "7bc579db7ee97f0323d76896ab6141ba7de836e7e51c89f45da448a148c63c51",
+      "source": "maestro/bB.svg"
+    },
+    "slate/maestro/bR.svg": {
+      "sha256": "6dfaf4dddebfd4fe1bbbe1f80571b9c25dfcc8c742e64bb08fe50c59933093a5",
+      "source": "maestro/bR.svg"
+    },
+    "slate/maestro/bQ.svg": {
+      "sha256": "31b118c45c52f6afbc29305db23e71323edc5f17a61c147bc7c44e626ae4fd47",
+      "source": "maestro/bQ.svg"
+    },
+    "slate/maestro/bK.svg": {
+      "sha256": "57d302746742d4fca7d4c2464c2bd2020911ce0ad4464154c5aab4ee8b2b1a8c",
+      "source": "maestro/bK.svg"
+    },
+    "slate/mpchess/wP.svg": {
+      "sha256": "1896cbd8d77a0a0f54ebf5baaf5fff998cd68a6a4cce3bda481cd2c49387345e",
+      "source": "mpchess/wP.svg"
+    },
+    "slate/mpchess/wN.svg": {
+      "sha256": "7b7cf68fd57d2a2d01fc74d64e710b18eec8bdd35ac804c6ac74d06ebd5da5c6",
+      "source": "mpchess/wN.svg"
+    },
+    "slate/mpchess/wB.svg": {
+      "sha256": "d0937432a23bd3bd0e4b296dc49be128ece26cbb590c595d3a8bee43dc17be8c",
+      "source": "mpchess/wB.svg"
+    },
+    "slate/mpchess/wR.svg": {
+      "sha256": "c5a447d768b2ea0632f8a15ca8691273db2dd62515b3a8bc5e1ebcd1100fd36c",
+      "source": "mpchess/wR.svg"
+    },
+    "slate/mpchess/wQ.svg": {
+      "sha256": "8de100baae6f35706e9e2b65e3dbec6553df8a648d38c7079d682af327c84314",
+      "source": "mpchess/wQ.svg"
+    },
+    "slate/mpchess/wK.svg": {
+      "sha256": "88abdeac7b1cf4d67db4f83bc18f37bca0cd0dd8396e025c66d344f6bd844b5d",
+      "source": "mpchess/wK.svg"
+    },
+    "slate/mpchess/bP.svg": {
+      "sha256": "22c47e3cdd8aefa9ed4e473af318b680244f825169ba16620c5b04dfb31fbba0",
+      "source": "mpchess/bP.svg"
+    },
+    "slate/mpchess/bN.svg": {
+      "sha256": "f4cc6b61ec9e28860a83969eabf48cea30052ccc5dcb325dcf09c910791ad171",
+      "source": "mpchess/bN.svg"
+    },
+    "slate/mpchess/bB.svg": {
+      "sha256": "a388bb2d3b4b7c5c75d54d4b4a48270dfdafb554e14d1a456e91e935a6da0804",
+      "source": "mpchess/bB.svg"
+    },
+    "slate/mpchess/bR.svg": {
+      "sha256": "aca301a5b449a905e7e4b596e5184221facabd5bbf32bc288a373fee578a5324",
+      "source": "mpchess/bR.svg"
+    },
+    "slate/mpchess/bQ.svg": {
+      "sha256": "abfc5d886a9209ed647bd64d10415337671357fe25c73c157216546ce94f6e06",
+      "source": "mpchess/bQ.svg"
+    },
+    "slate/mpchess/bK.svg": {
+      "sha256": "712fcc6254c494446426dc966104cc7366debc9ddebb49dcff3fde4a2478ff4e",
+      "source": "mpchess/bK.svg"
+    },
+    "slate/totoy/wP.svg": {
+      "sha256": "6a5bc1c4f63075a512389b643c16a143b1619eed2d8a90d074ee43610b61affa",
+      "source": "totoy/wP.svg"
+    },
+    "slate/totoy/wN.svg": {
+      "sha256": "9772312b2e38973e8e2319fd371fa9bd9b6a77036d1dc591b0f4a36308124cd7",
+      "source": "totoy/wN.svg"
+    },
+    "slate/totoy/wB.svg": {
+      "sha256": "b06c4f028747ac5af98c2d34e548d9b9fb04aa464387399b500028047d35ab37",
+      "source": "totoy/wB.svg"
+    },
+    "slate/totoy/wR.svg": {
+      "sha256": "98c21c599ade852a8472dda7705dd13355d0f65204626b1a6b56920ccbcc1678",
+      "source": "totoy/wR.svg"
+    },
+    "slate/totoy/wQ.svg": {
+      "sha256": "d1b62ed0886d6d19cda0fdcb8739e80b1dcd021251fdcfe5ecced4eeeba42fd5",
+      "source": "totoy/wQ.svg"
+    },
+    "slate/totoy/wK.svg": {
+      "sha256": "81a0310dc93458d1c7d8bb52a00cbce3d342f80a221c924232d2a67ca29c1e43",
+      "source": "totoy/wK.svg"
+    },
+    "slate/totoy/bP.svg": {
+      "sha256": "86f2910b77d8b92ac93d440af5d70417643d993e6f965c5ad264cc7d429ad028",
+      "source": "totoy/bP.svg"
+    },
+    "slate/totoy/bN.svg": {
+      "sha256": "d2845cc3239665d074fce0e5bc4642e0cc827934963e38b85f427a84e61be775",
+      "source": "totoy/bN.svg"
+    },
+    "slate/totoy/bB.svg": {
+      "sha256": "dc1aa56c80cf5c9a2d8a0148d429738c821cb90e74e0c1ad70dd2743f13abd21",
+      "source": "totoy/bB.svg"
+    },
+    "slate/totoy/bR.svg": {
+      "sha256": "2e490d4c03b93d0c0a2d6742f8434af925dfd9a324c53f33ee254ae9f258d785",
+      "source": "totoy/bR.svg"
+    },
+    "slate/totoy/bQ.svg": {
+      "sha256": "d5035491a31fb606f8c32c91d98b904df30949099b0817b8d8de8aed4aa56098",
+      "source": "totoy/bQ.svg"
+    },
+    "slate/totoy/bK.svg": {
+      "sha256": "05fbf4b0c29c09c6fb1ef3de2b5c6ebbb1a74180f6be1d2998a5e715c2bf6548",
+      "source": "totoy/bK.svg"
+    },
+    "oat/cburnett/wP.svg": {
+      "sha256": "f9427edd5091be5f98de29e5e92011b2567325b56b77ceeab700e971678a5764",
+      "source": "cburnett/wP.svg"
+    },
+    "oat/cburnett/wN.svg": {
+      "sha256": "a979b848c7f7bf4dfbb3c9ac0633e10587e0f79eaf5ce400b20e4daf59f34b77",
+      "source": "cburnett/wN.svg"
+    },
+    "oat/cburnett/wB.svg": {
+      "sha256": "d0fc32ca4ae3472a1ecaff23ce62e15fa0acd086e6abe4b4745951b92b816031",
+      "source": "cburnett/wB.svg"
+    },
+    "oat/cburnett/wR.svg": {
+      "sha256": "760adb8b7d41e9f3ce6daa50f19db1a2038555d79877420ae5874beb4a1440fa",
+      "source": "cburnett/wR.svg"
+    },
+    "oat/cburnett/wQ.svg": {
+      "sha256": "93a02570f369ddd72c2543c4e6ed349def69b48332b8bb2141db96ab587371b1",
+      "source": "cburnett/wQ.svg"
+    },
+    "oat/cburnett/wK.svg": {
+      "sha256": "7e77aeead116e7390731eabf24b2e1d214fb120528fdc64d7be2f2912f96432e",
+      "source": "cburnett/wK.svg"
+    },
+    "oat/cburnett/bP.svg": {
+      "sha256": "7393fbd2bb538291ca56dc43ba4fa892b099316ab8e5783f2033036a94b66bf6",
+      "source": "cburnett/bP.svg"
+    },
+    "oat/cburnett/bN.svg": {
+      "sha256": "a180fc69259a3b39af5d5f815f33096109322006d08a63092dc1a605208c0d35",
+      "source": "cburnett/bN.svg"
+    },
+    "oat/cburnett/bB.svg": {
+      "sha256": "5c34cd3b94134d1c0ea8ea13c6e6866ee6805ef40583b96c82cd0fe6417ec196",
+      "source": "cburnett/bB.svg"
+    },
+    "oat/cburnett/bR.svg": {
+      "sha256": "74a5a638ad71e70584db9e2a9b133fa1b453f727d4368b27cec09f9e44e6efbb",
+      "source": "cburnett/bR.svg"
+    },
+    "oat/cburnett/bQ.svg": {
+      "sha256": "30f914aa7fdd10d2fd9672f8d70e111fa66a362a98300bc4d7d436d2fb52de95",
+      "source": "cburnett/bQ.svg"
+    },
+    "oat/cburnett/bK.svg": {
+      "sha256": "855a47838592ddd7c0665214552d3966483f4750a8f0486f8e80416b22e5c40a",
+      "source": "cburnett/bK.svg"
+    },
+    "oat/maestro/wP.svg": {
+      "sha256": "ccc89ab4a54a4e432dc34b3a1a0086a131995d035a1a7918bbbe4cb871de34e2",
+      "source": "maestro/wP.svg"
+    },
+    "oat/maestro/wN.svg": {
+      "sha256": "c1d4dca902ee7b2d812cdfffcb303453facb24e6056765e9f059284ba9ffa084",
+      "source": "maestro/wN.svg"
+    },
+    "oat/maestro/wB.svg": {
+      "sha256": "2299baf4d370c915708884f85ef024f36adf05eabbafaa3cf96d674276d62b9b",
+      "source": "maestro/wB.svg"
+    },
+    "oat/maestro/wR.svg": {
+      "sha256": "e76d3f009cd6b09797bb23c33bcbf3de7294292bf0bd18ede21960dba2e8f377",
+      "source": "maestro/wR.svg"
+    },
+    "oat/maestro/wQ.svg": {
+      "sha256": "1f0d1d4d4bf2cc704bc19fcc0016da2582a88d187f887a41eaeaabbd3057cd83",
+      "source": "maestro/wQ.svg"
+    },
+    "oat/maestro/wK.svg": {
+      "sha256": "ebb40ff9dbd991eafe3ebc4f026dd2cb37018fa6149e4c3af7de51c7db1962d5",
+      "source": "maestro/wK.svg"
+    },
+    "oat/maestro/bP.svg": {
+      "sha256": "aad42691a66839b8ebe61ce23da8061c503e99076e79ec5154db4c288e3d5133",
+      "source": "maestro/bP.svg"
+    },
+    "oat/maestro/bN.svg": {
+      "sha256": "87c957dc8838bf2228601e5bb3bff6f3930808490194f2afa26c39bde70207f5",
+      "source": "maestro/bN.svg"
+    },
+    "oat/maestro/bB.svg": {
+      "sha256": "cd3fe17f79a1d5ca845042bd17175b3d9fcf227425e8d17d527e5d6168dc1fd5",
+      "source": "maestro/bB.svg"
+    },
+    "oat/maestro/bR.svg": {
+      "sha256": "ec78a4202b9e5e76795b63276e08a77232ade65495aca73c811e917c3062e955",
+      "source": "maestro/bR.svg"
+    },
+    "oat/maestro/bQ.svg": {
+      "sha256": "4b1c5699a556d34305566abea1b15651d73e7211f669091615c19239ae9fbee9",
+      "source": "maestro/bQ.svg"
+    },
+    "oat/maestro/bK.svg": {
+      "sha256": "e8f53f14a9e9a89f1158e62d5b95d90c58956a35d8d565ead15812422adf2497",
+      "source": "maestro/bK.svg"
+    },
+    "oat/mpchess/wP.svg": {
+      "sha256": "41a7186cdb88e6eb9326bada366d1cdc3402763cd73834e82121b22510ab2888",
+      "source": "mpchess/wP.svg"
+    },
+    "oat/mpchess/wN.svg": {
+      "sha256": "827a825578b665ee67a4c4f79bbff4b186e4371f12bb682c794af56c891a8555",
+      "source": "mpchess/wN.svg"
+    },
+    "oat/mpchess/wB.svg": {
+      "sha256": "1121f76ab9a4a395cf5fb2e92eb0a5c4a82961e9cc50ae26d4388b520a767bb6",
+      "source": "mpchess/wB.svg"
+    },
+    "oat/mpchess/wR.svg": {
+      "sha256": "1dc93490bc2ca1096af514db42eafc565a9e14077a1b4f115ef001f38c50dd7d",
+      "source": "mpchess/wR.svg"
+    },
+    "oat/mpchess/wQ.svg": {
+      "sha256": "f75a11923776427a648c1866a4ba75b7963f92acf02e869a10537f21c854b31b",
+      "source": "mpchess/wQ.svg"
+    },
+    "oat/mpchess/wK.svg": {
+      "sha256": "ef22c037fbaa6052e82a3afe9695d754ec2adf6b26cdaed63817269448753197",
+      "source": "mpchess/wK.svg"
+    },
+    "oat/mpchess/bP.svg": {
+      "sha256": "4896a61de2a66bf19bff12424056ead8e4c025f12abd3e3069c6a795900c6156",
+      "source": "mpchess/bP.svg"
+    },
+    "oat/mpchess/bN.svg": {
+      "sha256": "2bf6d02f6ee376bd5017d1d3e25cc369685e4a7b47a4bbaa62c0704cb54977f3",
+      "source": "mpchess/bN.svg"
+    },
+    "oat/mpchess/bB.svg": {
+      "sha256": "9a93ba274e492b443237e7168d75e27ea5a714f8a5d8b468ca00ccf1aa8a10d0",
+      "source": "mpchess/bB.svg"
+    },
+    "oat/mpchess/bR.svg": {
+      "sha256": "215463ad3b8fc7dc3c709e0751d97bfe784e05dbb81ece428b09090e95baf57d",
+      "source": "mpchess/bR.svg"
+    },
+    "oat/mpchess/bQ.svg": {
+      "sha256": "efdfb4655a830a3228dfc793ae4e6b5740b1081ca8ded31c7e1ac7c3fcee63e8",
+      "source": "mpchess/bQ.svg"
+    },
+    "oat/mpchess/bK.svg": {
+      "sha256": "7bc9967887615bb1b6f4108ed9db2371f7fb33b615e8841b4c21d429f395a381",
+      "source": "mpchess/bK.svg"
+    },
+    "oat/totoy/wP.svg": {
+      "sha256": "6e729d5a68bb55da9739cb19d1fe6d8e836bde4c2133b0fcf6a3dbb4fee94a94",
+      "source": "totoy/wP.svg"
+    },
+    "oat/totoy/wN.svg": {
+      "sha256": "b5b3d0dc1eb2668562d04d9af392d6e36c23ca4a95a2657f7d07c24b60cf6724",
+      "source": "totoy/wN.svg"
+    },
+    "oat/totoy/wB.svg": {
+      "sha256": "d299cfac20afb2dae9c76e236cea859ac66a1480913469acb859e41c363e4bf3",
+      "source": "totoy/wB.svg"
+    },
+    "oat/totoy/wR.svg": {
+      "sha256": "13a4f4fcb7b4dc254f6b1d53b8fc540f4f8138a45a5e3d7b17bc58475d6cdb12",
+      "source": "totoy/wR.svg"
+    },
+    "oat/totoy/wQ.svg": {
+      "sha256": "18ae3e6a86f38b2e40504919aa5934dd872835145f6bd7a087890ed2e94cacdc",
+      "source": "totoy/wQ.svg"
+    },
+    "oat/totoy/wK.svg": {
+      "sha256": "607f074a2c4ad10f6e20c97059e4a0417ecf1cdca083197f0ab3bd9ccb26a0d4",
+      "source": "totoy/wK.svg"
+    },
+    "oat/totoy/bP.svg": {
+      "sha256": "d46849a8ace22bd0f07dfa703f965e620efc30909d7ec27df7ebfabdf34d5d36",
+      "source": "totoy/bP.svg"
+    },
+    "oat/totoy/bN.svg": {
+      "sha256": "24494aea75e7dcd8f8f1531cb5575ab489f39d2963f3b119b2d50a35851bd1ac",
+      "source": "totoy/bN.svg"
+    },
+    "oat/totoy/bB.svg": {
+      "sha256": "2b344fc8a6241c9057256eceaf053b16e3f05f0d4cf4b3570a58814519544e18",
+      "source": "totoy/bB.svg"
+    },
+    "oat/totoy/bR.svg": {
+      "sha256": "f8731e0d00fa5ea38fde3318c782a5cf015f86f95de32ec44e7259323f2f24ef",
+      "source": "totoy/bR.svg"
+    },
+    "oat/totoy/bQ.svg": {
+      "sha256": "478388d92691379cbc6b79ac857f8308d4930c89d01d3e109724cc27a8d67122",
+      "source": "totoy/bQ.svg"
+    },
+    "oat/totoy/bK.svg": {
+      "sha256": "d57ffcee466e3e6609e2697fcacdc2982bf90efb2469d956a8c806c82eb7ea1e",
+      "source": "totoy/bK.svg"
+    },
+    "blush/cburnett/wP.svg": {
+      "sha256": "d6ca6f47797ad1ff9e5b7235fe875c72b1c5353167a08ec820911e127eff5bda",
+      "source": "cburnett/wP.svg"
+    },
+    "blush/cburnett/wN.svg": {
+      "sha256": "6b4e372e7e78f501a34bdca0ce7278a02bd570cb833919b0e6e4c1f95c992a7e",
+      "source": "cburnett/wN.svg"
+    },
+    "blush/cburnett/wB.svg": {
+      "sha256": "e7423df40500eed2e8761becad6929c5f1858a29e067057f02655b64552830e9",
+      "source": "cburnett/wB.svg"
+    },
+    "blush/cburnett/wR.svg": {
+      "sha256": "c95f0cd53fd3083548d1d8a86bb322ab9ce2eee02ea24a414927209e22e7a807",
+      "source": "cburnett/wR.svg"
+    },
+    "blush/cburnett/wQ.svg": {
+      "sha256": "dae1c22d4e74568a277cb486a4e0ddd962dd9d2980c44c7521792c702b983300",
+      "source": "cburnett/wQ.svg"
+    },
+    "blush/cburnett/wK.svg": {
+      "sha256": "88827f447966429102c9a6479fcc5cf3351b1a977325c30a80e0b0b9166da759",
+      "source": "cburnett/wK.svg"
+    },
+    "blush/cburnett/bP.svg": {
+      "sha256": "444205d749ebf783610088935aa0b3c48527a39a57eec63f9a0777d6f7e9f16a",
+      "source": "cburnett/bP.svg"
+    },
+    "blush/cburnett/bN.svg": {
+      "sha256": "3be245f29409af96a1a23c87e3194f856f47dba5df95b8d0516062d33e72fc41",
+      "source": "cburnett/bN.svg"
+    },
+    "blush/cburnett/bB.svg": {
+      "sha256": "3d763d62cab599e31592c1db820091013914fdc520f059af1640c07bf3d8f1a6",
+      "source": "cburnett/bB.svg"
+    },
+    "blush/cburnett/bR.svg": {
+      "sha256": "226a0bccbdaa65e0524c866c051c6eaea7b03338cc9cd69d4dfb44a6419d6fef",
+      "source": "cburnett/bR.svg"
+    },
+    "blush/cburnett/bQ.svg": {
+      "sha256": "2030812c0d8bb267b5c33966c3828a80811462a31e675c2d2d1d8d94b1458f6e",
+      "source": "cburnett/bQ.svg"
+    },
+    "blush/cburnett/bK.svg": {
+      "sha256": "3083a8f01321e5eb51a97575dbb2a94fc0fad02bf0ba477e986e9c9aca6e7508",
+      "source": "cburnett/bK.svg"
+    },
+    "blush/maestro/wP.svg": {
+      "sha256": "9786710270aaeea062ef9ea31e79b08e3aca061d72e5cb5395e823c03bb0fe61",
+      "source": "maestro/wP.svg"
+    },
+    "blush/maestro/wN.svg": {
+      "sha256": "ff1a2dcd757a716c85f0c8868586c4bbc389c4dcbc7052efb47e9c4d7e790ffd",
+      "source": "maestro/wN.svg"
+    },
+    "blush/maestro/wB.svg": {
+      "sha256": "266c7f7822e014f23106a27cec8e9611a026138eb3bb36754faae7d1ca1146e6",
+      "source": "maestro/wB.svg"
+    },
+    "blush/maestro/wR.svg": {
+      "sha256": "2dfad9af60dfbc2b5bf6dbc2fc191316ab041fb8acf46b417fb0636602827e89",
+      "source": "maestro/wR.svg"
+    },
+    "blush/maestro/wQ.svg": {
+      "sha256": "a981fc943b0c2f61e9ef75eed6361f652a9329ed4c1ad4120045610695b3cbe3",
+      "source": "maestro/wQ.svg"
+    },
+    "blush/maestro/wK.svg": {
+      "sha256": "b5e922e46e60c9bff8af9d240f2bc0f49737b40d0ba8899fc743bcf47bdf6c1f",
+      "source": "maestro/wK.svg"
+    },
+    "blush/maestro/bP.svg": {
+      "sha256": "8969b570b2287e29ddc75d0c18db27da80b7d422cd38aa02705d52b8c4d52aa4",
+      "source": "maestro/bP.svg"
+    },
+    "blush/maestro/bN.svg": {
+      "sha256": "f2b36f52911ef38c80398b2fef4cd5699d7b4e5975526db641822cdef351bfef",
+      "source": "maestro/bN.svg"
+    },
+    "blush/maestro/bB.svg": {
+      "sha256": "e81f64a46daa5f79a7c966cc2341f15f6b694c6357ec0ce4d36ad57c213d9242",
+      "source": "maestro/bB.svg"
+    },
+    "blush/maestro/bR.svg": {
+      "sha256": "a70a76d703641ba1710d9c99b0e26e7f9503a8cebdfaf170605192933558b7b3",
+      "source": "maestro/bR.svg"
+    },
+    "blush/maestro/bQ.svg": {
+      "sha256": "433fb25075ba02c72e6c78d14113e5ad3aaef9c73fe6c70c3b765ce7a5acf207",
+      "source": "maestro/bQ.svg"
+    },
+    "blush/maestro/bK.svg": {
+      "sha256": "5066e8f2e7d8290c8b8e4599e1ad3ec3742d8e0576de38d607bdafb2632a14b5",
+      "source": "maestro/bK.svg"
+    },
+    "blush/mpchess/wP.svg": {
+      "sha256": "70d6ed522e48df29bd56992f136a25920c71629917a5f0888ccdcf5d4711a87a",
+      "source": "mpchess/wP.svg"
+    },
+    "blush/mpchess/wN.svg": {
+      "sha256": "4ebeee25d0cf044eae8fb25029388df2b66a65088a10e617a15be3756ff2442d",
+      "source": "mpchess/wN.svg"
+    },
+    "blush/mpchess/wB.svg": {
+      "sha256": "d9e072f04b325adc75b34474d674d53ad66c97b60aa4064f75d75161c155581b",
+      "source": "mpchess/wB.svg"
+    },
+    "blush/mpchess/wR.svg": {
+      "sha256": "b1f695ae62c6f98663e38cecb973a5e0c9bddb5c11ce37f8b4a7ed460daeb1e2",
+      "source": "mpchess/wR.svg"
+    },
+    "blush/mpchess/wQ.svg": {
+      "sha256": "914a11ca03e3aab810465294e87a33560e81774e4768630bcfa63c0dff7753bc",
+      "source": "mpchess/wQ.svg"
+    },
+    "blush/mpchess/wK.svg": {
+      "sha256": "8114908f70ddb4ca747842eb1742897251d284734ba800776590b3479a1ebb46",
+      "source": "mpchess/wK.svg"
+    },
+    "blush/mpchess/bP.svg": {
+      "sha256": "151e5030931320acf7563a17164bff58654cfdaf2db0b39c61b75b300efdcb95",
+      "source": "mpchess/bP.svg"
+    },
+    "blush/mpchess/bN.svg": {
+      "sha256": "6896e122ccb8f5365c7bfdeb6179768798d9868974828fe4281aa61f0191ea9e",
+      "source": "mpchess/bN.svg"
+    },
+    "blush/mpchess/bB.svg": {
+      "sha256": "c82b96f7f95e7c432f459790fd6cfb0f6c73ba25cad263d7b923d854d2711a27",
+      "source": "mpchess/bB.svg"
+    },
+    "blush/mpchess/bR.svg": {
+      "sha256": "3531545c246269f3a5c33f0d10bc36e1520fd1612908533569f308fa5b518a73",
+      "source": "mpchess/bR.svg"
+    },
+    "blush/mpchess/bQ.svg": {
+      "sha256": "d1df0217a80ff017c3b475a502a841f5d6e16fbe4d6387c18a8bbba8ee334e7f",
+      "source": "mpchess/bQ.svg"
+    },
+    "blush/mpchess/bK.svg": {
+      "sha256": "a62e78ed47e74165ee3ae86a7981d48d90b348276d6012bbb37fefbe6566d22a",
+      "source": "mpchess/bK.svg"
+    },
+    "blush/totoy/wP.svg": {
+      "sha256": "2c888ccf9131c0df0f4fa9c1148ea11af2b34525956af10e09f3efba6a88ece0",
+      "source": "totoy/wP.svg"
+    },
+    "blush/totoy/wN.svg": {
+      "sha256": "bada8142732378266aba94312f5d1bf6ba7b55ecbab5941e824ad5a65f4fd2cd",
+      "source": "totoy/wN.svg"
+    },
+    "blush/totoy/wB.svg": {
+      "sha256": "e4c086a85c337d900cacb0b946c012454fc0191cc83a25098c673f066b8b7100",
+      "source": "totoy/wB.svg"
+    },
+    "blush/totoy/wR.svg": {
+      "sha256": "5a6ec52b2c42385df9dab7e468a88dda613a31ea04ff79547ef1791da2ba66be",
+      "source": "totoy/wR.svg"
+    },
+    "blush/totoy/wQ.svg": {
+      "sha256": "e2c61b553277b3918829e60034a7a7526144ef266bb9588c9ad3385b0631863e",
+      "source": "totoy/wQ.svg"
+    },
+    "blush/totoy/wK.svg": {
+      "sha256": "60372b748412d99aa9cb55dd63781c0c493cbaba20b020275c9ef23ca53955df",
+      "source": "totoy/wK.svg"
+    },
+    "blush/totoy/bP.svg": {
+      "sha256": "cfeb322af8e0600ccc4583df85b2becc1cd7b02e653f7940c8221276642cf2df",
+      "source": "totoy/bP.svg"
+    },
+    "blush/totoy/bN.svg": {
+      "sha256": "8097d22e3ef6460c7796efcedf62692e2e40151277ec5fef52efc1a6adb0f2d6",
+      "source": "totoy/bN.svg"
+    },
+    "blush/totoy/bB.svg": {
+      "sha256": "f7e76c7c108643f516dfd6c4e08e75cb4fe330e694caef7cbfb87772e1a87217",
+      "source": "totoy/bB.svg"
+    },
+    "blush/totoy/bR.svg": {
+      "sha256": "1af25fad6cdd492780b40690ed3d543e31d32d81e44410d4b00ee534895b59ab",
+      "source": "totoy/bR.svg"
+    },
+    "blush/totoy/bQ.svg": {
+      "sha256": "a8f5e230837a1743469976cfa9af63c664957188f06769be0bf64d91cd725bdf",
+      "source": "totoy/bQ.svg"
+    },
+    "blush/totoy/bK.svg": {
+      "sha256": "6d3a6f475ae11e1dc5aab5ff3905ae9747ff721b419df8532e62aff07cb3e5ae",
+      "source": "totoy/bK.svg"
+    },
+    "mist/cburnett/wP.svg": {
+      "sha256": "27f7f767d28eddc3e1dabfb353c2b1f47e288285382f386da1b7e1923925c373",
+      "source": "cburnett/wP.svg"
+    },
+    "mist/cburnett/wN.svg": {
+      "sha256": "46269e2c0565f1d8faa5a23bc84b1def19efb4dd02600cf417e301bbaba3786a",
+      "source": "cburnett/wN.svg"
+    },
+    "mist/cburnett/wB.svg": {
+      "sha256": "2c4ae1ba3d61010f1b0776e948213cb428e9908c2004f601dc8d9e3f45f65e51",
+      "source": "cburnett/wB.svg"
+    },
+    "mist/cburnett/wR.svg": {
+      "sha256": "130d2ed6192890d7cdd8fbf94600226c0948c31fc85b62f06580ced448450e84",
+      "source": "cburnett/wR.svg"
+    },
+    "mist/cburnett/wQ.svg": {
+      "sha256": "3e548f9cbeb9f43643ac7b6c7676625a4c52e4821a9c9040ca191de450934c86",
+      "source": "cburnett/wQ.svg"
+    },
+    "mist/cburnett/wK.svg": {
+      "sha256": "cd4133533e812595f066d299f80d4f2501ae63a0d94ebee48bc3e2ef24b7d7d9",
+      "source": "cburnett/wK.svg"
+    },
+    "mist/cburnett/bP.svg": {
+      "sha256": "0994f23053c74b2adb8459cd5a18f30495f9ecf5e1d1c627033215b021ab5f0b",
+      "source": "cburnett/bP.svg"
+    },
+    "mist/cburnett/bN.svg": {
+      "sha256": "7d32f586d6ea04d6c1d441023c05cc0b78c2094beca4ee1139aa8e24538a7f47",
+      "source": "cburnett/bN.svg"
+    },
+    "mist/cburnett/bB.svg": {
+      "sha256": "9489056c2b4e26528f52ec9a779f58db732d33f79d42a8699f20ca8c2f549619",
+      "source": "cburnett/bB.svg"
+    },
+    "mist/cburnett/bR.svg": {
+      "sha256": "b8c167b09ef3fd82a5dbd91cf4396a12a4d0a7438345e9a5cd88d3bfae411f44",
+      "source": "cburnett/bR.svg"
+    },
+    "mist/cburnett/bQ.svg": {
+      "sha256": "0b9328c7b55a52225fed7c4d3a8097558536842e62f2e1d728b7a8c8a771c704",
+      "source": "cburnett/bQ.svg"
+    },
+    "mist/cburnett/bK.svg": {
+      "sha256": "53ce4fbe48515fbe24c8c8b897b9be07e6546caa3758e926c193972a2aa6edda",
+      "source": "cburnett/bK.svg"
+    },
+    "mist/maestro/wP.svg": {
+      "sha256": "23407518137c43af297abe599caaa7b3aab960f45f2fc7e811a7843c2c9bc54a",
+      "source": "maestro/wP.svg"
+    },
+    "mist/maestro/wN.svg": {
+      "sha256": "c97e39be3eb383e94020b6262bb5d2cd5da68edc3f7d89b627755a8e4c6d0ce6",
+      "source": "maestro/wN.svg"
+    },
+    "mist/maestro/wB.svg": {
+      "sha256": "931becd33e4d2fbf6bf08eadc41f5b450d8e17885f471525562ed64c7a29d191",
+      "source": "maestro/wB.svg"
+    },
+    "mist/maestro/wR.svg": {
+      "sha256": "2faed49f3dbb5709dabee99129066914b74278e34e4f190a58f9ec89174c5c13",
+      "source": "maestro/wR.svg"
+    },
+    "mist/maestro/wQ.svg": {
+      "sha256": "c6aee976f0766fd55941a9d7c88e60572e39e92980cc43e263dd18988b837a8b",
+      "source": "maestro/wQ.svg"
+    },
+    "mist/maestro/wK.svg": {
+      "sha256": "ec94cddde5d85cb5834952e5000a46b0ed684bea0addd19de53760955ab46176",
+      "source": "maestro/wK.svg"
+    },
+    "mist/maestro/bP.svg": {
+      "sha256": "8b1c316be639bf568ae8448c6034032e1d6c0e9cd665b8299414efd60da06109",
+      "source": "maestro/bP.svg"
+    },
+    "mist/maestro/bN.svg": {
+      "sha256": "f09ee53cdecf2066c3d3c48078bbdd61083a43dd101c5d6b296ecc0f8a9799f2",
+      "source": "maestro/bN.svg"
+    },
+    "mist/maestro/bB.svg": {
+      "sha256": "53a79daba44666fa1854ede3667c4d5a7e72a27d36fa008c5eb57ae5ed8693cf",
+      "source": "maestro/bB.svg"
+    },
+    "mist/maestro/bR.svg": {
+      "sha256": "33a2fa7f20c7f312fc69321e6fb6d7438cf83df157a180fc3c4e4c6a1dbcf721",
+      "source": "maestro/bR.svg"
+    },
+    "mist/maestro/bQ.svg": {
+      "sha256": "967c5cfb6678d0976b35fd92a65a1b54951f39d88829f7457e103cfba984fd45",
+      "source": "maestro/bQ.svg"
+    },
+    "mist/maestro/bK.svg": {
+      "sha256": "962e7263bdf04255dd49d72cee6a306b04cc87368d297c6ec84aa81d931cac94",
+      "source": "maestro/bK.svg"
+    },
+    "mist/mpchess/wP.svg": {
+      "sha256": "1743ede2382eb365ccca254086019bc4827c4cbb0ca6a8d518b66d95932932c4",
+      "source": "mpchess/wP.svg"
+    },
+    "mist/mpchess/wN.svg": {
+      "sha256": "38713174f627bce7090b2617376d39d8bc6a297476c50478b73648004b829af3",
+      "source": "mpchess/wN.svg"
+    },
+    "mist/mpchess/wB.svg": {
+      "sha256": "6bd7cd6e7724cc1b60364bb02ca7202ea3d8bb7d954207402ea8b2bb1c8a0bc0",
+      "source": "mpchess/wB.svg"
+    },
+    "mist/mpchess/wR.svg": {
+      "sha256": "b26333ee8fabad325659afd92b2ff698e28e798be916fa6e10f22b411ed75956",
+      "source": "mpchess/wR.svg"
+    },
+    "mist/mpchess/wQ.svg": {
+      "sha256": "2db44134fdfe11f442b7191822eb75372b55149fbe413e65b4a211262b04b9b1",
+      "source": "mpchess/wQ.svg"
+    },
+    "mist/mpchess/wK.svg": {
+      "sha256": "f32908f8c724b20afae2b44410d665d4f3e390bc00be1131fba826b2ba73c426",
+      "source": "mpchess/wK.svg"
+    },
+    "mist/mpchess/bP.svg": {
+      "sha256": "cbabfeaea77c09c9e828c3573cd02edc7df10b96942abfaed6f0daa03135993b",
+      "source": "mpchess/bP.svg"
+    },
+    "mist/mpchess/bN.svg": {
+      "sha256": "40c5b6ff94aa0cba59ad1ef4c603c340fdc023a6c38c29f12f33e55a4066b9fb",
+      "source": "mpchess/bN.svg"
+    },
+    "mist/mpchess/bB.svg": {
+      "sha256": "6f86bebed0f7645beef71bb4592d50268d4c18a582e820f647a34e918f732029",
+      "source": "mpchess/bB.svg"
+    },
+    "mist/mpchess/bR.svg": {
+      "sha256": "c0b4e5bbe868858d469c833280d1d46a65847e58ab65617bcc09590454169426",
+      "source": "mpchess/bR.svg"
+    },
+    "mist/mpchess/bQ.svg": {
+      "sha256": "6225380a7730a9e4fe469366461741218f2ddf5123e8035c2b5a981a9b9c8580",
+      "source": "mpchess/bQ.svg"
+    },
+    "mist/mpchess/bK.svg": {
+      "sha256": "03dfebfe11415bcc895104239582c74af6913ea61513ca47b16ad65a8574a68f",
+      "source": "mpchess/bK.svg"
+    },
+    "mist/totoy/wP.svg": {
+      "sha256": "c9955bf41843e54c8c0a1591bf34a7619e3abe79fb3898cfd214066038e75e19",
+      "source": "totoy/wP.svg"
+    },
+    "mist/totoy/wN.svg": {
+      "sha256": "390cb3b6762a8972d9aabc5c27827040320af7e4a19f2f3f71a2385c9d105277",
+      "source": "totoy/wN.svg"
+    },
+    "mist/totoy/wB.svg": {
+      "sha256": "9a9da1085a8105369959d81d3db24de3ae9968add92de509493690645c6a0487",
+      "source": "totoy/wB.svg"
+    },
+    "mist/totoy/wR.svg": {
+      "sha256": "e062f6db5fd9064a212cb4dc9755de30eafa1b8006e65106addfa1a48cd8fba7",
+      "source": "totoy/wR.svg"
+    },
+    "mist/totoy/wQ.svg": {
+      "sha256": "bac758dbb63eb233579436f9b0f89821eaecaf0db0b5d766f2087ce03e69964d",
+      "source": "totoy/wQ.svg"
+    },
+    "mist/totoy/wK.svg": {
+      "sha256": "2c8fff9aba635d7cb31d9da17aaf8e7c10f9faf18894dc08dfd51f45748482d3",
+      "source": "totoy/wK.svg"
+    },
+    "mist/totoy/bP.svg": {
+      "sha256": "0c6663a06d991259e9ca2d16e0a4703b11aec91db9f764e291a95721eb091443",
+      "source": "totoy/bP.svg"
+    },
+    "mist/totoy/bN.svg": {
+      "sha256": "a074bcee63dc716fa62bd2094aa249e808e2817cd2a8721f60b00cbe6c5b1715",
+      "source": "totoy/bN.svg"
+    },
+    "mist/totoy/bB.svg": {
+      "sha256": "c0cdd567f0d1941ff8f5a751ecafe53c2595739292791e9285a26cae5278df13",
+      "source": "totoy/bB.svg"
+    },
+    "mist/totoy/bR.svg": {
+      "sha256": "4c72b88839258fb296f645290a698fb3b8393bebd61d261dddc92c21f25121e4",
+      "source": "totoy/bR.svg"
+    },
+    "mist/totoy/bQ.svg": {
+      "sha256": "5935589c4c061a2fc30eb565fa01cf0e31dfa4ca74d179014c83420c21b3e70a",
+      "source": "totoy/bQ.svg"
+    },
+    "mist/totoy/bK.svg": {
+      "sha256": "9be74b1f6361d5b4f7427efe393a36ccb86385b6785ea9086cf31372ee5bfcb3",
+      "source": "totoy/bK.svg"
+    }
+  }
+}

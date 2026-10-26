@@ -58,14 +58,7 @@
 /* from v13.css */
 
 /* Board pieces, typography and music: guaranteed local rendering. */
-:root{--white-piece:#fcfbf4;--white-outline:#4d534f;--black-piece:#2c3934;--black-outline:#e1e0d7}
-.piece-svg{display:block;width:77%;height:77%;overflow:visible;filter:drop-shadow(0 2px 1px #15151526)}
-.piece-svg.white path{fill:var(--white-piece);stroke:var(--white-outline);stroke-width:20;paint-order:stroke fill}
-.piece-svg.black path{fill:var(--black-piece);stroke:#c4cbbd;stroke-width:10;paint-order:stroke fill}
-:root[data-piece-style="rhosgfx"] .piece-svg{width:79%;height:79%;filter:drop-shadow(0 2px 1px #0000000d)}
-:root[data-piece-style="rhosgfx"] .piece-svg.white path{stroke-width:14}
-:root[data-piece-style="fantasy"] .piece-svg{width:75%;height:75%;filter:none}
-:root[data-piece-style="fantasy"] .piece-svg.white path{stroke-width:28}
+:root{}
 .play-mode-bar{justify-content:center}
 .era-bar{grid-template-columns:repeat(5,minmax(0,1fr))}
 
@@ -119,8 +112,6 @@ html{font-size:16px;scroll-behavior:smooth}body{font-family:'Noto Sans SC','Micr
 .arrows{inset:20px 9px 27px 27px;width:calc(100% - 36px);height:calc(100% - 47px)}
 .piece{width:100%;height:100%;min-width:0;min-height:0;display:grid;place-items:center;overflow:hidden;contain:layout paint;z-index:3}
 .piece-visual{width:100%;height:100%;display:grid;place-items:center;position:relative;pointer-events:none;overflow:hidden}
-.piece-visual>.piece-backup{grid-area:1/1;width:100%;height:100%;display:grid;place-items:center}
-.piece-visual>.piece-backup .piece-svg{width:66%!important;height:71%!important;max-width:72%;max-height:77%;filter:drop-shadow(0 1px 1px #171a1420);overflow:visible}
 .piece-visual>.piece-art-img{grid-area:1/1;display:block;width:79%!important;height:79%!important;max-width:79%;max-height:79%;object-fit:contain;z-index:2;opacity:0;transition:opacity 140ms ease;pointer-events:none}
 .piece-visual>.piece-art-img.loaded{opacity:1}
 .piece-visual>.piece-art-img.unavailable{display:none}
@@ -196,9 +187,6 @@ body{line-height:1.58}
 .piece-visual > .piece-art-img{display:block!important;grid-area:1/1;width:69%!important;height:69%!important;max-width:69%!important;max-height:69%!important;object-fit:contain!important;overflow:hidden;opacity:0;filter:drop-shadow(0 1px 1px #292e2619);transition:opacity .15s ease}
 .piece-visual.asset-ready > .piece-art-img{opacity:1}
 .piece-visual.asset-failed > .piece-art-img{display:none!important}
-.piece-visual > .piece-backup{grid-area:1/1;display:grid;place-items:center;width:100%;height:100%;opacity:1;pointer-events:none}
-.piece-visual.asset-ready > .piece-backup{display:none!important}
-.piece-visual > .piece-backup .piece-svg{width:61%!important;height:61%!important;max-width:61%;max-height:61%;overflow:hidden!important}
 .floating-piece{overflow:hidden!important}
 .floating-piece > .piece-visual{width:100%;height:100%}
 .transport{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(56px,1fr) repeat(3,minmax(0,1fr));gap:8px}
@@ -349,8 +337,6 @@ button:not(.square).press-feedback:not(:disabled){background-image:linear-gradie
 .mode-segment button.selected,.tab.active,.era-btn.selected{transition:background-color .2s var(--ui-ease),color .2s var(--ui-ease)!important}
 /* Avoid fuzzy nested compositing and doubled vector scaling. ViewBox stays SVG-native. */
 .piece-visual>.piece-art-img{width:73%!important;height:73%!important;max-width:73%!important;max-height:73%!important;object-fit:contain!important;filter:none!important;transform:none!important;image-rendering:auto!important;backface-visibility:visible;will-change:auto}
-.piece-visual,.piece-visual>.piece-backup{transform:none!important;filter:none!important}
-.piece-visual .piece-svg{shape-rendering:geometricPrecision;text-rendering:geometricPrecision}
 .floating-piece{transform-origin:0 0;backface-visibility:hidden;will-change:transform;contain:layout paint}
 #board{isolation:isolate}
 /* Move hint uses a restrained surface wash, not a thick animated outline. */
@@ -374,9 +360,7 @@ button:not(.square).press-feedback:not(:disabled){background-image:linear-gradie
 #music-play svg{display:block;width:24px;height:24px;margin:auto;fill:currentColor;stroke:none}
 #music-toggle .music-status-icon{transform:none!important}
 .piece-visual.asset-ready>.piece-art-img{opacity:1!important}
-.piece-visual.asset-ready>.piece-backup{display:none!important}
 .piece-visual>.piece-art-img{width:72%!important;height:72%!important;max-width:72%!important;max-height:72%!important;transition:opacity .12s linear!important;image-rendering:auto!important;filter:none!important;backface-visibility:visible!important}
-.piece-visual>.piece-backup{filter:none!important}
 /* More exact pixel rasterization at browser default zoom when supported */
 @supports(width:round(nearest,2.75px,1px)){
  .piece-visual>.piece-art-img{width:round(nearest,72%,1px)!important;height:round(nearest,72%,1px)!important}
@@ -406,7 +390,6 @@ body[data-play-mode="book"] #panel-notes .panel-heading #record-heading{font-siz
 @media(max-width:980px){.studio{grid-template-columns:1fr!important}.board-block{margin-inline:auto}.right{width:100%}}
 /* Restore delicate solid-outline antique piece set with SVG-native antialiasing and bounded geometry. */
 .piece-visual>.piece-art-img{width:74%!important;height:74%!important;max-width:74%!important;max-height:74%!important;object-fit:contain;filter:none!important;image-rendering:auto!important;transform:none!important}
-.piece-visual.asset-ready>.piece-backup{display:none!important}
 .floating-piece .piece-visual>.piece-art-img{width:74%!important;height:74%!important}
 /* Shared theme colors for all motion and selection affordances. */
 .square.last.light{background:color-mix(in srgb,var(--accent) 13%,var(--light))!important}
@@ -698,8 +681,8 @@ body[data-play-mode="book"] #status{min-height:0}
 .brand-face-back{transform:rotateY(180deg)}
 .brand-knight{
  display:block;width:29px;height:29px;background:currentColor;
- -webkit-mask:url('./assets/logo-knight.svg?v=1') center/contain no-repeat;
- mask:url('./assets/logo-knight.svg?v=1') center/contain no-repeat;
+ -webkit-mask:url('./assets/logo-knight.svg?v=2') center/contain no-repeat;
+ mask:url('./assets/logo-knight.svg?v=2') center/contain no-repeat;
  transform:translateX(-1px);-webkit-text-stroke:0;filter:none
 }
 @keyframes brand-coin{

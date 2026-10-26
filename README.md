@@ -84,7 +84,7 @@ python serve.py --check
 
 外观切换的逐帧检查、延迟图片加载、原位缩放、连续选择、对局不中断和减少动态效果：`node tests/appearance.cjs`。
 
-经典置首与默认、保存选择兼容、三种实心白子及六主题可读性：`node tests/classic-pieces.cjs`。重建三种实心白子：`python scripts/solid_classic_pieces.py`，修改后同步 `piece-art.js` 的 `ART_REVISION` 并重建 bundle。
+棋子顺序为经典 Cburnett、拟真 Maestro、极简 Mpchess、抽象 Totoy，默认经典。均来自 Lichess 官方原图，保留造型与原始描边，按六套主题生成静态配色，来源及各自许可见 [棋子说明](assets/pieces/README.md)（Maestro 限非商业用途）。图形与许可校验：`python tests/piece_assets.py`；六主题视觉检查：`node tests/classic-pieces.cjs`；重建主题：`python scripts/build_piece_themes.py`。
 
 对弈从选定着法放映、暂停/继续、引擎暂停恢复及旧回复隔离：`node tests/playback.cjs`。个人棋谱删除失败保留、删除成功持久化、设置弹窗展开状态：`node tests/storage-failure.cjs`。
 

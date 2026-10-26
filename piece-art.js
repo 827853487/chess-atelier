@@ -1,17 +1,21 @@
-// High-contrast vector Chess Atelier set, with user-selectable alternate open-license artwork.
+// Original Lichess artwork: Cburnett (Colin M. L. Burnett, GPL-2.0+),
+// Maestro (sadsnake1, CC-BY-NC-SA-4.0), Mpchess (Maxime Chupin, GPL-3.0+),
+// Totoy (Kosal Sen, CC-BY-4.0). Exact source commit/hash and licenses:
+// assets/pieces/manifest.json and README.md. Theme SVGs only change colors;
+// no runtime fill/stroke overrides, glyph substitution, or geometry changes.
 // 棋子标记串在一次绘制里是固定的，这里缓存 HTML 字符串，
 // 避免长棋谱每走一步都重新拼接同一段 SVG / img 标签。
-const choices=new Set(['fantasy','chessnut','rhosgfx']);
+const choices=new Set(['cburnett','maestro','mpchess','totoy']);
 // Bump when SVG artwork changes so an existing browser cache sees the new set.
-const ART_REVISION='3';
-export function setPieceStyle(v){document.documentElement.dataset.pieceStyle=choices.has(v)?v:'rhosgfx';}
+const ART_REVISION='4';
+export function setPieceStyle(v){document.documentElement.dataset.pieceStyle=choices.has(v)?v:'cburnett';}
 const cache=new Map();
-export function pieceSvg(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'rhosgfx'){
+export function pieceSvg(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'cburnett'){
  const code=(color==='w'?'w':'b')+type.toUpperCase();
  const key=theme+'|'+style+'|'+code;
  let html=cache.get(key);
  if(html===undefined){
-  html=`<span class="piece-visual"><span class="piece-backup" aria-hidden="true">${fallbackSvg(type,color)}</span><img class="piece-art-img" alt="" draggable="false" decoding="async" src="./assets/pieces-themed/${theme}/${style}/${code}.svg?v=${ART_REVISION}" onload="this.parentElement.classList.remove('asset-failed');delete this.dataset.retry;this.parentElement.classList.add('asset-ready')" onerror="var v=this.parentElement;v.classList.remove('asset-ready');if(this.dataset.retry){v.classList.add('asset-failed');return}this.dataset.retry='1';var s=this.src;setTimeout(function(){this.src=s},90)" /></span>`;
+  html=`<span class="piece-visual"><span class="piece-missing" aria-hidden="true" hidden>?</span><img class="piece-art-img" alt="" draggable="false" decoding="async" src="./assets/pieces-themed/${theme}/${style}/${code}.svg?v=${ART_REVISION}" onload="this.parentElement.classList.remove('asset-failed');this.parentElement.classList.add('asset-ready');this.previousElementSibling.hidden=true" onerror="if(!this.dataset.original){this.dataset.original='1';this.src='./assets/pieces/${style}/${code}.svg?v=${ART_REVISION}'}else{this.parentElement.classList.add('asset-failed');this.previousElementSibling.hidden=false}" /></span>`;
   cache.set(key,html);
  }
  return html;
@@ -29,7 +33,7 @@ export function pieceSvg(type,color,theme=document.documentElement.dataset.theme
 const POOL=new Map();   // poolKey -> 尚未使用的节点
 const WARM=new Set();   // 已确认该资源在浏览器里可用
 let poolScope='';
-const artScope=()=>`${document.documentElement.dataset.theme||'walnut'}|${document.documentElement.dataset.pieceStyle||'rhosgfx'}`;
+const artScope=()=>`${document.documentElement.dataset.theme||'walnut'}|${document.documentElement.dataset.pieceStyle||'cburnett'}`;
 const artKey=(type,color)=>artScope()+'|'+color+type;
 function ensureScope(){
  const s=artScope();
@@ -40,7 +44,7 @@ function markWarm(node){
  if(!v)return;
  v.classList.remove('asset-failed');v.classList.add('asset-ready');
 }
-function buildNode(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'rhosgfx'){
+function buildNode(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'cburnett'){
  const node=document.createElement('span');
  node.className='piece';
  node.dataset.artScope=theme+'|'+style;
