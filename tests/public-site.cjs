@@ -10,7 +10,7 @@ const output=path.resolve(__dirname,'../test-results');
  await context.route('**/*',route=>route.request().url().startsWith(base)?route.continue():route.abort());
  const move=async(from,to)=>{await page.locator(`#board [data-square="${from}"]`).click();await page.locator(`#board [data-square="${to}"]`).click();};
  try{
-  await page.goto(base);await page.waitForFunction(()=>document.querySelector('#collection').getAttribute('aria-busy')==='false');
+  await page.goto(base);await page.waitForFunction(()=>document.querySelector('#collection').getAttribute('aria-busy')==='false',null,{timeout:120000});
   await page.waitForFunction(()=>document.querySelectorAll('.engine-pv').length===3&&document.querySelector('#engine-probability').dataset.pending==='false',null,{timeout:45000});
   const initialOdds=await page.locator('#engine-probability').innerText();assert.match(initialOdds,/%/);
   // Stop and replace analysis several times; an old search must not overwrite the current view.

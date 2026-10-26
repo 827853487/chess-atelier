@@ -2313,12 +2313,22 @@ async function initLocal(){
 }
 async function loadBuiltinScores(){
  $('#collection').setAttribute('aria-busy','true');
- for(const pack of SCORE_PACKS){
-  if(state.archiveLoaded.has(pack.id))continue;
+ // Keep parsing / IDs in catalog order, but overlap up to four network round trips.
+ const packs=SCORE_PACKS.filter(pack=>!state.archiveLoaded.has(pack.id)),pending=new Map();
+ const prefetch=index=>{
+  for(let i=index;i<Math.min(index+4,packs.length);i++)if(!pending.has(i)){
+   const pack=packs[i];
+   pending.set(i,fetch('./data/complete/'+pack.file+(pack.revision?'?v='+pack.revision:''),{cache:'force-cache'})
+    .then(async response=>{if(!response.ok)throw Error('PGN HTTP '+response.status);return {text:await response.text()};})
+    .catch(error=>({error})));
+  }
+ };
+ for(let index=0;index<packs.length;index++){
+  prefetch(index);const pack=packs[index];
   try{
-   const res=await fetch('./data/complete/'+pack.file+(pack.revision?'?v='+pack.revision:''),{cache:'force-cache'});
-   if(!res.ok)continue;
-   const parts=splitPgn(await res.text());
+   const result=await pending.get(index);pending.delete(index);
+   if(result.error)throw result.error;
+   const parts=splitPgn(result.text);
    for(let i=0;i<parts.length;i++){
     const h=parsePgnHeaders(parts[i]);
     const white=h.White||'白方',black=h.Black||'黑方';
