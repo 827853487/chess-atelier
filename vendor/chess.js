@@ -65,6 +65,16 @@ export class Chess {
  move(value){let move=null,opts=legal(this._s),name='';if(typeof value==='string'){
   const seek=cleanMoveText(value).replace(/O-O-O/g,'OOO').replace(/O-O/g,'OO');
   move=opts.find(m=>cleanMoveText(san(this._s,m,opts)).replace(/O-O-O/g,'OOO').replace(/O-O/g,'OO')===seek);
+  // Older PGNs sometimes retain a redundant origin file/rank (e.g. Nge2
+  // when the other knight is pinned). Resolve only a unique LEGAL candidate;
+  // never accept an ambiguous token or relax the rules of chess.
+  if(!move){
+   const parts=/^([KQRBN])?([a-h])?([1-8])?(x?)([a-h][1-8])(?:=?([QRBN]))?$/.exec(seek);
+   if(parts){const [,piece,file,rank,capture,to,promotion]=parts,candidates=opts.filter(m=>{
+    const from=sq(m[0]),isCapture=this._s.b[m[1]]!=='.'||m[3]==='ep';
+    return this._s.b[m[0]].toUpperCase()===(piece||'P')&&sq(m[1])===to&&(!file||from[0]===file)&&(!rank||from[1]===rank)&&!!capture===isCapture&&(!m[2]?!promotion:m[2].toUpperCase()===promotion);
+   });if(candidates.length===1)move=candidates[0];}
+  }
   if(!move&&/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(value))move=opts.find(m=>sq(m[0])===value.slice(0,2)&&sq(m[1])===value.slice(2,4)&&(!m[2]||m[2]===(value[4]||'q')));
  }else if(value&&typeof value==='object')move=opts.find(m=>sq(m[0])===value.from&&sq(m[1])===value.to&&(!m[2]||m[2]===(value.promotion||'q')));
  if(!move)throw Error('Illegal move: '+JSON.stringify(value));const record=describe(this._s,move);this._s=apply(this._s,move);this._states.push(this._s);this._history.push(record);return {...record};}

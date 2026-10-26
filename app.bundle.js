@@ -69,6 +69,16 @@ class Chess {
  move(value){let move=null,opts=legal(this._s),name='';if(typeof value==='string'){
   const seek=cleanMoveText(value).replace(/O-O-O/g,'OOO').replace(/O-O/g,'OO');
   move=opts.find(m=>cleanMoveText(san(this._s,m,opts)).replace(/O-O-O/g,'OOO').replace(/O-O/g,'OO')===seek);
+  // Older PGNs sometimes retain a redundant origin file/rank (e.g. Nge2
+  // when the other knight is pinned). Resolve only a unique LEGAL candidate;
+  // never accept an ambiguous token or relax the rules of chess.
+  if(!move){
+   const parts=/^([KQRBN])?([a-h])?([1-8])?(x?)([a-h][1-8])(?:=?([QRBN]))?$/.exec(seek);
+   if(parts){const [,piece,file,rank,capture,to,promotion]=parts,candidates=opts.filter(m=>{
+    const from=sq(m[0]),isCapture=this._s.b[m[1]]!=='.'||m[3]==='ep';
+    return this._s.b[m[0]].toUpperCase()===(piece||'P')&&sq(m[1])===to&&(!file||from[0]===file)&&(!rank||from[1]===rank)&&!!capture===isCapture&&(!m[2]?!promotion:m[2].toUpperCase()===promotion);
+   });if(candidates.length===1)move=candidates[0];}
+  }
   if(!move&&/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(value))move=opts.find(m=>sq(m[0])===value.slice(0,2)&&sq(m[1])===value.slice(2,4)&&(!m[2]||m[2]===(value[4]||'q')));
  }else if(value&&typeof value==='object')move=opts.find(m=>sq(m[0])===value.from&&sq(m[1])===value.to&&(!m[2]||m[2]===(value.promotion||'q')));
  if(!move)throw Error('Illegal move: '+JSON.stringify(value));const record=describe(this._s,move);this._s=apply(this._s,move);this._states.push(this._s);this._history.push(record);return {...record};}
@@ -136,7 +146,7 @@ Chess;
 
 return { Chess };
 })();
-const { cloneRecord, recordRows, gameResult, standardPgn }=(()=>{
+const { cloneRecord, recordRows, gameResult, standardPgn, recordEnding }=(()=>{
 
 const START_FEN = new Chess().fen();
 const ROSTER = ['Event','Site','Date','Round','White','Black','Result'];
@@ -161,9 +171,26 @@ function recordRows(game){
 }
 function gameResult(game){
  if(game.isCheckmate())return game.turn()==='w'?'0-1':'1-0';
- if(game.isDraw())return '1/2-1/2';
  const result=game.header().Result;
+ // Preserve a recorded result rather than inferring an unclaimed draw.
+ if(['1-0','0-1','1/2-1/2'].includes(result))return result;
+ if(game.isDraw())return '1/2-1/2';
  return ['1-0','0-1','1/2-1/2','*'].includes(result)?result:'*';
+}
+function recordEnding(game,{recorded=false,atEnd=false,result=game.header().Result}={}){
+ // A mate prediction is not checkmate. Check the actual board first.
+ if(game.isCheckmate())return {title:`将死 · ${game.turn()==='w'?'黑方':'白方'}获胜`,detail:''};
+ if(recorded&&atEnd){
+  if(result==='1-0')return {title:'白方获胜',detail:''};
+  if(result==='0-1')return {title:'黑方获胜',detail:''};
+  if(result==='1/2-1/2')return {title:'和棋',detail:''};
+ }
+ if(game.isStalemate())return {title:'逼和',detail:'无合法着法且王未被将军'};
+ if(game.isInsufficientMaterial())return {title:'和棋',detail:'双方子力不足以将杀'};
+ // In a published mainline, claimable draws do not terminate playback.
+ if(!recorded&&game.isDraw())return {title:'和棋',detail:game.isThreefoldRepetition()?'三次重复局面':game._s?.half>=100?'五十回合规则':'符合和棋规则'};
+ if(recorded&&atEnd)return {title:'棋谱结束',detail:''};
+ return null;
 }
 function standardPgn(game, overrides={}){
  const h=game.header(),moves=game.history({verbose:true});
@@ -189,13 +216,13 @@ function standardPgn(game, overrides={}){
  return head+'\n\n'+lines.join('\n')+'\n\n';
 }
 
-return { cloneRecord, recordRows, gameResult, standardPgn };
+return { cloneRecord, recordRows, gameResult, standardPgn, recordEnding };
 })();
 const { browserEngineEnabled, browserEngineRequest, browserEngineStatus }=(()=>{
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
 function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
-const LEVELS={1:{name:'入门',elo:1320,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3190,ms:2200}};
+const LEVELS={1:{name:'入门',elo:1300,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3000,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
 const assetUrl=new URL('./vendor/stockfish/stockfish-19-lite-single.js',document.baseURI).href;
 class UciWorker{
@@ -297,7 +324,7 @@ class UciWorker{
 const play=new UciWorker(),analysis=new UciWorker();
 async function browserEngineStatus(){
  await play.ensure();
- return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[play.eloMin,play.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,elo:value.elo===null?null:Math.max(play.eloMin,Math.min(play.eloMax,value.elo))}]))};
+ return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[play.eloMin,play.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,engineElo:value.elo===null?null:Math.max(play.eloMin,Math.min(play.eloMax,value.elo))}]))};
 }
 function browserEngineRequest(path,body,options){
  if(path==='/api/play')return play.request(body,false,options);
@@ -2182,7 +2209,7 @@ function ensureSpectrum(){
 }
 function startSpectrum(){
  stopSpectrum();if(!spectrum)return;const data=new Uint8Array(spectrum.frequencyBinCount),groups=[[1,3],[3,6],[6,12],[12,24],[24,48]],bars=[...document.querySelectorAll('.wave-bars i')];
- const frame=()=>{if(audio.paused||$('music-panel').classList.contains('hidden')){spectrumFrame=0;return;}spectrum.getByteFrequencyData(data);groups.forEach(([from,to],i)=>{let total=0;for(let j=from;j<to;j++)total+=data[j];if(bars[i])bars[i].style.transform=`scaleY(${Math.max(.12,total/(to-from)/255).toFixed(3)})`;});spectrumFrame=requestAnimationFrame(frame);};spectrumFrame=requestAnimationFrame(frame);
+ const frame=()=>{if(audio.paused||$('music-panel').classList.contains('hidden')){spectrumFrame=0;return;}spectrum.getByteFrequencyData(data);groups.forEach(([from,to],i)=>{let total=0;for(let j=from;j<to;j++)total+=data[j];if(bars[i])bars[i].style.transform=`scaleY(${(.16+.84*Math.sqrt(total/(to-from)/255)).toFixed(3)})`;});spectrumFrame=requestAnimationFrame(frame);};spectrumFrame=requestAnimationFrame(frame);
 }
 const time=seconds=>Number.isFinite(seconds)&&seconds>=0?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'0:00';
 const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8 18.7 12 8 18.2z"/></svg>',pauseIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>';
@@ -2376,20 +2403,8 @@ function viewGame(){
 function headerResult(){return String(state.game.header?.()?.Result||state.currentScoreSource?.result||'');}
 function atRecordEnd(moves){return state.review&&moves.length>0&&state.view>=moves.length;}
 function finishBanner(g,moves){
- const last=state.view?moves[state.view-1]:null;
- if(g.isCheckmate())return `将死 · ${g.turn()==='w'?'黑方':'白方'}获胜`;
- if(last?.san?.includes('#'))return `将死 · ${last.color==='w'?'白方':'黑方'}获胜`;
- if(g.isStalemate())return '逼和<small>无合法着法且王未被将军</small>';
- if(g.isDraw()){
-  const why=g.isInsufficientMaterial()?'双方子力不足以将杀':g.isThreefoldRepetition()?'三次重复局面':g._s?.half>=100?'五十回合规则':'符合和棋规则';
-  return `和棋<small>${why}</small>`;
- }
- if(!atRecordEnd(moves))return '';
- const res=headerResult();
- if(res==='1/2-1/2')return '和棋';
- if(res==='1-0')return '白方获胜';
- if(res==='0-1')return '黑方获胜';
- return '';
+ const end=recordEnding(g,{recorded:state.review,atEnd:atRecordEnd(moves),result:headerResult()});
+ return end?safeText(end.title)+(end.detail?`<small>${safeText(end.detail)}</small>`:''):'';
 }
 function locationFor(r,c){return (state.orientation==='w'?FILES[c]:FILES[7-c])+(state.orientation==='w'?8-r:r+1);}
 function centerFor(s){let c=FILE_INDEX[s[0]],r=+s[1];return state.orientation==='w'?{x:50+c*100,y:50+(8-r)*100}:{x:50+(7-c)*100,y:50+(r-1)*100};}
@@ -2441,7 +2456,7 @@ function drawBoard(){
   }
  }
  const checked=g.isCheck();
- const turnColor=g.turn(),over=g.isGameOver()||atRecordEnd(moves);
+ const resultBanner=finishBanner(g,moves),turnColor=g.turn(),over=!!resultBanner;
  // 用 classList 做差量更新：只有状态真的变了才动 DOM，
  // 避免每步重设 className 触发全盘样式重算。
  const base=(r,c)=>((r+c)%2?'square dark':'square light');
@@ -2484,7 +2499,6 @@ function drawBoard(){
  $('#side-badge').textContent=over?'对局结束':(turnColor==='w'?'白方':'黑方')+'行棋';
  $('#status').textContent=over?'对局结束':state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱浏览 · 使用箭头切换着法':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
  const end=$('#game-result');
- const resultBanner=finishBanner(g,moves);
  if(resultBanner){end.classList.remove('hidden');end.innerHTML=resultBanner;}
  else end.classList.add('hidden');
  $('#ply').textContent=state.view+' / '+moves.length;
@@ -3389,7 +3403,7 @@ function syncSideSelect(side){
  document.querySelectorAll('#atelier-list-side .atelier-option').forEach(o=>o.setAttribute('aria-selected',String(o.dataset.value===side)));
 }
 function stampDuelRecord(){
- const computer='Stockfish',level=Number($('#bot-level').value),elos={1:1320,2:1600,3:1900,4:2200,5:2600,6:3190};
+ const computer='Stockfish',level=Number($('#bot-level').value),elos={1:1300,2:1600,3:1900,4:2200,5:2600,6:3000};
  state.game.header('Event','Local Computer Game','Site','Local','White',state.side==='w'?'Player':computer,'Black',state.side==='b'?'Player':computer,state.side==='w'?'BlackType':'WhiteType','program');
  delete state.game._headers.WhiteElo;delete state.game._headers.BlackElo;
  if(elos[level])state.game.header(state.side==='w'?'BlackElo':'WhiteElo',String(elos[level]));

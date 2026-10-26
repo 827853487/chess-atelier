@@ -23,9 +23,26 @@ export function recordRows(game){
 }
 export function gameResult(game){
  if(game.isCheckmate())return game.turn()==='w'?'0-1':'1-0';
- if(game.isDraw())return '1/2-1/2';
  const result=game.header().Result;
+ // Preserve a recorded result rather than inferring an unclaimed draw.
+ if(['1-0','0-1','1/2-1/2'].includes(result))return result;
+ if(game.isDraw())return '1/2-1/2';
  return ['1-0','0-1','1/2-1/2','*'].includes(result)?result:'*';
+}
+export function recordEnding(game,{recorded=false,atEnd=false,result=game.header().Result}={}){
+ // A mate prediction is not checkmate. Check the actual board first.
+ if(game.isCheckmate())return {title:`将死 · ${game.turn()==='w'?'黑方':'白方'}获胜`,detail:''};
+ if(recorded&&atEnd){
+  if(result==='1-0')return {title:'白方获胜',detail:''};
+  if(result==='0-1')return {title:'黑方获胜',detail:''};
+  if(result==='1/2-1/2')return {title:'和棋',detail:''};
+ }
+ if(game.isStalemate())return {title:'逼和',detail:'无合法着法且王未被将军'};
+ if(game.isInsufficientMaterial())return {title:'和棋',detail:'双方子力不足以将杀'};
+ // In a published mainline, claimable draws do not terminate playback.
+ if(!recorded&&game.isDraw())return {title:'和棋',detail:game.isThreefoldRepetition()?'三次重复局面':game._s?.half>=100?'五十回合规则':'符合和棋规则'};
+ if(recorded&&atEnd)return {title:'棋谱结束',detail:''};
+ return null;
 }
 export function standardPgn(game, overrides={}){
  const h=game.header(),moves=game.history({verbose:true});

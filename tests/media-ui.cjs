@@ -22,7 +22,9 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results'),ca
    const label=await page.locator('#music-title').innerText();assert.ok(catalog.some(track=>track.title.replace(new RegExp('^'+track.composer+'[ ·:：–—-]+'),'')===label&&(era==='all'||track.era===era)));
    await page.waitForFunction(()=>Number(document.querySelector('#music-panel').dataset.buffered)>=3,null,{timeout:30000});
   }
-  await page.waitForFunction(()=>document.querySelector('#music-audio').currentTime>1);
+  // Allow the selected recording's quiet lead-in to pass before sampling FFT.
+  await page.locator('[data-era=baroque]').click();
+  await page.waitForFunction(()=>document.querySelector('#music-audio').currentTime>4);
   const spectrum=await page.evaluate(()=>new Promise(resolve=>{const frames=[];let n=0;function sample(){frames.push([...document.querySelectorAll('.wave-bars i')].map(node=>node.style.transform).join('|'));if(++n<75)requestAnimationFrame(sample);else resolve(frames);}requestAnimationFrame(sample);}));
   assert.ok(new Set(spectrum).size>5,'spectrum follows actual changing audio frequency data');assert.ok(await page.locator('.wave-bars i').evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).animationName==='none')));
   await page.locator('#music-title').click();await page.locator('#music-copy-toast').waitFor({state:'visible'});assert.equal(await page.locator('#music-copy-toast').innerText(),'已复制');const copied=await page.evaluate(()=>navigator.clipboard.readText());assert.ok(catalog.some(track=>copied===track.composer+' - '+track.title.replace(new RegExp('^'+track.composer+'[ ·:：–—-]+'),'')));assert.equal(await page.evaluate(()=>getSelection().toString()),'');

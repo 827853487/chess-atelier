@@ -9,7 +9,7 @@ import { readStarredScores, writeStarredScores } from './favorites.js';
 
 // Bundled rules module: no network dependency for board and PGN playback.
 import { Chess } from './vendor/chess.js';
-import { cloneRecord, recordRows, gameResult, standardPgn } from './game-record.js';
+import { cloneRecord, recordRows, gameResult, standardPgn, recordEnding } from './game-record.js';
 import { engineRequest, scoreValue, scoreLabel, moveQuality } from './engine-client.js';
 document.querySelector('#loading').remove();
 const $ = q=>document.querySelector(q), $$=q=>[...document.querySelectorAll(q)];
@@ -73,20 +73,8 @@ function viewGame(){
 function headerResult(){return String(state.game.header?.()?.Result||state.currentScoreSource?.result||'');}
 function atRecordEnd(moves){return state.review&&moves.length>0&&state.view>=moves.length;}
 function finishBanner(g,moves){
- const last=state.view?moves[state.view-1]:null;
- if(g.isCheckmate())return `将死 · ${g.turn()==='w'?'黑方':'白方'}获胜`;
- if(last?.san?.includes('#'))return `将死 · ${last.color==='w'?'白方':'黑方'}获胜`;
- if(g.isStalemate())return '逼和<small>无合法着法且王未被将军</small>';
- if(g.isDraw()){
-  const why=g.isInsufficientMaterial()?'双方子力不足以将杀':g.isThreefoldRepetition()?'三次重复局面':g._s?.half>=100?'五十回合规则':'符合和棋规则';
-  return `和棋<small>${why}</small>`;
- }
- if(!atRecordEnd(moves))return '';
- const res=headerResult();
- if(res==='1/2-1/2')return '和棋';
- if(res==='1-0')return '白方获胜';
- if(res==='0-1')return '黑方获胜';
- return '';
+ const end=recordEnding(g,{recorded:state.review,atEnd:atRecordEnd(moves),result:headerResult()});
+ return end?safeText(end.title)+(end.detail?`<small>${safeText(end.detail)}</small>`:''):'';
 }
 function locationFor(r,c){return (state.orientation==='w'?FILES[c]:FILES[7-c])+(state.orientation==='w'?8-r:r+1);}
 function centerFor(s){let c=FILE_INDEX[s[0]],r=+s[1];return state.orientation==='w'?{x:50+c*100,y:50+(8-r)*100}:{x:50+(7-c)*100,y:50+(r-1)*100};}
@@ -138,7 +126,7 @@ function drawBoard(){
   }
  }
  const checked=g.isCheck();
- const turnColor=g.turn(),over=g.isGameOver()||atRecordEnd(moves);
+ const resultBanner=finishBanner(g,moves),turnColor=g.turn(),over=!!resultBanner;
  // 用 classList 做差量更新：只有状态真的变了才动 DOM，
  // 避免每步重设 className 触发全盘样式重算。
  const base=(r,c)=>((r+c)%2?'square dark':'square light');
@@ -181,7 +169,6 @@ function drawBoard(){
  $('#side-badge').textContent=over?'对局结束':(turnColor==='w'?'白方':'黑方')+'行棋';
  $('#status').textContent=over?'对局结束':state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱浏览 · 使用箭头切换着法':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
  const end=$('#game-result');
- const resultBanner=finishBanner(g,moves);
  if(resultBanner){end.classList.remove('hidden');end.innerHTML=resultBanner;}
  else end.classList.add('hidden');
  $('#ply').textContent=state.view+' / '+moves.length;
@@ -1086,7 +1073,7 @@ function syncSideSelect(side){
  document.querySelectorAll('#atelier-list-side .atelier-option').forEach(o=>o.setAttribute('aria-selected',String(o.dataset.value===side)));
 }
 function stampDuelRecord(){
- const computer='Stockfish',level=Number($('#bot-level').value),elos={1:1320,2:1600,3:1900,4:2200,5:2600,6:3190};
+ const computer='Stockfish',level=Number($('#bot-level').value),elos={1:1300,2:1600,3:1900,4:2200,5:2600,6:3000};
  state.game.header('Event','Local Computer Game','Site','Local','White',state.side==='w'?'Player':computer,'Black',state.side==='b'?'Player':computer,state.side==='w'?'BlackType':'WhiteType','program');
  delete state.game._headers.WhiteElo;delete state.game._headers.BlackElo;
  if(elos[level])state.game.header(state.side==='w'?'BlackElo':'WhiteElo',String(elos[level]));

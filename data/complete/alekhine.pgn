@@ -713,7 +713,7 @@ Kd5 47. g3 Nc1 48. f4 Ke6 49. Kd2 Nb3+ 50. Ke3 Kf5 51. h3 h5
 [ECO "D32"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "80"]
+[PlyCount "79"]
 
 1.d4 d5 2.Nf3 c5 3.c4 e6 4.cxd5 exd5 5.Nc3 Nc6 6.Bf4 Nf6 7.e3
 c4 8.Be2 Bb4 9.O-O Bxc3 10.bxc3 Ne4 11.Qc2 f5 12.Nd2 O-O 13.f3
@@ -6393,11 +6393,10 @@ Rh2 51. Rf2 Rh3+ 52. Kd2 Kc6 53. Kc2 Rh1 54. Rf5 Rg1 55. Rh5
 [BlackElo "?"]
 [PlyCount "49"]
 
-1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 g6 5. Nc3 Bg7 6. Be3
-Nf6 7. h4 d6 8. Be2 h5 9. f3 Bd7 10. Qd2 a6 11. Nxd5 Nxd5
-12. exd5 Ne5 13. c4 Rc8 14. Rc1 O-O 15. g4 hxg4 16. f4 Nf3+
-17. Bxf3 gxf3 18. h5 Bg4 19. hxg6 fxg6 20. Qh2 Qd7 21. Qh7+
-Kf7 22. Rh6 Rh8 23. Qxg6+ Kg8 24. Ne6 Bxe6 25. Bd4 1-0
+1. e4 c5 2. Nf3 Nc6 3. d4 cxd4 4. Nxd4 g6 5. Nc3 Bg7 6. Be3 Nf6 7. h4 d6 8.
+Be2 h5 9. f3 Bd7 10. Qd2 a6 11. Nd5 Nxd5 12. exd5 Ne5 13. c4 Rc8 14. Rc1 O-O
+15. g4 hxg4 16. f4 Nf3+ 17. Bxf3 gxf3 18. h5 Bg4 19. hxg6 fxg6 20. Qh2 Qd7 21.
+Qh7+ Kf7 22. Rh6 Rh8 23. Qxg6+ Kg8 24. Ne6 Bxe6 25. Bd4 1-0
 
 [Event "Moscow Triangular"]
 [Site "Moscow RUS"]
@@ -7395,7 +7394,7 @@ axb4 27. Ra1 b3 0-1
 [ECO "A47"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "30"]
+[PlyCount "31"]
 
 1. d4 Nf6 2. Nf3 b6 3. e3 Bb7 4. Nbd2 d6 5. Bd3 Nbd7 6. e4 e5
 7. c3 g6 8. O-O Bg7 9. dxe5 dxe5 10. Re1 O-O 11. Qc2 Qe7
@@ -9043,7 +9042,7 @@ Bxd4 27. Rxd4 Rxd4 28. Nxd4 Qxh3 29. gxh3 Nf2+ 30. Kg1 Nxh3#
 [ECO "C37"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "67"]
+[PlyCount "68"]
 
 1. e4 e5 2. f4 exf4 3. Nf3 g5 4. d4 Bg7 5. Bc4 h6 6. c3 Qe7
 7. O-O d6 8. Na3 Nc6 9. g3 Bh3 10. Rf2 O-O-O 11. gxf4 g4
@@ -9089,7 +9088,7 @@ Qh1+ 32. Kf2 Qxe4 33. Bxe4 Nxa4 34. b3 Nb6 35. Nf4 Re8
 [ECO "C01"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "56"]
+[PlyCount "57"]
 
 1. e4 {Notes by Giuseppe Gabelli.} e6 2. d4 d5 3. exd5 exd5
 4. Nc3 Nf6 5. Bg5 Be7 6. Bd3 Nc6 7. Nge2 O-O 8. h4 Re8 9. Qd2
@@ -17604,13 +17603,11 @@ Nb6 27. Kd1 a4 28. d5 Nd7 29. Kc2 Ne5 30. Kc3 Ng4 31. Kb4 Nxf2
 [BlackElo "?"]
 [PlyCount "62"]
 
-1. d4 Nf6 2. Nf3 e6 3. c4 b6 4. g3 Bb4+ 5. Bd2 Bxd2+ 6. Qxd2
-Bb7 7. Nc3 d6 8. Bg2 Nbd7 9. O-O O-O 10. Rfe1 Ne4 11. Nxe4
-Bxe4 12. Ng5 Bxg2 13. Kxg2 h6 14. Nh3 f5 15. e4 Qf6 16. f4
-Rad8 17. exf5 Qxf5 18. Re2 d5 19. Rae1 dxc4 20. Rxe6 Qd5+
-21. Kf1 Nc5 22. Re7 Nd3 23. R1e4 Rd7 24. Qe2 Rxe7 25. Rxe7
-Qh1+ 26. Ng1 Nxf4 27. Qxc4+ Qd5 28. Rxc7 b5 29.Qc6 Ne6 30.Ke1
-Nc7 31.Qc7 Qe4 0-1
+1. d4 Nf6 2. Nf3 e6 3. c4 b6 4. g3 Bb4+ 5. Bd2 Bxd2+ 6. Qxd2 Bb7 7. Nc3 d6 8.
+Bg2 Nbd7 9. O-O O-O 10. Rfe1 Ne4 11. Nxe4 Bxe4 12. Ng5 Bxg2 13. Kxg2 h6 14.
+Nh3 f5 15. e4 Qf6 16. f4 Rad8 17. exf5 Qxf5 18. Re2 d5 19. Rae1 dxc4 20. Rxe6
+Qd5+ 21. Kf1 Nc5 22. Re7 Nd3 23. R1e4 Rd7 24. Qe2 Rxe7 25. Rxe7 Qh1+ 26. Ng1
+Nxf4 27. Qxc4+ Qd5 28. Rxc7 b5 29. Qc6 Ne6+ 30. Ke1 Nxc7 31. Qxc7 Qe4+ 0-1
 
 [Event "Birmingham"]
 [Site "Birmingham ENG"]
@@ -33659,11 +33656,10 @@ Rc2+ 47. Kg1 Rff2 48. c8=Q 1-0
 [BlackElo "?"]
 [PlyCount "61"]
 
-1. Nf3 c5 2. c4 Nc6 3. d4 cxd4 4. Nxd4 g6 5. e4 Bg7 6. Nc2 Nf6
-7. Nc3 a6 8. Be2 O-O 9. O-O d6 10. Be3 b6 11. f4 Bb7 12. Bf3
-Qc7 13. Rc1 Rac8 14. Qd2 Nb8 15. b3 b5 16 e5. dxe5 17. fxe5
-Nfd7 18. Bxb7 Qxb7 19. Bh6 Nxe5 20. Bxg7 Kxg7 21. cxb5 Rfd8
-22. Qf4 f6 23. Nd4 Qb6 24. Na4 Qd6 25. Rxc8 Rxc8 26. bxa6 Nxa6
+1. Nf3 c5 2. c4 Nc6 3. d4 cxd4 4. Nxd4 g6 5. e4 Bg7 6. Nc2 Nf6 7. Nc3 a6 8.
+Be2 O-O 9. O-O d6 10. Be3 b6 11. f4 Bb7 12. Bf3 Qc7 13. Rc1 Rac8 14. Qd2 Nb8
+15. b3 b5 16. e5 dxe5 17. fxe5 Nfd7 18. Bxb7 Qxb7 19. Bh6 Nxe5 20. Bxg7 Kxg7
+21. cxb5 Rfd8 22. Qf4 f6 23. Nd4 Qb6 24. Na4 Qd6 25. Rxc8 Rxc8 26. bxa6 Nxa6
 27. Rd1 Kg8 28. h3 Nb4 29. Nb2 Nxa2 30. Kh1 Nc4 31. Qg4 1-0
 
 [Event "Clock simul, 13b"]
@@ -34905,13 +34901,13 @@ Bb4+ 7. Nbd2 Nf6 8. Bd3 Nh5 9. Bg5 f6 10. Nh4 O-O 11. Qxh5 Ne5
 [Source "Krustamikla.Sahs.Bridzs Nr.20 (16.05.1936)"]
 [PlyCount "77"]
 
-1.c4 Nf6 2.Nc3 e5 3.Nf3 Nc6 4.d4 exd4 5.Nxd4 Bb4 6.Bg5 O-O
-7.Rc1 Re8 8.e3 h6 9.Bh4 d6 10.Be2 Ne5 11.O-O Bxc3 12.Rxc3 Ng6
-13.Bxf6 Qxf6 14.Nb5 Qe7 15.Rc1 a6 16.Nc3 Bf5 17.Nd5 Qd7 18.f3
-Be6 19.Qd4 Ne7 20.e4 c5 21.Qd2 Bd5 22.cxd5 b5 23.f4 Ng6 24.f5
-Nf8 25.f6 Rxe4 26.fxg7 Kxg7 27.Bf3 Re5 28.Rf2 Rae8 29.Rcf1 Ng6
-30.Bg4 Qe7 31.Rf7+ Qxf7 32.Rxf7+ Kxf7 33.Qxh6 Rxd5 34.Bh5 Rg8
-35.Qh7+ Rg7 36.Bxg6+ Kf6 37.Qh4+ Kxg6 38.Qe4+ Rf5 39.g4 1-0
+1. c4 Nf6 2. Nc3 e5 3. Nf3 Nc6 4. d4 exd4 5. Nxd4 Bb4 6. Bg5 O-O 7. Rc1 Re8 8.
+e3 h6 9. Bh4 d6 10. Be2 Ne5 11. O-O Bxc3 12. Rxc3 Ng6 13. Bxf6 Qxf6 14. Nb5
+Qe7 15. Rc1 a6 16. Nc3 Bf5 17. Nd5 Qd7 18. f3 Be6 19. Qd4 Ne7 20. e4 c5 21.
+Qd2 Bxd5 22. cxd5 b5 23. f4 Ng6 24. f5 Nf8 25. f6 Rxe4 26. fxg7 Kxg7 27. Bf3
+Re5 28. Rf2 Rae8 29. Rcf1 Ng6 30. Bg4 Qe7 31. Rxf7+ Qxf7 32. Rxf7+ Kxf7 33.
+Qxh6 Rxd5 34. Bh5 Rg8 35. Qh7+ Rg7 36. Bxg6+ Kf6 37. Qh4+ Kxg6 38. Qe4+ Rf5
+39. g4 1-0
 
 [Event "Alekhine simul"]
 [Site "Riga LAT"]
@@ -38218,7 +38214,7 @@ Ke8 27. Ke1 Kf7 1/2-1/2
 [ECO "B04"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "70"]
+[PlyCount "71"]
 
 1. e4 Nf6 2. e5 Nd5 3. d4 d6 4. Nf3 Bg4 5. c4 Nb6 6. Be2 dxe5
 7. Nxe5 Bxe2 8. Qxe2 Qxd4 9. O-O N8d7 10. Nxd7 Nxd7 11. Nc3 c6
@@ -38590,7 +38586,7 @@ Bxg3 23. hxg3 Qd6 24. f4 a5 25. Qf2 Rc7 26. Rd1 a4 27. Be4 Nb6
 [ECO "D17"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "98"]
+[PlyCount "99"]
 
 1. d4 {Notes by Max Euwe} d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4
 5. a4 Bf5 6. Ne5 Nbd7 7. Nxc4 Qc7 8. g3 e5 9. dxe5 Nxe5
@@ -38672,7 +38668,7 @@ g6.} 1-0
 [ECO "D17"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "80"]
+[PlyCount "81"]
 
 1. d4 {Notes by Alekhine} d5 2. c4 c6 3. Nf3 Nf6 4. Nc3 dxc4
 5. a4 Bf5 6. Ne5 {I considered it vital to find out
@@ -43786,7 +43782,7 @@ Bb2 37. f4 Bxa3 38. Nxa3 Qe1+ 39. Qf1 Qe3+ 40. Qf2 Qc1+
 [ECO "E02"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "52"]
+[PlyCount "53"]
 
 1. d4 {Notes by Alekhine} Nf6 2. c4 e6 3. g3 d5 4. Bg2 dxc4
 5. Qa4+ Bd7 6. Qxc4 Bc6 7. Nf3 Bd5 {Black loses too many tempi
@@ -43944,7 +43940,7 @@ Kg7 42. Rc8 Re5 43. Bf8+ Kf7 0-1
 [ECO "C86"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "54"]
+[PlyCount "55"]
 
 1. e4 {Annotation by Alexander Alekhine.} e5 2. Nf3 Nc6 3. Bb5
 a6 4. Ba4 Nf6 5. O-O Be7 6. Qe2 b5 7. Bb3 O-O 8. c3 {In
@@ -46135,7 +46131,7 @@ Rxe5 28. Rxe5 Nf3 29. Rg4 Qxf6 30. Bxg6 Nxe5 0-1
 [ECO "C01"]
 [WhiteElo "?"]
 [BlackElo "?"]
-[PlyCount "95"]
+[PlyCount "96"]
 
 1. e4 {Notes by Alekhine} e6 2. d4 d5 3. exd5 {The exchange
 variation is very far from being as innocent as it

@@ -71,3 +71,21 @@
 课程顺序、覆盖范围及练习方式见 [CURRICULUM.md](CURRICULUM.md)。各文件与上游下载校验值见 [library-sources.json](library-sources.json)。
 
 维护采集：`python scripts/enrich_library.py`、`python scripts/enrich_openings.py`、`python scripts/enrich_champions.py`、`python scripts/enrich_training.py`。只在维护时联网，日常阅读和分析使用本地文件与本机 Stockfish。
+
+
+## 2026-10-26 旧棋谱记谱更正
+
+独立 python-chess 与网页规则交叉核对全部70份文件（8452盘/片段），保留已有来源署名、对局结果和主线实际走法。未添加任何推测的后续着法。
+
+阿廖欣旧合集下列4盘仅将已有主线输出为标准SAN，修正多余/遗漏的吃子符号、将军符号和着数标点。修前以独立解析器还原的最终FEN与更正后完全一致：
+
+| 记录序号（1起） | 对局 | 日期 | 笔误举例 |
+| --- | --- | --- | --- |
+| 287 | Alexander Alekhine – Vladimir Nenarokov | 1918 | 11.Nxd5 → 11.Nd5 |
+| 792 | Arthur John Mackenzie – Alexander Alekhine | 1926-06-07 | 30…Nc7 → Nxc7；31.Qc7 → Qxc7 |
+| 1506 | Alexander Alekhine – Joan Comas | 1935-01-27 | `16 e5. dxe5` → `16. e5 dxe5` |
+| 1563 | Alexander Alekhine – Ernests Gize | 1935-09-13 | 21…Bd5 → Bxd5；31.Rf7+ → Rxf7+ |
+
+仅修正PlyCount标签：alekhine.pgn 第35、334、410、412、1703、1719、1720、1939、1944、2038盘，chess-classics.pgn 第4盘。它们的主线及结果不变。
+
+另外22盘使用冗余起点标注（例如另一个马被牵制时仍写Nge2）；保留原文件，由网页在唯一合法候选下识别。标准SAN输出会自动省去不必要的起点标记。重复申领和棋条件不取代历史记录的最终结果。审计确认合法主线与将死判定，不据此断言原始历史数据从未被截断。

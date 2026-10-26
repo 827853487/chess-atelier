@@ -34,7 +34,9 @@ class LocalEngineTests(unittest.TestCase):
     def test_discovery_and_real_difficulty_options(self):
         with self.request('/api/engine') as response:data=json.load(response)
         self.assertTrue(data['available']);self.assertIn('Stockfish',data['name']);self.assertEqual(len(data['levels']),6)
-        self.assertEqual(data['levels']['6']['elo'],3190)
+        self.assertEqual(data['levels']['6']['elo'],3000)
+        self.assertEqual(data['levels']['1']['elo'],1300)
+        self.assertGreaterEqual(data['levels']['1']['engineElo'],data['eloRange'][0])
 
     def test_all_six_levels_return_legal_moves(self):
         board=chess.Board()
@@ -42,7 +44,7 @@ class LocalEngineTests(unittest.TestCase):
             with self.subTest(level=level):
                 result=PLAY_ENGINE.play(board,level)
                 self.assertIn(chess.Move.from_uci(result['uci']),board.legal_moves)
-                self.assertEqual(result['elo'],LEVELS[level]['elo'])
+                self.assertEqual(result['elo'],max(PLAY_ENGINE.elo_min,min(PLAY_ENGINE.elo_max,LEVELS[level]['elo'])))
 
     def test_reject_invalid_fen_and_illegal_history(self):
         for data in [{'fen':'8/8/8/8/8/8/8/8 w - - 0 1'}, {'fen':chess.STARTING_FEN,'origin':chess.STARTING_FEN,'moves':['e2e5']}, {'fen':chess.STARTING_FEN,'level':99}]:

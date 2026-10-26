@@ -17,12 +17,12 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent
 LEVELS = {
-    1: {'name': '入门', 'elo': 1320, 'ms': 350},
+    1: {'name': '入门', 'elo': 1300, 'ms': 350},
     2: {'name': '一般', 'elo': 1600, 'ms': 500},
     3: {'name': '进阶', 'elo': 1900, 'ms': 700},
     4: {'name': '高手', 'elo': 2200, 'ms': 1000},
     5: {'name': '大师', 'elo': 2600, 'ms': 1400},
-    6: {'name': '顶级', 'elo': 3190, 'ms': 2200},
+    6: {'name': '顶级', 'elo': 3000, 'ms': 2200},
 }
 
 
@@ -105,7 +105,7 @@ class LocalStockfish:
             available = False
         return {'available': available, 'source': 'stockfish', 'name': self.name,
                 'local': True, 'message': self.error, 'eloRange': [self.elo_min, self.elo_max],
-                'levels': {str(k): {**v, 'elo': min(self.elo_max, max(self.elo_min, v['elo']))
+                'levels': {str(k): {**v, 'engineElo': min(self.elo_max, max(self.elo_min, v['elo']))
                                    if v['elo'] is not None else None} for k, v in LEVELS.items()}}
 
     def close(self):

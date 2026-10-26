@@ -2,7 +2,7 @@ import { Chess } from './vendor/chess.js';
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
 export function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
-const LEVELS={1:{name:'入门',elo:1320,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3190,ms:2200}};
+const LEVELS={1:{name:'入门',elo:1300,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3000,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
 const assetUrl=new URL('./vendor/stockfish/stockfish-19-lite-single.js',document.baseURI).href;
 class UciWorker{
@@ -104,7 +104,7 @@ class UciWorker{
 const play=new UciWorker(),analysis=new UciWorker();
 export async function browserEngineStatus(){
  await play.ensure();
- return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[play.eloMin,play.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,elo:value.elo===null?null:Math.max(play.eloMin,Math.min(play.eloMax,value.elo))}]))};
+ return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[play.eloMin,play.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,engineElo:value.elo===null?null:Math.max(play.eloMin,Math.min(play.eloMax,value.elo))}]))};
 }
 export function browserEngineRequest(path,body,options){
  if(path==='/api/play')return play.request(body,false,options);

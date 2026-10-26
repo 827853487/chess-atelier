@@ -9,8 +9,31 @@ for(const file of ['vendor/chess.js','game-record.js','engine-client.js']){
  const source=fs.readFileSync(path.join(root,file),'utf8').replace(/^import .*;\s*$/gm,'').replace(/^export default .*;\s*$/gm,'').replace(/^export /gm,'');
  vm.runInContext(source,context,{filename:file});
 }
-vm.runInContext('globalThis.api={Chess,cloneRecord,recordRows,standardPgn,gameResult,moveQuality,scoreLabel}',context);
-const {Chess,cloneRecord,recordRows,standardPgn,gameResult,moveQuality}=context.api;
+vm.runInContext('globalThis.api={Chess,cloneRecord,recordRows,standardPgn,gameResult,moveQuality,scoreLabel,recordEnding}',context);
+const {Chess,cloneRecord,recordRows,standardPgn,gameResult,moveQuality,recordEnding}=context.api;
+
+test('record endings distinguish board mate, recorded wins and instructional excerpts',()=>{
+ const g=new Chess();g.move('e4');
+ assert.equal(recordEnding(g,{recorded:true,atEnd:false}),null);
+ assert.equal(recordEnding(g,{recorded:true,atEnd:true,result:'1-0'}).title,'白方获胜');
+ assert.equal(recordEnding(g,{recorded:true,atEnd:true,result:'*'}).title,'棋谱结束');
+ assert.equal(recordEnding(g,{recorded:true,atEnd:true,result:'1/2-1/2'}).title,'和棋');
+ const mate=new Chess();for(const move of ['f3','e5','g4','Qh4#'])mate.move(move);
+ assert.equal(recordEnding(mate,{recorded:true,atEnd:true,result:'*'}).title,'将死 · 黑方获胜');
+ const check=new Chess();for(const move of ['e4','e5','Bc4','Nc6','Qh5','Nf6','Qxf7+'])check.move(move);
+ // This position actually mates: SAN suffixes are not trusted as a substitute for rules.
+ assert.equal(recordEnding(check).title,'将死 · 白方获胜');
+ const onlyCheck=new Chess('4k3/8/8/8/8/8/4R3/4K3 b - - 0 1');
+ assert.equal(onlyCheck.isCheck(),true);assert.equal(recordEnding(onlyCheck),null);
+});
+
+test('unclaimed repetition neither ends an imported mainline nor overrides its final result',()=>{
+ const g=new Chess();for(const move of ['Nf3','Nf6','Ng1','Ng8','Nf3','Nf6','Ng1','Ng8'])g.move(move);
+ assert.equal(recordEnding(g,{recorded:true,atEnd:false}),null);
+ g.header('Result','1-0');assert.equal(recordEnding(g,{recorded:true,atEnd:true}).title,'白方获胜');
+ assert.equal(gameResult(g),'1-0');assert.match(standardPgn(g),/\[Result "1-0"\]/);
+ assert.equal(recordEnding(g).title,'和棋');
+});
 
 test('standard roster, SAN, checkmate result and import/export round trip',()=>{
  const g=new Chess();for(const m of ['f3','e5','g4','Qh4#'])g.move(m);
@@ -58,6 +81,15 @@ test('headers preserve metadata and correctly unescape quotes and backslashes',(
 test('a body-only result is retained, illegal SAN fails instead of skipping a move',()=>{
  const g=new Chess();g.loadPgn('1. e4 e5 1/2-1/2');assert.equal(g.header().Result,'1/2-1/2');
  assert.throws(()=>new Chess().loadPgn('1. e4 e4 2. Nf3',{strict:false}),/Invalid PGN move/);
+});
+
+test('legacy redundant SAN origins resolve uniquely among legal moves',()=>{
+ const g=new Chess();g.loadPgn('1. d4 d5 2. c4 e6 3. Nb1c3 Ng8f6 *');
+ assert.equal(g.history().join(' '),'d4 d5 c4 e6 Nc3 Nf6');
+ // Both white knights can reach d2, so a missing origin remains invalid.
+ const ambiguous=new Chess('4k3/8/8/8/8/8/8/1N2KN2 w - - 0 1');
+ assert.throws(()=>ambiguous.move('Nd2'),/Illegal move/);
+ assert.throws(()=>new Chess().move('Nxe3'),/Illegal move/);
 });
 test('move-quality scores use a consistent white perspective for either mover',()=>{
  const previous={complete:true,pvs:[{cp:100,moves:'e2e4'}]},current={complete:true,pvs:[{cp:-100,moves:'d7d5'}]};
