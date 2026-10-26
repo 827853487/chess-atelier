@@ -118,18 +118,17 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
   finally{clearTimeout(timeout);if(controller===request)controller=null;if(token===epoch)schedule();}
  }
  function sync(){
-  const moves=cachedHistory(),available=state.mode==='free'||moves.length>0&&state.game.isGameOver();
+  const moves=cachedHistory();
   if(record&&(record.game!==state.game||record.length!==moves.length||record.last!==moves.at(-1)?.san)){
-   const wasActive=state.postReview;stop();record=null;state.postReview=false;clearMarks();$('post-review').hidden=true;if(wasActive)analysis.setReviewMode(false);
+   const wasActive=state.postReview,previous=record;stop();record=null;clearMarks();if(wasActive){record=createRecord();for(const [index,data] of previous.results)if(record.positions[index]?.fen===previous.positions[index]?.fen&&record.positions[index]?.origin===previous.positions[index]?.origin&&record.positions[index]?.moves.join(' ')===previous.positions[index]?.moves.join(' '))record.results.set(index,data);}else $('post-review').hidden=true;
   }
-  const button=$('side-badge');button.disabled=!available;button.classList.toggle('is-review-active',!!state.postReview);button.setAttribute('aria-pressed',String(!!state.postReview));
-  if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止复盘，返回棋谱浏览':'加载 Stockfish 逐步复盘';}
-  else button.title='对弈结束后可复盘';
+  const button=$('review-toggle');button.setAttribute('aria-pressed',String(!!state.postReview));button.setAttribute('aria-disabled',String(!analysis.isEnabled()));
   if(state.postReview){if(lastView!==state.view){stop();clearMarks();lastView=state.view;error='';}render();schedule();}
  }
- $('side-badge').addEventListener('click',()=>{
+ $('review-toggle').addEventListener('click',()=>{
+  if(!analysis.isEnabled()){state.notify?.('请先打开实时分析');return;}
   if(state.postReview){close();return;}
-  if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);goto(0);sync();
+  if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);sync();
  });
  window.addEventListener('pagehide',()=>{stop();textAnimation?.cancel();for(const node of departingMarks)node.remove();departingMarks.clear();});
  return {sync,close,prepareMotion,motionStarted,boardResetStarted,motionSettled:()=>{textMotion=null;textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='';if(state.postReview)render();}};

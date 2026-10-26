@@ -6,7 +6,7 @@ const output=path.resolve(__dirname,'../test-results');
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
  page.on('pageerror',error=>errors.push(error.message));
  const select=async(id,value)=>{await page.locator(`#atelier-${id} .atelier-select-trigger`).click();await page.locator(`#atelier-list-${id} [data-value="${value}"]`).click();};
- const move=async(from,to,plies)=>{await page.locator(`#board [data-square="${from}"]`).click();await page.locator(`#board [data-square="${to}"]`).click();await page.waitForFunction(n=>document.querySelectorAll('#movelist [data-ply]').length===n,plies);};
+ const move=async(from,to,plies)=>{await page.waitForFunction(()=>!document.querySelector('#board.is-opening,.floating-piece,.appearance-ghost'));await page.locator(`#board [data-square="${from}"]`).click();await page.locator(`#board [data-square="${to}"]`).click();await page.waitForFunction(n=>document.querySelectorAll('#movelist [data-ply]').length===n,plies);};
  const position=()=>page.locator('#board .square').evaluateAll(cells=>cells.map(cell=>[cell.dataset.square,cell.querySelector(':scope > .piece:not(.appearance-ghost) .piece-visual')?.dataset.piece||'']));
  const appearanceDone=()=>page.waitForFunction(()=>!document.querySelector('.appearance-ghost')&&[...document.querySelectorAll('#board .piece')].every(node=>node.getAnimations().length===0));
  try{
@@ -20,7 +20,7 @@ const output=path.resolve(__dirname,'../test-results');
   await page.locator('#flip').click();
   await page.waitForFunction(()=>!document.querySelector('#board.is-opening'));
   await page.locator('#fileinput').setInputFiles({name:'appearance.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from('[Event "Appearance"]\n[Result "*"]\n\n1. e4 e5 2. Nf3 Nc6 *')});
-  await page.locator('#collection [data-local]').first().click();await page.locator('#last').click();await page.waitForFunction(()=>!document.querySelector('#board.is-opening')&&!document.querySelector('.floating-piece'));
+  await page.locator('#collection [data-local]').first().click();await page.waitForFunction(()=>!document.querySelector('#board.is-opening'));await page.locator('#last').click();await page.waitForFunction(()=>!document.querySelector('#board.is-opening')&&!document.querySelector('.floating-piece'));
   const original=await position(),notation=await page.locator('#movelist').innerText();
   await page.locator('#settings-toggle').click();
   let releaseSage;const sageReady=new Promise(resolve=>releaseSage=resolve);

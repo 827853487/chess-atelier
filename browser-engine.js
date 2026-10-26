@@ -2,7 +2,7 @@ import { Chess } from './vendor/chess.js';
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
 export function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
-const LEVELS={1:{name:'入门',elo:1320,ms:350},2:{name:'休闲',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'全力',elo:null,ms:2200}};
+const LEVELS={1:{name:'入门',elo:1320,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3190,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
 const assetUrl=new URL('./vendor/stockfish/stockfish-19-lite-single.js',document.baseURI).href;
 class UciWorker{
@@ -76,9 +76,9 @@ class UciWorker{
      const rank=Number(line.match(/\bmultipv (\d+)/)?.[1]||1),wdl=line.match(/\bwdl (\d+) (\d+) (\d+)/);
      const row={depth:Number(depth[1]),moves:pv[1],[score[1]]:sign*Number(score[2])};
      if(wdl)row.wdl=(sign===1?wdl.slice(1):wdl.slice(1).reverse()).map(Number);
-     let batch=batches.get(row.depth);if(!batch)batches.set(row.depth,batch=new Map());batch.set(rank,row);
+     let batch=batches.get(row.depth);if(!batch||rank===1)batches.set(row.depth,batch=new Map());batch.set(rank,row);
      while(batches.size>24)batches.delete(batches.keys().next().value);
-     if(batch.size>=count&&batch.has(1)){
+     if(batch.size>=count&&batch.has(1)&&new Set([...batch.values()].map(item=>item.moves.split(' ')[0])).size>=count){
       rows=[...batch].sort((a,b)=>a[0]-b[0]).map(([,value])=>value);
       if(performance.now()-lastEmit>=120){lastEmit=performance.now();onUpdate?.({...base,depth:rows[0].depth,pvs:rows,complete:false});}
      }

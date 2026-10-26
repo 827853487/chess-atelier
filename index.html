@@ -5,7 +5,7 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=60" rel="stylesheet"/><link href="./engine-ui.css?v=60" rel="stylesheet"/><link href="./library-ui.css?v=60" rel="stylesheet"/>
+<link href="./app.css?v=61" rel="stylesheet"/><link href="./engine-ui.css?v=61" rel="stylesheet"/><link href="./library-ui.css?v=61" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
@@ -16,10 +16,10 @@
 <main class="studio">
 <section aria-label="棋盘与复盘控制" class="left">
 <div class="board-block">
-<div class="board-heading"><div><h1>棋盘</h1></div><button class="side-badge" id="side-badge" type="button" disabled>白方</button></div>
+<div class="board-heading"><div><h1>棋盘</h1></div></div>
 <div aria-label="学习模式" class="play-mode-bar" role="group">
 <div class="mode-segment" id="mode-segment"><button aria-pressed="true" class="selected" data-play-mode="free" type="button">打谱</button><button aria-pressed="false" data-play-mode="book" type="button">对弈</button></div>
-</div>
+<span class="side-badge" id="side-badge" aria-live="polite">白方行棋</span></div>
 <div class="board-frame">
 <div class="promo-choice hidden" id="promo-choice" role="dialog" aria-label="选择升变棋子"></div><div aria-hidden="true" class="board-coordinates"><div class="rank-labels"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div class="file-labels"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div><div aria-label="国际象棋棋盘" class="board" id="board" role="grid"></div><svg aria-hidden="true" class="arrows" id="arrows" viewbox="0 0 800 800"><path id="candidate-arrow" visibility="hidden"></path></svg><div aria-live="assertive" class="game-result hidden" id="game-result" role="alert"></div></div>
 <div aria-label="棋谱步数控制" class="transport"><button aria-label="第一步" id="first" title="第一步"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M5 5v14"></path><path d="m17 6-6 6 6 6"></path></svg></button><button aria-label="上一步" id="prev" title="上一步，键盘 ←"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></button><button aria-label="自动播放棋谱" aria-pressed="false" class="primary-transport" id="autoplay" title="播放与暂停"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"></path></svg></button><button aria-label="下一步" id="next" title="下一步，键盘 →"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg></button><button aria-label="最后一步" id="last" title="最后一步"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M19 5v14"></path><path d="m7 6 6 6-6 6"></path></svg></button></div>
@@ -30,7 +30,7 @@
 <section aria-label="棋谱与学习" class="right">
 <div class="section-top"><div><h2 id="right-heading">棋谱</h2></div></div>
 <div aria-labelledby="analysis-heading" class="analysis-card-wrap"><h3 class="analysis-heading" id="analysis-heading">局势分析</h3><div aria-label="局面分析" class="coach-card" data-paused="false">
-<div class="engine-toolbar"><span class="engine-connection" id="engine-connection" data-state="busy"><i aria-hidden="true"></i><strong id="engine-name">Stockfish</strong></span><button aria-label="实时分析" aria-pressed="true" class="engine-toggle" id="analysis-toggle" type="button"><span>实时分析</span><i aria-hidden="true"></i></button></div>
+<div class="engine-toolbar"><span class="engine-connection" id="engine-connection" data-state="busy"><i aria-hidden="true"></i><strong id="engine-name">Stockfish</strong></span><button aria-label="实时分析" aria-pressed="true" class="engine-toggle" id="analysis-toggle" type="button"><span>实时分析</span><i aria-hidden="true"></i></button><button aria-label="复盘模式" aria-pressed="false" aria-disabled="false" class="engine-toggle" id="review-toggle" type="button"><span>复盘模式</span><i aria-hidden="true"></i></button></div>
 <div class="analysis-body"><div class="analysis-live">
 <div class="engine-probability" data-known="false" data-pending="true" id="engine-probability" title="Stockfish 胜／和／负模型估计，非玩家实战胜率；分析完成后更新。"><div aria-label="等待胜率分析" class="engine-probability-bar" id="engine-probability-bar" role="img"><span class="odds-white" id="odds-bar-white" style="width:0%"></span><span class="odds-draw" id="odds-bar-draw" style="width:100%"></span><span class="odds-black" id="odds-bar-black" style="width:0%"></span></div><div class="engine-odds-labels"><span class="odds-white-label">白 <b id="odds-white">—</b></span><span class="odds-draw-label">和 <b id="odds-draw">—</b></span><span class="odds-black-label">黑 <b id="odds-black">—</b></span></div></div>
 <div aria-label="Stockfish 候选着法" aria-busy="true" class="engine-suggestions" id="engine-insight"></div>
@@ -43,8 +43,8 @@
 <p class="library-status" id="library-status"></p><div aria-labelledby="category-openings" class="library-list" id="collection" role="tabpanel"></div></div>
 <div class="source-row duel-config mode-book-only hidden"><select aria-hidden="true" class="hidden" id="mode"><option value="free">打谱研究</option><option value="book">人机对弈</option></select>
 <div class="field-small"><label for="side">我执</label><div class="atelier-select-slot" data-for="side"><select aria-label="我执" class="native" id="side"><option value="w">白方</option><option value="b">黑方</option></select></div></div>
-<div class="field-small"><label for="bot-level">Stockfish 难度</label><div class="atelier-select-slot" data-for="bot-level"><select aria-label="电脑难度" class="native" id="bot-level"><option value="1">入门 · 1320</option><option selected="" value="2">休闲 · 1600</option><option value="3">进阶 · 1900</option><option value="4">高手 · 2200</option><option value="5">大师 · 2600</option><option value="6">全力 · 不限强度</option></select></div></div><button class="duel-start" id="duel-start" type="button">开始对弈</button></div>
-<p class="difficulty-note mode-book-only hidden" id="difficulty-note">难度采用 Stockfish 目标 Elo；局面分析始终使用全强度。</p>
+<div class="field-small"><label for="bot-level">难度</label><div class="atelier-select-slot" data-for="bot-level"><select aria-label="电脑难度" class="native" id="bot-level"><option value="1">入门 · 1320</option><option selected="" value="2">一般 · 1600</option><option value="3">进阶 · 1900</option><option value="4">高手 · 2200</option><option value="5">大师 · 2600</option><option value="6">顶级 · 3190</option></select></div></div><button class="duel-start" id="duel-start" type="button">开始对弈</button></div>
+
 <div class="detail-panel" id="panel-notes"><div class="panel-heading"><h3 id="record-heading">棋谱着法</h3><button class="inline-button mode-book-only hidden" id="export">导出 PGN ↗</button></div><div class="move-tape" id="movelist">选择棋谱，展示全部着法。</div></div>
 </section>
 </main>
@@ -89,6 +89,6 @@
 <div class="pack-create"><span></span><button class="inline-button" id="save-confirm" type="button">保存</button></div>
 </div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=60" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=60" defer></script>
+<script src="./app.bundle.js?v=61" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=61" defer></script>
 </body>
 </html>

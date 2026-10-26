@@ -34,7 +34,7 @@ class LocalEngineTests(unittest.TestCase):
     def test_discovery_and_real_difficulty_options(self):
         with self.request('/api/engine') as response:data=json.load(response)
         self.assertTrue(data['available']);self.assertIn('Stockfish',data['name']);self.assertEqual(len(data['levels']),6)
-        self.assertIsNone(data['levels']['6']['elo'])
+        self.assertEqual(data['levels']['6']['elo'],3190)
 
     def test_all_six_levels_return_legal_moves(self):
         board=chess.Board()

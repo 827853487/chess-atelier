@@ -2,7 +2,7 @@ import { Chess } from './vendor/chess.js';
 import { engineRequest, engineStatus } from './engine-client.js';
 import { setupRestNotes } from './chess-notes.js';
 
-export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookReply}){
+export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookReply,toast}){
  const $=q=>document.querySelector(q);
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const cache=new Map();let timer=null,controller=null,sequence=0,enabled=true;
@@ -79,9 +79,8 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
    const data=await engineStatus();
    if(!data.available)throw Error(data.message||'本地 Stockfish 不可用');
    const select=$('#bot-level');
-   for(const option of select.options){const level=data.levels[option.value];if(level)option.textContent=level.name+(level.elo?` · ${level.elo}`:' · 不限强度');}
+   for(const option of select.options){const level=data.levels[option.value];if(level)option.textContent=level.name+' · '+(level.elo||3190);}
    select.dispatchEvent(new CustomEvent('change',{detail:{engineOptions:true}}));
-   $('#difficulty-note').textContent=data.browser?'Stockfish 浏览器轻量版；目标 Elo 随设备变化，分析始终全强度。':'目标 Elo 随设备表现略有变化；分析始终全强度。';
   }catch(error){status('本地引擎不可用');empty(error.message);$('#retry-engine').classList.remove('hidden');}
  }
  $('#analysis-toggle').addEventListener('click',()=>{
@@ -91,7 +90,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
   if(!enabled){state.arrow=null;drawArrow();}
-  scheduleEngine();
+  $('#review-toggle').setAttribute('aria-disabled',String(!enabled));scheduleEngine();
  });
  $('#engine-insight').addEventListener('click',event=>{
   const button=event.target.closest('[data-pv]');if(!button||!state.analysis)return;
@@ -105,7 +104,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
  });
  window.addEventListener('pagehide',()=>{clearTimeout(timer);controller?.abort();});
  function setReviewMode(on){
-  if(on)enabled=true;
+  if(on&&!enabled){toast?.('请先打开实时分析');return false;}
   $('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
   $('#analysis-toggle span').textContent='实时分析';$('#analysis-toggle').setAttribute('aria-label','实时分析');
   $('.coach-card').dataset.review=String(on);
@@ -113,5 +112,5 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
   scheduleEngine();
  }
- return {scheduleEngine,refreshEngineStatus,setReviewMode,boardReset:nextNote,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,isEnabled:()=>enabled,boardReset:nextNote,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
 }

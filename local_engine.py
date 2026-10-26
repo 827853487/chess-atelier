@@ -18,11 +18,11 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent
 LEVELS = {
     1: {'name': '入门', 'elo': 1320, 'ms': 350},
-    2: {'name': '休闲', 'elo': 1600, 'ms': 500},
+    2: {'name': '一般', 'elo': 1600, 'ms': 500},
     3: {'name': '进阶', 'elo': 1900, 'ms': 700},
     4: {'name': '高手', 'elo': 2200, 'ms': 1000},
     5: {'name': '大师', 'elo': 2600, 'ms': 1400},
-    6: {'name': '全力', 'elo': None, 'ms': 2200},
+    6: {'name': '顶级', 'elo': 3190, 'ms': 2200},
 }
 
 
@@ -169,10 +169,13 @@ class LocalStockfish:
                         wdl = info['wdl'].white()
                         row['wdl'] = [wdl.wins, wdl.draws, wdl.losses]
                     depth = row['depth']
+                    rank = info.get('multipv', 1)
+                    if rank == 1:
+                        depths[depth] = {}
                     batch = depths.setdefault(depth, {})
-                    batch[info.get('multipv', 1)] = row
+                    batch[rank] = row
                     # Never mix PV ranks from different iterations: their root moves can duplicate.
-                    if len(batch) < count:
+                    if len(batch) < count or len({item['moves'].split()[0] for item in batch.values()}) < count:
                         continue
                     rows = batch.copy()
                     if len(depths) > 24:

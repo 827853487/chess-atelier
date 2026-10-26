@@ -1,0 +1,21 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18865/dist/';
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[],api=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))api.push(r.url());});await context.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());
+ const idle=async()=>{await page.waitForFunction(()=>!document.querySelector('#board.is-opening,.floating-piece,.appearance-ghost'));await page.waitForTimeout(60);};
+ try{
+  await page.goto(base);await page.waitForFunction(()=>document.querySelector('#collection').getAttribute('aria-busy')==='false',null,{timeout:120000});assert.equal(await page.locator('#ply').innerText(),'0 / 12');
+  await page.waitForFunction(()=>document.querySelectorAll('.engine-pv').length===3&&document.querySelector('#engine-probability').dataset.pending==='false',null,{timeout:60000});
+  await page.evaluate(()=>{document.querySelector('#next').click();for(let i=0;i<20;i++)document.querySelector('#next').click();});await idle();assert.equal(await page.locator('#ply').innerText(),'1 / 12');
+  await page.locator('#review-toggle').click();await page.waitForFunction(()=>document.querySelector('#review-progress').textContent.startsWith('13 / 13'),null,{timeout:120000});await page.waitForSelector('.review-mark:not(.is-leaving)');
+  await page.locator('[data-play-mode=book]').click();await idle();await page.evaluate(()=>{document.querySelector('#flip').click();for(let i=0;i<8;i++)document.querySelector('#flip').click();});await page.waitForTimeout(1800);await idle();assert.equal(await page.locator('#side').inputValue(),'w');assert.equal(await page.locator('#movelist [data-ply]').count(),0);
+  const actual=await page.evaluate(()=>{const n=document.querySelector('[data-square=e2] > .piece');document.querySelector('[data-square=e2]').click();document.querySelector('[data-square=e4]').click();return document.querySelector('.floating-piece')?.contains(n);});assert.equal(actual,true);
+  await page.waitForFunction(()=>document.querySelectorAll('#movelist [data-ply]').length===2,null,{timeout:45000});await idle();
+  await page.locator('#undo').click();await page.waitForFunction(()=>document.querySelectorAll('#movelist [data-ply]').length===0);await idle();assert.equal(await page.locator('[data-square=e2] .piece-visual').getAttribute('data-piece'),'wp');
+  await page.locator('#analysis-toggle').click();assert.equal(await page.locator('#review-toggle').getAttribute('aria-disabled'),'true');assert.equal(await page.locator('#review-toggle').getAttribute('aria-pressed'),'false');
+  await page.locator('.board-block').screenshot({path:path.resolve(__dirname,'../test-results/public-motion-board.png')});
+  await page.setViewportSize({width:390,height:844});await idle();const header=await page.evaluate(()=>{const a=document.querySelector('.brand').getBoundingClientRect(),b=document.querySelector('.top-tools').getBoundingClientRect();return {gap:Math.abs((a.top+a.bottom-b.top-b.bottom)/2),right:b.right,width:innerWidth};});assert.ok(header.gap<8&&header.right<=header.width);await page.locator('#music-toggle').click();assert.ok((await page.locator('#music-panel').boundingBox()).height<340);
+  assert.deepEqual(errors,[]);assert.deepEqual(api,[]);fs.writeFileSync(path.resolve(__dirname,'../test-results/public-motion-result.json'),JSON.stringify({passed:true,url:base,realWasm:true,reviewPositions:13,initialItalian:true,viewOnlyFlip:true,realNodeMove:true,undo:true,mobileHeader:true,noEngineApi:true,pageErrors:errors},null,2));console.log('PASS: real static WASM analysis/review/play/undo, Italian default, view-only flip, real moving nodes, review switches and mobile header');
+ }catch(e){await page.screenshot({path:path.resolve(__dirname,'../test-results/public-motion-failure.png'),fullPage:true});throw e;}finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

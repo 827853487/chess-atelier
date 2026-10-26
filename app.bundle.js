@@ -195,7 +195,7 @@ const { browserEngineEnabled, browserEngineRequest, browserEngineStatus }=(()=>{
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
 function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
-const LEVELS={1:{name:'入门',elo:1320,ms:350},2:{name:'休闲',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'全力',elo:null,ms:2200}};
+const LEVELS={1:{name:'入门',elo:1320,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3190,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
 const assetUrl=new URL('./vendor/stockfish/stockfish-19-lite-single.js',document.baseURI).href;
 class UciWorker{
@@ -269,9 +269,9 @@ class UciWorker{
      const rank=Number(line.match(/\bmultipv (\d+)/)?.[1]||1),wdl=line.match(/\bwdl (\d+) (\d+) (\d+)/);
      const row={depth:Number(depth[1]),moves:pv[1],[score[1]]:sign*Number(score[2])};
      if(wdl)row.wdl=(sign===1?wdl.slice(1):wdl.slice(1).reverse()).map(Number);
-     let batch=batches.get(row.depth);if(!batch)batches.set(row.depth,batch=new Map());batch.set(rank,row);
+     let batch=batches.get(row.depth);if(!batch||rank===1)batches.set(row.depth,batch=new Map());batch.set(rank,row);
      while(batches.size>24)batches.delete(batches.keys().next().value);
-     if(batch.size>=count&&batch.has(1)){
+     if(batch.size>=count&&batch.has(1)&&new Set([...batch.values()].map(item=>item.moves.split(' ')[0])).size>=count){
       rows=[...batch].sort((a,b)=>a[0]-b[0]).map(([,value])=>value);
       if(performance.now()-lastEmit>=120){lastEmit=performance.now();onUpdate?.({...base,depth:rows[0].depth,pvs:rows,complete:false});}
      }
@@ -666,7 +666,7 @@ const { setupLocalAnalysis }=(()=>{
 
 
 
-function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookReply}){
+function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookReply,toast}){
  const $=q=>document.querySelector(q);
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const cache=new Map();let timer=null,controller=null,sequence=0,enabled=true;
@@ -743,9 +743,8 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
    const data=await engineStatus();
    if(!data.available)throw Error(data.message||'本地 Stockfish 不可用');
    const select=$('#bot-level');
-   for(const option of select.options){const level=data.levels[option.value];if(level)option.textContent=level.name+(level.elo?` · ${level.elo}`:' · 不限强度');}
+   for(const option of select.options){const level=data.levels[option.value];if(level)option.textContent=level.name+' · '+(level.elo||3190);}
    select.dispatchEvent(new CustomEvent('change',{detail:{engineOptions:true}}));
-   $('#difficulty-note').textContent=data.browser?'Stockfish 浏览器轻量版；目标 Elo 随设备变化，分析始终全强度。':'目标 Elo 随设备表现略有变化；分析始终全强度。';
   }catch(error){status('本地引擎不可用');empty(error.message);$('#retry-engine').classList.remove('hidden');}
  }
  $('#analysis-toggle').addEventListener('click',()=>{
@@ -755,7 +754,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
   if(!enabled){state.arrow=null;drawArrow();}
-  scheduleEngine();
+  $('#review-toggle').setAttribute('aria-disabled',String(!enabled));scheduleEngine();
  });
  $('#engine-insight').addEventListener('click',event=>{
   const button=event.target.closest('[data-pv]');if(!button||!state.analysis)return;
@@ -769,7 +768,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
  });
  window.addEventListener('pagehide',()=>{clearTimeout(timer);controller?.abort();});
  function setReviewMode(on){
-  if(on)enabled=true;
+  if(on&&!enabled){toast?.('请先打开实时分析');return false;}
   $('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
   $('#analysis-toggle span').textContent='实时分析';$('#analysis-toggle').setAttribute('aria-label','实时分析');
   $('.coach-card').dataset.review=String(on);
@@ -777,7 +776,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
   scheduleEngine();
  }
- return {scheduleEngine,refreshEngineStatus,setReviewMode,boardReset:nextNote,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,isEnabled:()=>enabled,boardReset:nextNote,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
 }
 
 return { setupLocalAnalysis };
@@ -903,18 +902,17 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
   finally{clearTimeout(timeout);if(controller===request)controller=null;if(token===epoch)schedule();}
  }
  function sync(){
-  const moves=cachedHistory(),available=state.mode==='free'||moves.length>0&&state.game.isGameOver();
+  const moves=cachedHistory();
   if(record&&(record.game!==state.game||record.length!==moves.length||record.last!==moves.at(-1)?.san)){
-   const wasActive=state.postReview;stop();record=null;state.postReview=false;clearMarks();$('post-review').hidden=true;if(wasActive)analysis.setReviewMode(false);
+   const wasActive=state.postReview,previous=record;stop();record=null;clearMarks();if(wasActive){record=createRecord();for(const [index,data] of previous.results)if(record.positions[index]?.fen===previous.positions[index]?.fen&&record.positions[index]?.origin===previous.positions[index]?.origin&&record.positions[index]?.moves.join(' ')===previous.positions[index]?.moves.join(' '))record.results.set(index,data);}else $('post-review').hidden=true;
   }
-  const button=$('side-badge');button.disabled=!available;button.classList.toggle('is-review-active',!!state.postReview);button.setAttribute('aria-pressed',String(!!state.postReview));
-  if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止复盘，返回棋谱浏览':'加载 Stockfish 逐步复盘';}
-  else button.title='对弈结束后可复盘';
+  const button=$('review-toggle');button.setAttribute('aria-pressed',String(!!state.postReview));button.setAttribute('aria-disabled',String(!analysis.isEnabled()));
   if(state.postReview){if(lastView!==state.view){stop();clearMarks();lastView=state.view;error='';}render();schedule();}
  }
- $('side-badge').addEventListener('click',()=>{
+ $('review-toggle').addEventListener('click',()=>{
+  if(!analysis.isEnabled()){state.notify?.('请先打开实时分析');return;}
   if(state.postReview){close();return;}
-  if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);goto(0);sync();
+  if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);sync();
  });
  window.addEventListener('pagehide',()=>{stop();textAnimation?.cancel();for(const node of departingMarks)node.remove();departingMarks.clear();});
  return {sync,close,prepareMotion,motionStarted,boardResetStarted,motionSettled:()=>{textMotion=null;textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='';if(state.postReview)render();}};
@@ -2176,6 +2174,16 @@ const local=LOCAL_MUSIC.map(track=>({...track,id:'local:'+track.file,localUrl:'.
 const remoteSeed=MUSIC_SEED.map(([file,title,composer])=>({id:'seed:'+file,file,title,composer,era:/巴赫|亨德尔|维瓦尔第|斯卡拉蒂/.test(composer)?'baroque':/莫扎特|贝多芬|海顿/.test(composer)?'classical':/德彪西|拉威尔|萨蒂/.test(composer)?'modern':'romantic',sourceUrl:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file)}));
 const state={era:'all',shuffle:true,onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
 const source=track=>track.localUrl||track.remoteUrl||'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(track.file).replace(/%20/g,'_');
+let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0;
+audio.crossOrigin='anonymous';
+function stopSpectrum(){cancelAnimationFrame(spectrumFrame);spectrumFrame=0;for(const bar of document.querySelectorAll('.wave-bars i'))bar.style.transform='scaleY(.12)';}
+function ensureSpectrum(){
+ try{if(!spectrumContext){const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;spectrumContext=new Context();spectrumSource=spectrumContext.createMediaElementSource(audio);spectrum=spectrumContext.createAnalyser();spectrum.fftSize=256;spectrum.smoothingTimeConstant=.72;spectrumSource.connect(spectrum);spectrum.connect(spectrumContext.destination);}spectrumContext.resume().catch(()=>{});}catch{}
+}
+function startSpectrum(){
+ stopSpectrum();if(!spectrum)return;const data=new Uint8Array(spectrum.frequencyBinCount),groups=[[1,3],[3,6],[6,12],[12,24],[24,48]],bars=[...document.querySelectorAll('.wave-bars i')];
+ const frame=()=>{if(audio.paused||$('music-panel').classList.contains('hidden')){spectrumFrame=0;return;}spectrum.getByteFrequencyData(data);groups.forEach(([from,to],i)=>{let total=0;for(let j=from;j<to;j++)total+=data[j];if(bars[i])bars[i].style.transform=`scaleY(${Math.max(.12,total/(to-from)/255).toFixed(3)})`;});spectrumFrame=requestAnimationFrame(frame);};spectrumFrame=requestAnimationFrame(frame);
+}
 const time=seconds=>Number.isFinite(seconds)&&seconds>=0?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'0:00';
 const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8 18.7 12 8 18.2z"/></svg>',pauseIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>';
 function tracks(){
@@ -2230,6 +2238,7 @@ function prefetch(){
 }
 function start(track){
  if(!track)return;
+ ensureSpectrum();
  const serial=++state.serial;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
  state.history.push(track.id);if(state.history.length>32)state.history.shift();
  audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
@@ -2267,13 +2276,13 @@ function setupPeriodMusic(){
  const copyTitle=async()=>{if(!state.track)return;const label=musicCopyTitle(state.track),toast=$('music-copy-toast');try{await navigator.clipboard.writeText(label);toast.textContent='已复制';}catch{toast.textContent='复制失败，请允许剪贴板权限';}clearTimeout(copyTimer);toast.hidden=false;copyTimer=setTimeout(()=>toast.hidden=true,1400);};
  $('music-copy').addEventListener('click',copyTitle);$('music-copy').addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyTitle();}});
  audio.volume=.25;$('music-next-audio').preload='none';
- audio.addEventListener('playing',()=>{state.playing=true;state.errors=0;state.status='';render();});
- audio.addEventListener('pause',()=>{state.playing=false;render();});
+ audio.addEventListener('playing',()=>{state.playing=true;state.errors=0;state.status='';render();startSpectrum();});
+ audio.addEventListener('pause',()=>{state.playing=false;stopSpectrum();render();});
  audio.addEventListener('durationchange',()=>{if(Number.isFinite(audio.duration))$('music-duration').textContent=time(audio.duration);});
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
  audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
- $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=$('music-panel').classList.contains('hidden');$('music-panel').classList.toggle('hidden',!open);$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();}});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=$('music-panel').classList.contains('hidden');$('music-panel').classList.toggle('hidden',!open);$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
  $('music-close').addEventListener('click',closePanel);
  document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
  $('music-panel').addEventListener('keydown',event=>{if(event.key==='Escape')closePanel();});
@@ -2281,13 +2290,13 @@ function setupPeriodMusic(){
   state.era=button.dataset.era;if(state.era==='all')state.shuffle=true;state.plan=[];state.errors=0;
   start(pick(1,true));expandOnline();
  }));
- $('music-play').addEventListener('click',()=>{if(!audio.paused){audio.pause();return;}if(state.track&&!state.failed.has(state.track.id))audio.play().catch(()=>fail());else{state.failed.clear();state.errors=0;start(pick(1,true));}});
+ $('music-play').addEventListener('click',()=>{ensureSpectrum();if(!audio.paused){audio.pause();return;}if(state.track&&!state.failed.has(state.track.id))audio.play().catch(()=>fail());else{state.failed.clear();state.errors=0;start(pick(1,true));}});
  $('music-prev').addEventListener('click',()=>advance(-1));$('music-next').addEventListener('click',()=>advance(1));
  $('music-shuffle').addEventListener('click',()=>{state.shuffle=!state.shuffle;prefetch();render();});
  $('music-seek').addEventListener('input',event=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(event.target.value)/1000;});
  $('music-seek').addEventListener('pointerup',event=>event.target.blur());
  addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});new ResizeObserver(syncPanelAnchor).observe(document.querySelector('.masthead'));
- addEventListener('pagehide',()=>{audio.pause();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
+ addEventListener('pagehide',()=>{audio.pause();stopSpectrum();spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
  syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();if(!state.track)expandOnline();},2500);
 }
 
@@ -2325,6 +2334,7 @@ function searchBlob(x){
 let postReview=null,analysisUi=null;
 const state={game:new Chess(),origin:defaultFen,view:0,orientation:'w',side:'w',mode:'free',selected:null,legal:[],arrow:null,busy:false,generation:0,analysis:null,review:false,reviewTitle:'', local:[],tab:'notes', db:null,musicIndex:0, soundEnabled:true, hintsEnabled:true, animEnabled:true, catalogCount:0, classicsCount:0, archiveLoaded:new Set(), fullKeys:new Set(),duelStarted:false,currentScoreId:null,currentScoreSource:null,userPacks:[],pendingImportPack:'',packFocus:'我的棋谱',packConfirm:'',promo:null};
 // 列表常量：DOM 中同时存在的棋谱行上限，超出部分滚动时再追加。
+state.notify=toast;
 const LIST_PAGE=120;
 let starredIds;try{starredIds=readStarredScores(localStorage);}catch{starredIds=new Set();}
 function toggleStarredScore(id){
@@ -2407,19 +2417,16 @@ function drawArrow(){
 // 坐标标签只在翻转棋盘时重写
 let lastOrientation=null;
 function drawBoard(){
- clearOpeningMotion();
- clearAppearanceMotion();
+ if(boardAnimating()){boardDrawPending=true;return;}
  const g=viewGame(),moves=cachedHistory(),last=state.view?moves[state.view-1]:null,b=$('#board');
- // 重绘前先把仍在半空飞行的棋子立刻落定。否则 .floating-piece 会在动画中途
- // 被抽走、目标格又还挂着 opacity:0，棋子在半路凭空消失一下。
- if(settleFlights()){for(const n of b.querySelectorAll('.piece'))if(n.style.opacity)n.style.opacity='';}
- b.querySelectorAll('.floating-piece').forEach(node=>node.remove());
+ // 动画中的重绘由上方统一延后，不能抽走正在移动的真实图片节点。
+
  if(b.querySelectorAll(':scope > .square').length!==64){
-  b.replaceChildren();const frag=document.createDocumentFragment();
+  const arrows=$('#arrows');arrows?.remove();b.replaceChildren();const frag=document.createDocumentFragment();
   for(let r=0;r<8;r++)for(let c=0;c<8;c++){
    const el=document.createElement('button');el.type='button';el.className='square';el.setAttribute('role','gridcell');
    el.addEventListener('click',()=>clickSquare(el.dataset.square));frag.append(el);
-  }b.append(frag);
+  }b.append(frag);if(arrows)b.append(arrows);
  }
  const cells=b.querySelectorAll(':scope > .square');
  // 棋子样式与主题在一次绘制内是常量，提到循环外避免 64 次 DOM 读取
@@ -2445,7 +2452,7 @@ function drawBoard(){
   const wantCheck=!!(p?.type==='k'&&p.color===turnColor&&checked);
   const wantCapture=legalCaptures.has(sq),wantMark=legalTargets.has(sq)||wantCapture;
   if(el.className!==base(r,c))el.className=base(r,c);
-  el.classList.toggle('last',wantLast);
+  el.classList.toggle('last',wantLast);el.classList.toggle('last-from',!!last&&last.from===sq);el.classList.toggle('last-to',!!last&&last.to===sq);
   el.classList.toggle('selected',wantSel);
   el.classList.toggle('check',wantCheck);
   el.classList.toggle('can-move',wantMark&&!wantCapture);
@@ -2484,6 +2491,13 @@ function drawBoard(){
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
  postReview?.sync();
 }
+let boardDrawPending=false,pendingBoardAction=null,boardFlush=false,undoRunning=false,exclusiveDone=Promise.resolve(),finishExclusive=null;
+function boardAnimating(){return activeFlights.size>0||!!openingMotion||appearanceMotion.length>0;}
+function boardLocked(){return boardAnimating()||undoRunning;}
+function deferBoardAction(action){if(!boardLocked())return false;pendingBoardAction=action;return true;}
+function flushBoardWork(){if(boardFlush)return;boardFlush=true;requestAnimationFrame(()=>{boardFlush=false;if(boardLocked())return;const action=pendingBoardAction;pendingBoardAction=null;if(action){action();return;}if(boardDrawPending){boardDrawPending=false;drawBoard();}});}
+async function whenBoardIdle(){while(boardLocked()||pendingBoardAction){if(pendingBoardAction&&!boardLocked()){flushBoardWork();await new Promise(requestAnimationFrame);continue;}await Promise.all([whenFlightsIdle(),whenOpeningIdle(),...appearanceMotion.map(item=>item.animation.finished.catch(()=>{})),undoRunning?exclusiveDone:Promise.resolve()]);}}
+function flipBoard(){if(deferBoardAction(flipBoard))return;animateOpening(()=>{state.orientation=state.orientation==='w'?'b':'w';clearBoardGeometry();drawBoard();});}
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
 let animationSerial=0;
 // 格子几何：棋盘是固定网格，只在棋盘盒尺寸变化时重算一次，
@@ -2509,17 +2523,6 @@ function squareOffset(sq){
  if(c.width<2||c.height<2)return null;
  return {x:c.left-b.left,y:c.top-b.top,w:c.width,h:c.height};
 }
-// 飞行中的棋子：直接克隆棋盘上同种棋子的节点，
-// 让浏览器复用已经解码好的图片，而不是每步都新建 <img> 触发重新解码。
-function ghostPiece(piece,color,square){
- const loc=squareOffset(square);if(!loc)return null;
- const src=document.querySelector(`#board .piece-visual[data-piece="${color}${piece}"]`);
- const node=document.createElement('div');node.className='floating-piece';
- if(src)node.append(src.cloneNode(true));
- else node.innerHTML=pieceSvg(piece,color);
- Object.assign(node.style,{left:loc.x+'px',top:loc.y+'px',width:loc.w+'px',height:loc.h+'px'});
- $('#board').append(node);return node;
-}
 function pulseSquare(square,isCapture){const sq=boardCell(square);if(!sq)return;sq.classList.remove('pulse-move','pulse-capture');void sq.offsetWidth;sq.classList.add(isCapture?'pulse-capture':'pulse-move');setTimeout(()=>sq.classList.remove('pulse-move','pulse-capture'),650);}
 /* 飞行中的棋子统一登记。任何一次重绘 / 新的走子都会先把它们落定，
    保证同一时刻只有一枚棋子在飞，也保证不会在动画中途被 DOM 抽走。 */
@@ -2535,55 +2538,36 @@ function whenFlightsIdle(){
  if(!activeFlights.size)return Promise.resolve();
  return Promise.all([...activeFlights].map(f=>f.promise).filter(Boolean)).catch(()=>{});
 }
-function transition(m,reverse=false){
+function takeMotionNodes(move,reverse=false){
+ if(!move||!state.animEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches)return null;
+ const take=square=>{const cell=boardCell(square),node=cell?.querySelector(':scope > .piece');if(node){node.remove();cell.dataset.pieceKey='';}return node;};
+ const result={mover:take(reverse?move.to:move.from),captured:null,rook:null};
+ if(move.captured&&!reverse)result.captured=take(move.flags?.includes('e')?move.to[0]+move.from[1]:move.to);
+ if(move.flags?.includes('k')||move.flags?.includes('q')){const rank=move.color==='w'?'1':'8',kingSide=move.flags.includes('k');result.rook=take((reverse?(kingSide?'f':'d'):(kingSide?'h':'a'))+rank);}
+ return result;
+}
+function transition(m,reverse=false,snapshot=null){
  if(!m)return Promise.resolve();
- const from=reverse?m.to:m.from,to=reverse?m.from:m.to;
- const isCapture=!!m.captured,moveType=(reverse&&m.promotion)?m.promotion:m.piece;
- const target=boardCell(to)?.querySelector(':scope > .piece');
- if(target)target.style.opacity='0';
- const src=squareOffset(from),end=squareOffset(to);
- if(!src||!end){if(target)target.style.opacity='';return Promise.resolve();}
+ const from=reverse?m.to:m.from,to=reverse?m.from:m.to,isCapture=!!m.captured;
+ const target=boardCell(to)?.querySelector(':scope > .piece'),src=squareOffset(from),end=squareOffset(to);
  showMoveCue(m,reverse);
- if(!state.animEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches){pulseSquare(to,isCapture);playMoveSound(m);if(target)target.style.opacity='';return Promise.resolve();}
- const serial=++animationSerial;const mover=ghostPiece(moveType,m.color,from);if(!mover){if(target)target.style.opacity='';return Promise.resolve();}
- const distance=Math.hypot(end.x-src.x,end.y-src.y);
- const duration=Math.round(Math.max(190,Math.min(350,195+distance*.18)));
- const ghosts=[mover],anims=[],hidden=[target];
- let settle;
- const flight={done:false,promise:new Promise(resolve=>{settle=resolve;})};
- flight.finish=()=>{
-  if(flight.done)return;flight.done=true;
-  for(const a of anims){try{a.cancel();}catch{}}
-  for(const g of ghosts)g.remove();
-  for(const h of hidden)if(h)h.style.opacity='';
-  activeFlights.delete(flight);
-  postReview?.motionSettled();
-  settle();
- };
- activeFlights.add(flight);
- if(isCapture&&!reverse){const capSq=m.flags?.includes('e')?m.to[0]+m.from[1]:m.to;const captured=ghostPiece(m.captured,m.color==='w'?'b':'w',capSq);if(captured){ghosts.push(captured);anims.push(captured.animate([
-   {offset:0,opacity:1,transform:'translate3d(0,0,0) scale(1)'},
-   {offset:.45,opacity:.9,transform:'translate3d(0,0,0) scale(1)'},
-   {offset:1,opacity:0,transform:'translate3d(0,0,0) scale(.72)'}
-  ],{duration,fill:'forwards',easing:'cubic-bezier(.3,0,.6,1)'}));}}
- if(reverse&&isCapture){const captured=boardCell(m.flags?.includes('e')?m.to[0]+m.from[1]:m.to)?.querySelector('.piece');if(captured)anims.push(captured.animate([{opacity:0,transform:'scale(.78)'},{opacity:1,transform:'scale(1)'}],{duration,fill:'both',easing:'cubic-bezier(.2,.6,.3,1)'}));}
- const dx=end.x-src.x,dy=end.y-src.y;
- const flightFrames=(x,y)=>[{transform:'translate3d(0,0,0)'},{transform:`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0)`}];
- const main=mover.animate(flightFrames(dx,dy),{duration,easing:'cubic-bezier(.32,.02,.20,1)',fill:'forwards'});
- anims.push(main);
- postReview?.motionStarted(duration);
- if(m.flags?.includes('k')||m.flags?.includes('q')){const kingSide=m.flags.includes('k'),rank=m.color==='w'?'1':'8';const rf=kingSide?'h'+rank:'a'+rank,rt=kingSide?'f'+rank:'d'+rank;const a=reverse?rt:rf,b=reverse?rf:rt;const rstart=squareOffset(a),rend=squareOffset(b);if(rstart&&rend){const rook=ghostPiece('r',m.color,a);const rookTarget=boardCell(b)?.querySelector('.piece');if(rook){ghosts.push(rook);anims.push(rook.animate(flightFrames(rend.x-rstart.x,rend.y-rstart.y),{duration,easing:'cubic-bezier(.32,.02,.20,1)',fill:'forwards'}));}if(rookTarget){rookTarget.style.opacity='0';hidden.push(rookTarget);}}}
- playMoveSound(m);
- let wrapped=false,safety=0;
- const wrapUp=()=>{
-  if(wrapped)return;wrapped=true;clearTimeout(safety);
-  const latest=serial===animationSerial&&!flight.done;
-  flight.finish();
-  if(latest){pulseSquare(to,isCapture);const current=viewGame();if(current.isCheck())highlightCheck(current.isCheckmate());if(current.isGameOver())showFinalCelebration();}
- };
- safety=setTimeout(wrapUp,duration+80);
- main.finished.catch(()=>{}).then(wrapUp);
- return flight.promise;
+ const releaseSnapshot=()=>{for(const node of Object.values(snapshot||{}))if(node)releasePiece(node);};
+ if(!src||!end||!state.animEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches){releaseSnapshot();playMoveSound(m);return Promise.resolve();}
+ const duration=Math.round(Math.max(220,Math.min(360,210+Math.hypot(end.x-src.x,end.y-src.y)*.18))),serial=++animationSerial;
+ const ghosts=[],anims=[],landings=[],recycle=[];
+ const float=(node,square)=>{if(!node)return null;const loc=squareOffset(square),container=document.createElement('div');container.className='floating-piece';node.style.opacity='';container.append(node);const board=$('#board').getBoundingClientRect();Object.assign(container.style,{left:(loc.x/board.width*100)+'%',top:(loc.y/board.height*100)+'%',width:(loc.w/board.width*100)+'%',height:(loc.h/board.height*100)+'%'});$('#board').append(container);ghosts.push(container);return container;};
+ const moving=snapshot?.mover||acquirePiece(reverse&&m.promotion?m.promotion:m.piece,m.color),mover=float(moving,from);
+ if(target)target.style.opacity='0';landings.push({node:moving,target,square:to,promoted:!!m.promotion});
+ if(snapshot?.captured){const captured=float(snapshot.captured,m.flags?.includes('e')?m.to[0]+m.from[1]:m.to);recycle.push(snapshot.captured);anims.push(captured.animate([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.74)'}],{duration:duration*.75,easing:'ease-out',fill:'both'}));}
+ if(reverse&&isCapture){const restored=boardCell(m.flags?.includes('e')?m.to[0]+m.from[1]:m.to)?.querySelector(':scope > .piece');if(restored)anims.push(restored.animate([{opacity:0},{opacity:1}],{duration,fill:'both',easing:'ease-out'}));}
+ const frames=(x,y)=>[{transform:'translate3d(0,0,0)'},{transform:`translate3d(${x/src.w*100}%,${y/src.h*100}%,0)`}];
+ const main=mover.animate(frames(end.x-src.x,end.y-src.y),{duration,easing:'cubic-bezier(.32,.02,.2,1)',fill:'both'});anims.push(main);
+ if(snapshot?.rook){const rank=m.color==='w'?'1':'8',kingSide=m.flags.includes('k'),rf=(reverse?(kingSide?'f':'d'):(kingSide?'h':'a'))+rank,rt=(reverse?(kingSide?'h':'a'):(kingSide?'f':'d'))+rank,rookTarget=boardCell(rt)?.querySelector(':scope > .piece'),a=squareOffset(rf),b=squareOffset(rt),rook=float(snapshot.rook,rf);if(rookTarget)rookTarget.style.opacity='0';landings.push({node:snapshot.rook,target:rookTarget,square:rt});anims.push(rook.animate(frames(b.x-a.x,b.y-a.y),{duration,easing:'cubic-bezier(.32,.02,.2,1)',fill:'both'}));}
+ let resolve,safety;const flight={done:false,promise:new Promise(ready=>resolve=ready)};
+ flight.finish=()=>{if(flight.done)return;flight.done=true;clearTimeout(safety);for(const a of anims)a.cancel();for(const item of landings){if(item.promoted){releasePiece(item.node);if(item.target)item.target.style.opacity='';}else{if(item.target)releasePiece(item.target);item.node.remove();boardCell(item.square)?.prepend(item.node);item.node.style.opacity='';}}for(const node of recycle)releasePiece(node);for(const ghost of ghosts)ghost.remove();activeFlights.delete(flight);postReview?.motionSettled();resolve();flushBoardWork();};
+ activeFlights.add(flight);postReview?.motionStarted(duration);playMoveSound(m);
+ const finish=()=>{const latest=serial===animationSerial&&!flight.done;flight.finish();if(latest&&viewGame().isGameOver())showFinalCelebration();};
+ safety=setTimeout(finish,duration+150);main.finished.then(finish,()=>{});return flight.promise;
 }
 function highlightCheck(mate=false){const king=$('#board .square.check');if(!king)return;king.classList.remove('check-flash','check-mate-flash','check-nudge');void king.offsetWidth;king.classList.add(mate?'check-mate-flash':'check-flash');}
 function nudgeCheckedKing(g){
@@ -2610,7 +2594,7 @@ function playChosen(moves){
  if(moves.some(m=>m.flags?.includes('p'))){askPromotion(from,to,moves[0].color||'w');return;}
  makeMove({from,to,promotion:moves[0].promotion});
 }
-function clickSquare(square){if(state.mode==='free'){toast('打谱模式仅供浏览，请使用箭头切换着法');return;}if(state.postReview){toast('请先关闭复盘，再继续对弈');return;}clearOpeningMotion();if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
+function clickSquare(square){if(boardLocked())return;if(state.mode==='free'){toast('打谱模式仅供浏览，请使用箭头切换着法');return;}if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
  stopPlayback();
  if(state.mode==='book'&&!state.duelStarted){toast('请先点击「开始对弈」');return;}
  if(state.mode==='book'&&!state.review&&g.turn()!==state.side){toast('电脑行棋中；可切换为「打谱研究」操作双方');return;}
@@ -2634,7 +2618,10 @@ function clickSquare(square){if(state.mode==='free'){toast('打谱模式仅供�
 }
 function clearHints(){state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;}
 function makeMove(m,{auto=false,quiet=false}={}){
- stopPlayback();let applied;
+ if(boardLocked()||state.mode==='book'&&!state.duelStarted||!auto&&state.mode==='book'&&viewGame().turn()!==state.side)return false;
+ stopPlayback();let applied,snapshot;
+ const legal=fromUci(viewGame(),m.from+m.to+(m.promotion||''));if(!legal)return false;
+ snapshot=quiet?null:takeMotionNodes(legal);
  if(state.mode==='book'&&!state.duelStarted)return false;
  try{
   if(state.mode==='book'&&!auto&&viewGame().turn()!==state.side)return false;
@@ -2644,15 +2631,15 @@ function makeMove(m,{auto=false,quiet=false}={}){
   }
   applied=state.game.move({from:m.from,to:m.to,promotion:m.promotion});
   state.game.header('Result',gameResult(state.game));invalidateViewMemo();
- }catch{if(!auto)toast('不是合法着法');return false;}
+ }catch{for(const node of Object.values(snapshot||{}))if(node)releasePiece(node);drawBoard();if(!auto)toast('不是合法着法');return false;}
  const gen=state.generation;
- state.view=history().length;clearHints();
+ state.view=history().length;clearHints();postReview?.prepareMotion(state.view);
  drawBoard();
  if(!quiet){
   const landed=boardCell(applied.to)?.querySelector(':scope > .piece');
   if(landed)landed.style.opacity='0';
  }
- const fly=quiet?Promise.resolve():transition(applied);
+ const fly=quiet?Promise.resolve():transition(applied,false,snapshot);
  if(quiet&&applied)showMoveCue(applied);
  if(state.mode==='book'&&state.duelStarted)state.busy=true;
  const wrapUp=()=>{
@@ -2671,21 +2658,28 @@ function makeMove(m,{auto=false,quiet=false}={}){
 let playController=null;
 function cancelBusy(){state.generation++;state.busy=false;playController?.abort();playController=null;}
 function reset(){
+ if(deferBoardAction(reset))return;
  if(state.mode==='book'){beginDuel();return;}
- animateOpening(()=>{
-  stopPlayback();cancelBusy();hidePromotion();state.currentScoreId=null;state.currentScoreSource=null;state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;state.review=false;state.reviewTitle='';invalidateViewMemo();clearHints();
-  $('#move-cue').textContent='初始局面 · 使用箭头浏览棋谱';drawAll();
- });
+ openLocalScore(LESSONS.find(lesson=>lesson.id==='italian'));
 }
-function goto(p,{resumeComputer=true}={}){cancelBusy();settleFlights();const old=state.view,next=Math.min(history().length,Math.max(0,p)),m=Math.abs(old-next)===1?history()[Math.min(old,next)]:null;
+function goto(p,{resumeComputer=true}={}){
+ if(boardLocked())return Promise.resolve(false);
+ const old=state.view,next=Math.min(history().length,Math.max(0,p));if(next===old)return Promise.resolve(false);
+ cancelBusy();const moves=cachedHistory(),m=Math.abs(old-next)===1?moves[Math.min(old,next)]:null,snapshot=m?takeMotionNodes(m,next<old):null;
  if(m&&state.animEnabled&&!matchMedia('(prefers-reduced-motion: reduce)').matches)postReview?.prepareMotion(next);
- state.view=next;state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;drawAll();if(m)transition(m,next<old);else $('#move-cue').textContent=next?'已跳转到第 '+next+' 半回合':'初始局面 · 使用箭头浏览棋谱';
- const g=viewGame(),moves=cachedHistory();
- if(finishBanner(g,moves))showFinalCelebration();
- if(resumeComputer&&state.mode==='book'&&!state.review&&state.view===moves.length&&g.turn()!==state.side&&!g.isGameOver())maybeBookReply();
+ const update=()=>{state.view=next;clearHints();drawAll();};let motion;
+ if(m){update();motion=transition(m,next<old,snapshot);}else motion=animateOpening(update);
+ return Promise.resolve(motion).then(()=>{if(resumeComputer&&state.mode==='book'&&!state.review&&state.view===cachedHistory().length&&viewGame().turn()!==state.side&&!viewGame().isGameOver())maybeBookReply();return true;});
 }
-function undo(){stopPlayback();cancelBusy();if(state.view<history().length||state.review){goto(state.view-1);return;}
- let times=state.mode==='book'&&state.game.turn()===state.side?2:1;while(times--&&history().length)state.game.undo();state.game.header('Result','*');invalidateViewMemo();state.view=history().length;clearHints();drawAll();$('#move-cue').textContent='已悔棋';if(state.mode==='book'&&state.game.turn()!==state.side&&!state.game.isGameOver())maybeBookReply();}
+async function undo(){
+ if(boardLocked())return;stopPlayback();
+ if(state.review||state.view<history().length){goto(state.view-1);return;}
+ cancelBusy();const count=state.mode==='book'&&state.game.turn()===state.side?2:1;
+ undoRunning=true;exclusiveDone=new Promise(ready=>finishExclusive=ready);
+ try{for(let i=0;i<count&&history().length;i++){const move=cachedHistory().at(-1),snapshot=takeMotionNodes(move,true);state.game.undo();state.game.header('Result','*');invalidateViewMemo();state.view=history().length;clearHints();postReview?.prepareMotion(state.view);drawAll();await transition(move,true,snapshot);}}
+ finally{undoRunning=false;finishExclusive?.();finishExclusive=null;$('#move-cue').textContent='已悔棋';flushBoardWork();}
+ if(state.mode==='book'&&state.game.turn()!==state.side&&!state.game.isGameOver())maybeBookReply();
+}
 const UCI_RE=/^[a-h][1-8][a-h][1-8][qrbn]?$/;
 // 由着法查棋局对象：先按 UCI 前四位建索引，避免对每个候选都重新生成整盘合法着法。
 const uciCache=new WeakMap();
@@ -2705,16 +2699,18 @@ function enginePosition(g=viewGame()){
 }
 async function maybeBookReply(){
  const requestedGeneration=state.generation;
- await whenFlightsIdle();await whenOpeningIdle();
+ await whenBoardIdle();
  if(requestedGeneration!==state.generation)return;
  if(state.mode!=='book'||!state.duelStarted||state.review||playbackTimer!==null||state.view!==history().length)return;
- const g=viewGame();if(g.turn()===state.side||g.isGameOver()){state.busy=false;drawBoard();return;}
+ if(playController&&!playController.signal.aborted)return;
+ const g=viewGame();if(g.turn()===state.side||g.isGameOver()){state.busy=false;return;}
  const token=++state.generation,fen=g.fen();
  playController?.abort();const controller=playController=new AbortController();
  const timeout=setTimeout(()=>controller.abort(),12000);
  state.busy=true;$('#retry-engine').classList.add('hidden');drawBoard();
  try{
   const data=await engineRequest('/api/play',{...enginePosition(g),level:botLevel()},{signal:controller.signal});
+  await whenBoardIdle();
   if(token!==state.generation||state.mode!=='book'||state.view!==history().length||viewGame().fen()!==fen)return;
   const move=fromUci(g,data.uci);
   if(!data.ok||!move)throw Error(data.message||'Stockfish 未返回合法着法');
@@ -2726,8 +2722,8 @@ async function maybeBookReply(){
   $('#retry-engine').classList.remove('hidden');toast(state.engineError);
  }finally{clearTimeout(timeout);if(playController===controller)playController=null;}
 }
-function loadPosition(fen,title='残局练习'){try{const game=new Chess(fen);animateOpening(()=>{stopPlayback();invalidateViewMemo();cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();});return true;}catch{toast('无法读取此残局局面');return false;}}
-function loadPgn(pgn,title='',targetPly=null){try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');animateOpening(()=>{stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();});
+function loadPosition(fen,title='残局练习'){if(deferBoardAction(()=>loadPosition(fen,title)))return false;try{const game=new Chess(fen);animateOpening(()=>{stopPlayback();invalidateViewMemo();cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();});return true;}catch{toast('无法读取此残局局面');return false;}}
+function loadPgn(pgn,title='',targetPly=null){if(deferBoardAction(()=>loadPgn(pgn,title,targetPly)))return false;try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');animateOpening(()=>{stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();});
  if(finishBanner(game,moves)&&state.view>=moves.length)showFinalCelebration();
  return true;}catch(e){console.warn('PGN parse failed',e);toast('棋谱格式无法解析');return false;}}
 // 着法记录：只在棋谱长度变化时重建 DOM，回放时仅切换选中态，
@@ -3192,6 +3188,7 @@ function markCurrentScore(){
   if(on)row.setAttribute('aria-current','true');else row.removeAttribute('aria-current');});
 }
 function openLocalScore(source){
+ if(deferBoardAction(()=>openLocalScore(source)))return;
  if(!source)return;
  if((source.pgn?loadPgn(source.pgn,source.title):source.fen?loadPosition(source.fen,source.title):false)){
   state.currentScoreId=source.id;state.currentScoreSource=source;
@@ -3259,7 +3256,7 @@ function clearOpeningMotion(){
  for(const animation of active.animations)animation.cancel();
  for(const node of active.oldNodes)releasePiece(node);
  active.layer?.remove();$('#board').classList.remove('is-opening');$('#board').removeAttribute('aria-busy');
- active.resolve();
+ active.resolve();flushBoardWork();
 }
 function whenOpeningIdle(){return openingMotion?.done||Promise.resolve();}
 function animateOpening(update,{animate=true}={}){
@@ -3306,11 +3303,12 @@ function appearanceAnimation(node,frames,duration,ghost=null,startTime=null,easi
  if(startTime!==null)animation.startTime=startTime;
  const entry={animation,ghost};appearanceMotion.push(entry);
  const done=animation.finished.catch(()=>{}).then(()=>{
-  animation.cancel();ghost?.remove();appearanceMotion=appearanceMotion.filter(item=>item!==entry);
+  animation.cancel();ghost?.remove();appearanceMotion=appearanceMotion.filter(item=>item!==entry);flushBoardWork();
  });
  return done;
 }
 async function changeAppearance(animate){
+ if(deferBoardAction(()=>changeAppearance(animate)))return;
  const sequence=++appearanceSequence,theme=requestedTheme,style=requestedPieceStyle,root=document.documentElement;
  clearOpeningMotion();clearAppearanceMotion();
  const themeChanged=root.dataset.theme!==theme,styleChanged=(root.dataset.pieceStyle||'cburnett')!==style;
@@ -3318,8 +3316,7 @@ async function changeAppearance(animate){
  const prepared=animate?await preparePieceArt(theme,style):[];
  if(sequence!==appearanceSequence)return;
  const motion=animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
- settleFlights();
- if(animate){await whenFlightsIdle();if(sequence!==appearanceSequence)return;}
+ await whenBoardIdle();if(sequence!==appearanceSequence)return;
  const previous=motion?[...$('#board').querySelectorAll('.square > .piece')].map(node=>{
   const square=node.parentElement.dataset.square;
   // Reuse the already rendered image instead of cloning an image that must load again.
@@ -3363,6 +3360,7 @@ function initializeThemeMotion(){
  root.classList.add('appearance-ready');
 }
 function setPlayMode(mode,{animate=true}={}){
+ if(deferBoardAction(()=>setPlayMode(mode,{animate})))return;
  const next=mode==='book'?'book':'free';
  stopPlayback();settleFlights();cancelBusy();hidePromotion();
  state.mode=next;
@@ -3371,7 +3369,7 @@ function setPlayMode(mode,{animate=true}={}){
  state.review=false;state.reviewTitle='';
  state.duelStarted=false;
  if(next==='book'){state.side='w';state.orientation='w';syncSideSelect('w');}
- else state.orientation='w';
+ else{state.orientation='w';const lesson=LESSONS.find(item=>item.id==='italian');state.game.loadPgn(lesson.pgn);state.review=true;state.reviewTitle=lesson.title;state.currentScoreId=lesson.id;state.currentScoreSource=lesson;}
  clearBoardGeometry();
  invalidateViewMemo();clearHints();
  $('#mode').value=next;
@@ -3390,37 +3388,15 @@ function syncSideSelect(side){
  if(lab)lab.textContent=sel.selectedOptions[0]?.textContent||(side==='b'?'黑方':'白方');
  document.querySelectorAll('#atelier-list-side .atelier-option').forEach(o=>o.setAttribute('aria-selected',String(o.dataset.value===side)));
 }
-function takeDuelSeat(color,{keepPosition=false}={}){
- const next=color==='b'?'b':'w';
- const changed=state.side!==next;
- state.side=next;
- state.orientation=next;
- syncSideSelect(next);
- clearBoardGeometry();
- if(!keepPosition)return changed;
- if(state.mode!=='book'){drawBoard();return changed;}
- clearHints();
- if(!state.duelStarted||state.review){drawBoard();return changed;}
- cancelBusy();
- drawBoard();
- const g=viewGame();
- if(!g.isGameOver()&&g.turn()!==state.side){
-  const gen=state.generation;
-  requestAnimationFrame(()=>{
-   clearBoardGeometry();
-   requestAnimationFrame(()=>{if(gen===state.generation)maybeBookReply();});
-  });
- }
- return changed;
-}
 function stampDuelRecord(){
- const computer='Stockfish',level=Number($('#bot-level').value),elos={1:1320,2:1600,3:1900,4:2200,5:2600};
+ const computer='Stockfish',level=Number($('#bot-level').value),elos={1:1320,2:1600,3:1900,4:2200,5:2600,6:3190};
  state.game.header('Event','Local Computer Game','Site','Local','White',state.side==='w'?'Player':computer,'Black',state.side==='b'?'Player':computer,state.side==='w'?'BlackType':'WhiteType','program');
  delete state.game._headers.WhiteElo;delete state.game._headers.BlackElo;
  if(elos[level])state.game.header(state.side==='w'?'BlackElo':'WhiteElo',String(elos[level]));
 }
 function stampNewRecord(){state.engineError='';state.game.header('Event','Casual Game','Site','Local','Date',pgnDate(),'Round','-','White','?','Black','?','Result','*');}
 function beginDuel({animate=true}={}){
+ if(deferBoardAction(()=>beginDuel({animate})))return;
  animateOpening(()=>{
  stopPlayback();settleFlights();cancelBusy();hidePromotion();
  state.currentScoreId=null;state.currentScoreSource=null;state.duelStarted=true;
@@ -3463,9 +3439,7 @@ function setupEvents(){
  $('#duel-start').addEventListener('click',beginDuel);$('#reset').addEventListener('click',reset);$('#undo').addEventListener('click',undo);
  $('#first').addEventListener('click',()=>{stopPlayback();goto(0);});$('#prev').addEventListener('click',()=>{stopPlayback();goto(state.view-1);});$('#next').addEventListener('click',()=>{stopPlayback();goto(state.view+1);});$('#last').addEventListener('click',()=>{stopPlayback();goto(history().length);});
  $('#flip').addEventListener('click',()=>{
-  const next=state.orientation==='w'?'b':'w';
-  stopPlayback();
-  animateOpening(()=>{if(state.mode==='book')takeDuelSeat(next,{keepPosition:true});else{state.orientation=next;clearBoardGeometry();drawBoard();}});
+  flipBoard();
  });
  $('#save').addEventListener('click',saveGame);$('#export').addEventListener('click',exportPgn);
  $('#mode').addEventListener('change',e=>setPlayMode(e.target.value));
@@ -3536,7 +3510,7 @@ function setupEvents(){
  $('#theme').addEventListener('change',e=>applyTheme(e.target.value));
  $('#piece-style').addEventListener('change',e=>applyPieceStyle(e.target.value));
  $('#animation-speed').addEventListener('change',e=>{state.animEnabled=e.target.value!=='off';});
- const applyHints=on=>{state.hintsEnabled=on;const sel=$('#move-hints');if(sel)sel.value=on?'on':'off';try{localStorage.setItem('ChessAtelierMoveHints',on?'on':'off');}catch{}drawBoard();};
+ const applyHints=on=>{if(deferBoardAction(()=>applyHints(on)))return;state.hintsEnabled=on;const sel=$('#move-hints');if(sel)sel.value=on?'on':'off';try{localStorage.setItem('ChessAtelierMoveHints',on?'on':'off');}catch{}drawBoard();};
  applyHints((()=>{try{return localStorage.getItem('ChessAtelierMoveHints')!=='off';}catch{return true;}})());
  $('#move-hints')?.addEventListener('change',e=>applyHints(e.target.value!=='off'));
  // Center the result on the boundary between the board's two lowest visible ranks.
@@ -3545,7 +3519,7 @@ function setupEvents(){
   result.style.left=(board.offsetLeft+board.offsetWidth/2)+'px';
   result.style.top=(board.offsetTop+board.offsetHeight*7/8)+'px';
  }).observe($('#board'));
- addEventListener('resize',()=>{clearBoardGeometry();settleFlights();},{passive:true});
+ addEventListener('resize',()=>{clearBoardGeometry();},{passive:true});
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)||document.querySelector('dialog[open]'))return;if(e.key==='ArrowLeft'){e.preventDefault();stopPlayback();goto(state.view-1);}if(e.key==='ArrowRight'){e.preventDefault();stopPlayback();goto(state.view+1);}});
 }
 initializeArchives();setupEvents();setupLogoEasterEgg();setupPeriodMusic();try{applyTheme(localStorage.getItem('ChessAtelierTheme'),{animate:false});}catch{applyTheme('walnut',{animate:false});}

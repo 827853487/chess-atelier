@@ -120,3 +120,54 @@
 .source-external{display:inline-block;margin-left:3px;font-size:10px;line-height:1;vertical-align:super;opacity:.75}
 #music-artist{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
 #music-artist:hover{text-decoration:underline;text-underline-offset:2px}
+
+/* One visual transaction at a time; overlays tint cells beneath the real pieces. */
+#board>.square{z-index:auto!important;isolation:auto!important;transform:none!important;--cell-color:var(--light);background:var(--cell-color)!important}
+#board>.square.dark{--cell-color:var(--dark)}
+#board>.square.last-from{--cell-color:color-mix(in srgb,#ffe66f 52%,var(--light))}
+#board>.square.last-from.dark{--cell-color:color-mix(in srgb,#ffe66f 52%,var(--dark))}
+#board>.square.last-to{--cell-color:color-mix(in srgb,#c2a03e 48%,var(--light))}
+#board>.square.last-to.dark{--cell-color:color-mix(in srgb,#c2a03e 48%,var(--dark))}
+#board>.square:hover{background:var(--cell-color)!important;filter:none!important}
+#board>.square>.piece{position:relative;z-index:3!important}
+#board .floating-piece{z-index:8!important}
+#board>.arrows{position:absolute;inset:0!important;width:100%!important;height:100%!important;z-index:1!important;pointer-events:none}
+#board>.square::before,#board>.square::after{z-index:0!important;pointer-events:none}
+#board>.square.selected{box-shadow:inset 0 0 0 2px var(--accent)!important;outline:none!important}
+#board>.square.selected::after{content:none!important}
+#board>.square .capture{inset:0!important;border-radius:0!important;z-index:0!important}
+#board>.square .dot{z-index:0!important}
+#settings-dialog{overflow:visible}
+#settings-dialog .settings-body{scrollbar-gutter:stable both-edges;padding-left:18px;padding-right:18px}
+#settings-dialog .settings-floating-menu{position:absolute;transform:none;transform-origin:top;z-index:300}
+#settings-dialog .settings-floating-menu.is-open-menu{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+.board-heading,.section-top{margin:0 0 9px!important;min-height:34px;display:flex;align-items:center}
+.board-heading h1,.section-top h2{margin:0!important;line-height:34px!important}
+.play-mode-bar{justify-content:space-between!important;gap:9px}
+.play-mode-bar .mode-segment{flex:1;max-width:270px}
+.side-badge{font-size:11px!important;line-height:20px;padding:3px 8px;min-height:26px;flex:none;cursor:default!important}
+.analysis-heading{font-size:17px}
+.engine-connection{font-size:14px}
+.engine-toolbar{gap:8px}
+.engine-toggle{font-size:13px;padding-left:0;gap:5px;white-space:nowrap}
+.engine-toggle>i{width:30px;height:17px;flex:none}
+.engine-toggle>i::after{width:13px;height:13px}
+.engine-toggle[aria-pressed=true]>i::after{transform:translateX(13px)}
+.engine-toggle[aria-disabled=true]{opacity:.42}
+.review-mark{width:clamp(18px,1.8vw,21px);height:clamp(18px,1.8vw,21px);font-size:11px}
+.duel-config .field-small{flex:0 0 108px;width:108px}
+.duel-config .field-small .atelier-select{width:108px!important;min-width:0!important;max-width:108px!important}
+.duel-config .atelier-select-trigger{padding-left:8px;padding-right:8px}
+.brand-face{--logo-ink:color-mix(in srgb,var(--ink) 80%,#101010)}
+#music-panel{height:auto!important;min-height:0!important;bottom:auto!important;max-height:calc(100dvh - var(--masthead-h,72px) - 20px)!important}
+#music-panel .music-progress{margin-bottom:0!important}
+#music-panel audio{display:none}
+#music-panel .wave-bars i,#music-panel.is-playing .wave-bars i{height:16px!important;animation:none!important;transform-origin:50% 100%;transition:transform .055s linear!important}
+@media(max-width:600px){.masthead{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;justify-content:space-between!important}.brand-wrap{min-width:0;flex:none;margin-right:0!important}.top-tools{flex-wrap:nowrap!important;flex:none;gap:7px}.brand-type small{display:none}.brand-icon{width:42px;height:42px}.brand-type b{font-size:20px}.brand{gap:9px}.top-tools .tool-icon--music{min-width:78px;padding-left:9px;padding-right:9px}.top-tools .tool-icon--gear{width:36px;min-width:36px}.duel-config .field-small{flex:0 0 100px;width:100px}.duel-config .field-small .atelier-select{width:100px!important;max-width:100px!important}.play-mode-bar .mode-segment{max-width:245px}}
+
+@media(max-width:700px){.masthead{align-items:center!important;flex-direction:row!important}.top-tools{width:auto!important;flex:0 0 auto!important;align-items:center!important}.brand-wrap{max-width:calc(100% - 148px)}}
+.play-mode-bar .mode-segment{margin:0!important;max-width:270px!important}
+
+@media(max-width:820px){.masthead .top-tools{width:auto!important;flex:0 0 auto!important;justify-content:flex-end!important}}
+
+.duel-config .atelier-select-trigger{gap:4px;padding-left:6px;padding-right:6px}.duel-config .atelier-selected-label{font-size:12px}.duel-config .atelier-select-trigger>svg{width:13px;height:13px}

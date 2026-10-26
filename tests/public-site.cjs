@@ -20,7 +20,7 @@ const output=path.resolve(__dirname,'../test-results');
   await page.waitForFunction(()=>document.querySelector('#engine-probability').dataset.pending==='false',null,{timeout:30000});
   await page.locator('[data-play-mode="book"]').click();await move('e2','e4');
   await page.waitForFunction(()=>document.querySelectorAll('#movelist [data-ply]').length===2,null,{timeout:30000});
-  assert.match(await page.locator('#difficulty-note').innerText(),/浏览器轻量版/);
+  assert.equal(await page.locator('#difficulty-note').count(),0);
   const completed=await page.locator('#movelist').innerText();assert.match(completed,/e4/);
   await page.locator('#first').click();await page.locator('#autoplay').click();
   await page.waitForFunction(()=>document.querySelector('#autoplay').getAttribute('aria-pressed')==='false',null,{timeout:12000});

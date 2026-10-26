@@ -7,6 +7,7 @@
     if (!selectWrap) return;
     selectWrap.classList.remove('is-open');
     selectWrap.classList.remove('opens-up');
+    const menu=document.getElementById(selectWrap.querySelector('.atelier-select-trigger').getAttribute('aria-controls'));menu?.classList.remove('is-open-menu');
     selectWrap.querySelector('.atelier-select-trigger').setAttribute('aria-expanded', 'false');
     if (restore) selectWrap.querySelector('.atelier-select-trigger').focus({ preventScroll: true });
     if (opened === selectWrap) opened = null;
@@ -86,10 +87,9 @@
       optionsChanged();wrap.classList.add('is-open');trigger.setAttribute('aria-expanded','true');opened=wrap;
       const settings=wrap.closest('#settings-dialog .settings-body');
       if(settings){
-        const bounds=settings.getBoundingClientRect(),anchor=trigger.getBoundingClientRect(),height=Math.min(list.scrollHeight,276);
-        const below=bounds.bottom-anchor.bottom-8,above=anchor.top-bounds.top-8;
-        wrap.classList.toggle('opens-up',below<height&&above>below);
-        list.style.maxHeight=Math.max(72,Math.min(276,wrap.classList.contains('opens-up')?above:below))+'px';
+        const dialog=settings.closest('dialog'),anchor=trigger.getBoundingClientRect(),bounds=dialog.getBoundingClientRect();
+        dialog.append(list);list.classList.add('settings-floating-menu','is-open-menu');
+        Object.assign(list.style,{left:((anchor.left-bounds.left)/(bounds.width/dialog.offsetWidth))+'px',top:((anchor.bottom-bounds.top)/(bounds.height/dialog.offsetHeight)+5)+'px',bottom:'auto',right:'auto',width:anchor.width+'px',minWidth:anchor.width+'px',maxWidth:anchor.width+'px',maxHeight:Math.max(34,Math.min(276,innerHeight-anchor.bottom-17))+'px'});
       }
       const active=list.querySelector('[aria-selected="true"]')||items()[0];
       if(id==='archive-select'){
@@ -100,7 +100,7 @@
       }
     }
     trigger.addEventListener('click',()=>wrap.classList.contains('is-open')?close(wrap):open());
-    wrap.addEventListener('keydown',e=>{
+    const handleKeys=e=>{
       if(!['Escape','ArrowDown','ArrowUp','Home','End','Enter',' '].includes(e.key))return;
       e.preventDefault();
       if(e.key==='Escape'){close(wrap,true);return;}
@@ -113,7 +113,8 @@
       // Scroll only this menu; scrollIntoView can also move the enclosing page/right pane.
       if(row.offsetTop<list.scrollTop)list.scrollTop=row.offsetTop;
       else if(row.offsetTop+row.offsetHeight>list.scrollTop+list.clientHeight)list.scrollTop=row.offsetTop+row.offsetHeight-list.clientHeight;
-    });
+    };
+    wrap.addEventListener('keydown',handleKeys);list.addEventListener('keydown',e=>{if(!wrap.contains(list))handleKeys(e);});
     select.addEventListener('change',optionsChanged);
     if(id==='archive-select'){
       let pending=false;
@@ -122,6 +123,7 @@
     optionsChanged();
   }
   ids.forEach(id=>init(document.getElementById(id)));
-  document.addEventListener('pointerdown',e=>{if(opened&&!opened.contains(e.target))close(opened);},{capture:true});
+  document.addEventListener('pointerdown',e=>{if(opened&&!opened.contains(e.target)&&!document.getElementById(opened.querySelector('.atelier-select-trigger').getAttribute('aria-controls'))?.contains(e.target))close(opened);},{capture:true});
+  addEventListener('resize',()=>close(opened),{passive:true});
   document.querySelector('#settings-dialog')?.addEventListener('close',()=>{if(opened?.closest('#settings-dialog'))close(opened);});
 })();

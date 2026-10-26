@@ -7,7 +7,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  const layout=()=>page.locator('#board > .square').evaluateAll(cells=>Object.fromEntries(cells.map(c=>[c.dataset.square,c.querySelector('.piece-visual')?.dataset.piece||''])));
  try{
   await page.goto(process.env.CHESS_TEST_URL||'http://127.0.0.1:18765');await page.waitForFunction(()=>document.querySelector('#collection').getAttribute('aria-busy')==='false');await page.locator('#analysis-toggle').click();
-  await page.locator('[data-square=e2]').click();await page.locator('[data-square=e4]').click();assert.equal(await page.locator('#movelist [data-ply]').count(),0);assert.match(await page.locator('#toast').innerText(),/仅供浏览/);
+  await page.locator('[data-square=e2]').click();await page.locator('[data-square=e4]').click();assert.equal(await page.locator('#movelist [data-ply]').count(),12);assert.match(await page.locator('#toast').innerText(),/仅供浏览/);
   await page.locator('#fileinput').setInputFiles(['A','B'].map((name,i)=>({name:name+'.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from(`[Event "${name}"]\n[White "Motion ${name}"]\n[Black "Test"]\n[Result "*"]\n\n${i?'1. d4 d5 2. c4 e6 3. Nc3 Nf6':'1. e4 e5 2. Nf3 Nc6 3. Bb5 a6'} *`)})));
   const row=name=>page.locator('#collection .library-open').filter({hasText:'Motion '+name});await row('A').click();await idle();
   const note=await page.locator('#chess-note').innerText();
