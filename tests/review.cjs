@@ -17,10 +17,16 @@ vm.runInContext(fs.readFileSync(path.join(root,'vendor/chess.js'),'utf8').replac
   await page.locator('#collection [data-local]').first().click();assert.equal(await page.locator('#ply').innerText(),'0 / 4');
   assert.equal(reviewRequests,0,'no review model runs until requested');
   await page.locator('#side-badge').click();await page.waitForFunction(()=>document.querySelector('#review-progress').textContent.startsWith('5 / 5'));
-  await page.locator('#movelist [data-ply="1"]').click();await page.waitForSelector('[data-square=f3] .review-mark');
+  assert.equal(await page.locator('#analysis-toggle').innerText(),'实时分析');assert.equal(await page.locator('#analysis-toggle').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('.analysis-live > #post-review').count(),1);assert.equal(await page.locator('#engine-insight').isVisible(),false);
+  const frames=await page.evaluate(()=>new Promise(resolve=>{const frames=[];document.querySelector('#movelist [data-ply="1"]').click();let n=0;function sample(){frames.push({flying:!!document.querySelector('.floating-piece'),badge:!!document.querySelector('.review-mark')});if(++n<35)requestAnimationFrame(sample);else resolve(frames);}requestAnimationFrame(sample);}));
+  assert.ok(frames.some(f=>f.flying));assert.ok(frames.some(f=>f.badge));assert.ok(frames.every(f=>!f.flying||!f.badge),'badges appear only after the moving piece lands');
+  await page.waitForSelector('[data-square=f3] .review-mark');assert.ok((await page.locator('.review-mark').boundingBox()).width>=20);
+  assert.match(await page.locator('#review-move-title').innerText(),/最佳|良好|可改进|失误/);assert.ok((await page.locator('#review-comment').innerText()).length>8);
   await page.locator('#review-suggestion').click();assert.equal(await page.locator('#candidate-arrow').evaluate(node=>node.tagName.toLowerCase()),'path');
   assert.equal(await page.locator('#candidate-arrow').getAttribute('marker-end'),null);
-  assert.equal(await page.locator('#candidate-arrow').getAttribute('visibility'),'visible');
+  await page.waitForFunction(()=>document.querySelector('#candidate-arrow').getAttribute('visibility')==='visible');
+  assert.match(await page.locator('#review-line-description').innerText(),/箭头/);
   await page.locator('.right').screenshot({path:path.join(output,'post-review-study.png')});
   const completed=reviewRequests;await page.locator('#side-badge').click();await page.waitForTimeout(250);assert.equal(reviewRequests,completed);
   assert.equal(await page.locator('#post-review').isVisible(),false);

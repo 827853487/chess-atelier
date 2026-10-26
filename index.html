@@ -5,7 +5,7 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=57" rel="stylesheet"/><link href="./engine-ui.css?v=57" rel="stylesheet"/><link href="./library-ui.css?v=57" rel="stylesheet"/>
+<link href="./app.css?v=58" rel="stylesheet"/><link href="./engine-ui.css?v=58" rel="stylesheet"/><link href="./library-ui.css?v=58" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
@@ -34,7 +34,7 @@
 <div class="analysis-body"><div class="analysis-live">
 <div class="engine-probability" data-known="false" data-pending="true" id="engine-probability" title="Stockfish 胜／和／负模型估计，非玩家实战胜率；分析完成后更新。"><div aria-label="等待胜率分析" class="engine-probability-bar" id="engine-probability-bar" role="img"><span class="odds-white" id="odds-bar-white" style="width:0%"></span><span class="odds-draw" id="odds-bar-draw" style="width:100%"></span><span class="odds-black" id="odds-bar-black" style="width:0%"></span></div><div class="engine-odds-labels"><span class="odds-white-label">白 <b id="odds-white">—</b></span><span class="odds-draw-label">和 <b id="odds-draw">—</b></span><span class="odds-black-label">黑 <b id="odds-black">—</b></span></div></div>
 <div aria-label="Stockfish 候选着法" aria-busy="true" class="engine-suggestions" id="engine-insight"></div>
-<span aria-live="polite" class="visually-hidden" id="analysis-state" role="status">正在连接</span>
+<div class="post-review" id="post-review" hidden><div class="post-review-top"><span>Stockfish 复盘</span><span id="review-progress"></span></div><div class="post-review-meter"><i id="review-meter"></i></div><strong id="review-move-title">正在加载分析…</strong><p id="review-comment"></p><button type="button" id="review-suggestion" hidden></button><p id="review-line-description" hidden></p></div><span aria-live="polite" class="visually-hidden" id="analysis-state" role="status">正在连接</span>
 </div><div aria-hidden="true" aria-label="棋间短句，双击或按回车换一句" class="analysis-rest" id="analysis-rest" role="button" tabindex="-1" title="双击换一句"><blockquote><p id="chess-note"></p><p hidden id="chess-note-translation"></p><cite hidden id="chess-note-source"></cite></blockquote></div></div><div class="engine-footer"><button class="inline-button hidden" id="retry-engine" type="button">重试</button></div>
 </div></div>
 <div class="search-card mode-free-only" id="study-workspace">
@@ -45,7 +45,7 @@
 <div class="field-small"><label for="side">我执</label><div class="atelier-select-slot" data-for="side"><select aria-label="我执" class="native" id="side"><option value="w">白方</option><option value="b">黑方</option></select></div></div>
 <div class="field-small"><label for="bot-level">Stockfish 难度</label><div class="atelier-select-slot" data-for="bot-level"><select aria-label="电脑难度" class="native" id="bot-level"><option value="1">入门 · 1320</option><option selected="" value="2">休闲 · 1600</option><option value="3">进阶 · 1900</option><option value="4">高手 · 2200</option><option value="5">大师 · 2600</option><option value="6">全力 · 不限强度</option></select></div></div><button class="duel-start" id="duel-start" type="button">开始对弈</button></div>
 <p class="difficulty-note mode-book-only hidden" id="difficulty-note">难度采用 Stockfish 目标 Elo；局面分析始终使用全强度。</p>
-<div class="detail-panel" id="panel-notes"><div class="panel-heading"><h3 id="record-heading">棋谱着法</h3><button class="inline-button mode-book-only hidden" id="export">导出 PGN ↗</button></div><div class="post-review" id="post-review" hidden><div class="post-review-top"><span>Stockfish 复盘</span><span id="review-progress"></span></div><div class="post-review-meter"><i id="review-meter"></i></div><strong id="review-move-title">正在加载分析…</strong><p id="review-comment"></p><button type="button" id="review-suggestion" hidden></button></div><div class="move-tape" id="movelist">选择棋谱，展示全部着法。</div></div>
+<div class="detail-panel" id="panel-notes"><div class="panel-heading"><h3 id="record-heading">棋谱着法</h3><button class="inline-button mode-book-only hidden" id="export">导出 PGN ↗</button></div><div class="move-tape" id="movelist">选择棋谱，展示全部着法。</div></div>
 </section>
 </main>
 </div>
@@ -91,6 +91,6 @@
 <div class="pack-create"><span></span><button class="inline-button" id="save-confirm" type="button">保存</button></div>
 </div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=57" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=57" defer></script>
+<script src="./app.bundle.js?v=58" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=58" defer></script>
 </body>
 </html>

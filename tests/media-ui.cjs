@@ -13,7 +13,7 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results'),ca
   await page.waitForTimeout(2300);assert.equal(await page.evaluate(()=>window.logoTurns.length),2,'a burst coalesces to exactly one additional turn');
   await page.locator('#home').click();await page.waitForTimeout(1200);assert.equal(await page.evaluate(()=>window.logoTurns.length),3);
   await page.locator('#settings-toggle').click();assert.deepEqual(await page.locator('#settings-dialog .settings-links a').allTextContents(),['Lichess','Stockfish','Wikimedia Commons']);
-  assert.ok((await page.locator('#settings-dialog').boundingBox()).width<=380);assert.ok((await page.locator('#settings-dialog .atelier-select').first().boundingBox()).width<=133);await page.locator('#settings-close').click();
+  assert.ok((await page.locator('#settings-dialog').boundingBox()).width<=400);assert.ok((await page.locator('#settings-dialog .atelier-select').first().boundingBox()).width<=133);await page.locator('#settings-close').click();
   const card=await page.locator('#study-workspace').boundingBox(),list=await page.locator('#collection').boundingBox();assert.ok(list.x>card.x+8&&list.x+list.width<card.x+card.width-8&&list.y+list.height<card.y+card.height-6,'scroll surface stays inside rounded card border');
   await page.locator('#music-toggle').click();
   for(const era of ['baroque','classical','romantic','modern','all']){

@@ -6,6 +6,7 @@
   function close(selectWrap, restore = false) {
     if (!selectWrap) return;
     selectWrap.classList.remove('is-open');
+    selectWrap.classList.remove('opens-up');
     selectWrap.querySelector('.atelier-select-trigger').setAttribute('aria-expanded', 'false');
     if (restore) selectWrap.querySelector('.atelier-select-trigger').focus({ preventScroll: true });
     if (opened === selectWrap) opened = null;
@@ -83,6 +84,13 @@
       if(trigger.disabled)return;
       if(opened && opened!==wrap)close(opened);
       optionsChanged();wrap.classList.add('is-open');trigger.setAttribute('aria-expanded','true');opened=wrap;
+      const settings=wrap.closest('#settings-dialog .settings-body');
+      if(settings){
+        const bounds=settings.getBoundingClientRect(),anchor=trigger.getBoundingClientRect(),height=Math.min(list.scrollHeight,276);
+        const below=bounds.bottom-anchor.bottom-8,above=anchor.top-bounds.top-8;
+        wrap.classList.toggle('opens-up',below<height&&above>below);
+        list.style.maxHeight=Math.max(72,Math.min(276,wrap.classList.contains('opens-up')?above:below))+'px';
+      }
       const active=list.querySelector('[aria-selected="true"]')||items()[0];
       if(id==='archive-select'){
         list.scrollTop=0;items()[0]?.focus({preventScroll:true});
@@ -115,4 +123,5 @@
   }
   ids.forEach(id=>init(document.getElementById(id)));
   document.addEventListener('pointerdown',e=>{if(opened&&!opened.contains(e.target))close(opened);},{capture:true});
+  document.querySelector('#settings-dialog')?.addEventListener('close',()=>{if(opened?.closest('#settings-dialog'))close(opened);});
 })();

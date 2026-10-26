@@ -6,7 +6,8 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
  const $=q=>document.querySelector(q);
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const cache=new Map();let timer=null,controller=null,sequence=0,enabled=true;
- const nextNote=setupRestNotes();
+ const nextNote=setupRestNotes();let lastBoardKey='';
+ function boardUpdated(){const boardKey=JSON.stringify([state.generation,state.origin,state.game.fen(),state.view,state.orientation,document.documentElement.dataset.theme,document.documentElement.dataset.pieceStyle]);if(boardKey!==lastBoardKey){lastBoardKey=boardKey;nextNote();}}
  const key=p=>JSON.stringify([p.origin,p.moves]);
  const remember=(k,data)=>{cache.delete(k);cache.set(k,data);while(cache.size>128)cache.delete(cache.keys().next().value);};
  function status(text,busy=false){
@@ -41,11 +42,12 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   state.analysis=data;
   if(data.terminal){
    odds(data.result==='1-0'?[1000,0,0]:data.result==='0-1'?[0,0,1000]:[0,1000,0]);
-   status('对局结束');empty('对局结束 · 可回退复盘');return;
+   status('对局结束');if(!state.postReview)empty('对局结束 · 可回退复盘');return;
   }
   const rows=variations(data,viewGame().fen());if(!rows.length)return;
   // Iterations update suggestions; probabilities settle only once per position.
   if(data.complete)odds(rows[0].wdl);
+  if(state.postReview){status(data.complete?'分析完成':'正在分析',!data.complete);if(data.complete)$('#retry-engine').classList.add('hidden');return;}
   $('#engine-insight').innerHTML=`<div class="engine-pvs">${rows.map(row=>`<button class="engine-pv" type="button" data-pv="${row.i}" title="${escape(row.moves.map(m=>m.san).join(' → '))}" aria-label="候选 ${row.i+1}：${escape(row.moves[0].san)}，在棋盘标记"><span class="engine-pv-rank">${row.i+1}</span><strong>${escape(row.moves[0].san)}</strong><span class="engine-pv-line">${escape(row.moves.slice(1).map(m=>m.san).join('  '))||'—'}</span></button>`).join('')}</div>`;
   status(data.complete?'分析完成':'正在分析',!data.complete);
   if(!state.engineError)$('#retry-engine').classList.add('hidden');
@@ -84,7 +86,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   }catch(error){status('本地引擎不可用');empty(error.message);$('#retry-engine').classList.remove('hidden');}
  }
  $('#analysis-toggle').addEventListener('click',()=>{
-  if(state.postReview){state.closeReview?.();return;}
+  if(state.postReview)state.closeReview?.();
   enabled=!enabled;$('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
   $('.coach-card').dataset.paused=String(!enabled);
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
@@ -104,12 +106,13 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
  });
  window.addEventListener('pagehide',()=>{clearTimeout(timer);controller?.abort();});
  function setReviewMode(on){
-  enabled=on;$('#analysis-toggle').setAttribute('aria-pressed',String(on));
-  $('#analysis-toggle span').textContent=state.postReview?'复盘分析':'实时分析';
-  $('#analysis-toggle').setAttribute('aria-label',state.postReview?'复盘分析':'实时分析');
-  $('.coach-card').dataset.paused=String(!on);$('.analysis-live').inert=!on;$('.analysis-live').setAttribute('aria-hidden',String(!on));
-  $('#analysis-rest').setAttribute('aria-hidden',String(on));$('#analysis-rest').tabIndex=on?-1:0;
-  if(!on)nextNote();scheduleEngine();
+  if(on)enabled=true;
+  $('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
+  $('#analysis-toggle span').textContent='实时分析';$('#analysis-toggle').setAttribute('aria-label','实时分析');
+  $('.coach-card').dataset.review=String(on);
+  $('.coach-card').dataset.paused=String(!enabled);$('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
+  $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
+  scheduleEngine();
  }
- return {scheduleEngine,refreshEngineStatus,setReviewMode,renderReview:render,reviewLoading:()=>{empty('正在分析当前局面…');status('复盘分析中',true);$('#engine-probability').dataset.pending='true';}};
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,boardUpdated,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
 }

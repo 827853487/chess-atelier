@@ -28,7 +28,7 @@ function searchBlob(x){
  if(s===undefined){s=(displayName(x)+' '+(x.white||'')+' '+(x.black||'')+' '+(x.stage||'')+' '+(x.origin||'')+' '+(x.eco||'')).toLowerCase();searchCache.set(x,s);}
  return s;
 }
-let postReview=null;
+let postReview=null,analysisUi=null;
 const state={game:new Chess(),origin:defaultFen,view:0,orientation:'w',side:'w',mode:'free',selected:null,legal:[],arrow:null,busy:false,generation:0,analysis:null,review:false,reviewTitle:'', local:[],tab:'notes', db:null,musicIndex:0, soundEnabled:true, hintsEnabled:true, animEnabled:true, catalogCount:0, classicsCount:0, archiveLoaded:new Set(), fullKeys:new Set(),duelStarted:false,currentScoreId:null,currentScoreSource:null,userPacks:[],pendingImportPack:'',packFocus:'我的棋谱',packConfirm:'',promo:null};
 // 列表常量：DOM 中同时存在的棋谱行上限，超出部分滚动时再追加。
 const LIST_PAGE=120;
@@ -176,6 +176,7 @@ function drawBoard(){
  else end.classList.add('hidden');
  $('#ply').textContent=state.view+' / '+moves.length;
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
+ analysisUi?.boardUpdated();
  postReview?.sync();
 }
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
@@ -250,6 +251,7 @@ function transition(m,reverse=false){
   for(const g of ghosts)g.remove();
   for(const h of hidden)if(h)h.style.opacity='';
   activeFlights.delete(flight);
+  postReview?.motionSettled();
   settle();
  };
  activeFlights.add(flight);
@@ -913,9 +915,9 @@ function confirmSaveGame(){
  dbTransaction('readwrite',store=>store.put(source)).then(()=>{state.local.push(source);collectionDirty=true;state.rebuildArchiveOptions?.();selectArchivePack(origin);renderCollection();renderPackDialog();toast('棋谱已保存到「'+origin+'」');}).catch(()=>toast('保存失败，请使用「导出 PGN」备份'));
 }
 function saveGame(){openSaveDialog();}
-const analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
+analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
 const {scheduleEngine,refreshEngineStatus}=analysisUi;
-postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi});
+postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi,whenFlightsIdle});
 const playIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"/></svg>';
 const pauseIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14M16 5v14"/></svg>';
 function stopPlayback({resumeComputer=false}={}){
@@ -1003,7 +1005,8 @@ async function changeAppearance(animate){
  clearOpeningMotion();clearAppearanceMotion();
  const themeChanged=root.dataset.theme!==theme,styleChanged=(root.dataset.pieceStyle||'rhosgfx')!==style;
  if(!themeChanged&&!styleChanged){setPieceStyle(style);return;}
- if(animate){await preparePieceArt(theme,style);if(sequence!==appearanceSequence)return;}
+ const prepared=animate?await preparePieceArt(theme,style):[];
+ if(sequence!==appearanceSequence)return;
  const motion=animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
  settleFlights();
  if(animate){await whenFlightsIdle();if(sequence!==appearanceSequence)return;}
@@ -1012,11 +1015,11 @@ async function changeAppearance(animate){
   // Reuse the already rendered image instead of cloning an image that must load again.
   node.remove();return {square,node};
  }):[];
- root.dataset.theme=theme;setPieceStyle(style);resetPiecePool();preloadPieceArt();drawBoard();
+ root.dataset.theme=theme;setPieceStyle(style);resetPiecePool();preloadPieceArt(prepared);drawBoard();
  if(motion){
   // Style changes have two halves: retract the old set completely, then grow the new set.
   // Keep both on one timeline; ghosts are removed rather than restored on completion.
-  const startTime=document.timeline.currentTime,duration=styleChanged?600:240;
+  const startTime=null,duration=styleChanged?480:240;
   for(const {square,node} of previous){
    node.classList.add('appearance-ghost');$('#board').querySelector(`[data-square="${square}"]`).append(node);
    appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.5,transform:'scale(0)',opacity:1},{transform:'scale(0)',opacity:1}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
@@ -1024,6 +1027,10 @@ async function changeAppearance(animate){
   for(const node of $('#board').querySelectorAll('.square > .piece:not(.appearance-ghost)')){
    appearanceAnimation(node,styleChanged?[{transform:'scale(0)',opacity:1},{offset:.5,transform:'scale(0)',opacity:1},{transform:'scale(1)',opacity:1}]:[{opacity:0},{offset:.7,opacity:1},{opacity:1}],duration,null,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
+  // Anchor the whole set to the first paint after all effects have been installed.
+  // A busy SVG/layout frame must not consume the shrink phase before it is visible.
+  const effects=appearanceMotion.map(entry=>entry.animation);for(const animation of effects)animation.pause();
+  requestAnimationFrame(time=>{if(sequence!==appearanceSequence)return;const active=new Set(appearanceMotion.map(entry=>entry.animation));for(const animation of effects){if(!active.has(animation))continue;animation.play();animation.startTime=time;}});
  }
 }
 function applyPieceStyle(value,{animate=true}={}){

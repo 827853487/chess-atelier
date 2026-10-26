@@ -6,9 +6,7 @@ const choices=new Set(['fantasy','chessnut','rhosgfx']);
 const ART_REVISION='3';
 export function setPieceStyle(v){document.documentElement.dataset.pieceStyle=choices.has(v)?v:'rhosgfx';}
 const cache=new Map();
-export function pieceSvg(type,color){
- const style=document.documentElement.dataset.pieceStyle||'rhosgfx';
- const theme=document.documentElement.dataset.theme||'walnut';
+export function pieceSvg(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'rhosgfx'){
  const code=(color==='w'?'w':'b')+type.toUpperCase();
  const key=theme+'|'+style+'|'+code;
  let html=cache.get(key);
@@ -42,20 +40,20 @@ function markWarm(node){
  if(!v)return;
  v.classList.remove('asset-failed');v.classList.add('asset-ready');
 }
-function buildNode(type,color){
+function buildNode(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'rhosgfx'){
  const node=document.createElement('span');
  node.className='piece';
- node.dataset.artScope=artScope();
- node.innerHTML=pieceSvg(type,color);
+ node.dataset.artScope=theme+'|'+style;
+ node.innerHTML=pieceSvg(type,color,theme,style);
  const visual=node.firstElementChild;
  if(visual){
   visual.dataset.piece=(color==='w'?'w':'b')+type;
   const img=visual.querySelector('.piece-art-img');
-  const key=artKey(type,color);
+  const key=theme+'|'+style+'|'+color+type;
   img?.addEventListener('load',()=>WARM.add(key),{once:true});
   // src 命中内存缓存时 Chrome 会同步给 complete，此时可以直接判定为可用
-  if(img&&img.complete&&img.naturalWidth>0)WARM.add(artKey(type,color));
-  if(WARM.has(artKey(type,color)))markWarm(node);
+  if(img&&img.complete&&img.naturalWidth>0)WARM.add(key);
+  if(WARM.has(key))markWarm(node);
  }
  return node;
 }
@@ -85,7 +83,7 @@ export function releasePiece(node){
 export function resetPiecePool(){POOL.clear();poolScope='';}
 // Decode the complete target set before replacing any visible pieces.
 const PREPARED=new Map();
-export function preparePieceArt(theme,style){
+export async function preparePieceArt(theme,style){
  const requests=[];
  for(const color of ['w','b'])for(const type of ['p','n','b','r','q','k']){
   const key=theme+'|'+style+'|'+color+type;
@@ -96,11 +94,18 @@ export function preparePieceArt(theme,style){
   }
   requests.push(PREPARED.get(key));
  }
- return Promise.all(requests);
+ await Promise.all(requests);
+ // Decode the actual nodes that will be inserted, not just separate Image objects.
+ // In particular, async SVG decoding can otherwise start halfway through a scale animation.
+ const nodes=[],want={p:9,n:3,b:3,r:3,q:2,k:2};
+ for(const color of ['w','b'])for(const type of Object.keys(want))for(let i=0;i<want[type];i++)nodes.push(buildNode(type,color,theme,style));
+ await Promise.all(nodes.map(async node=>{const image=node.querySelector('img');try{await image.decode();markWarm(node);}catch{}}));
+ return nodes;
 }
 /* 开局前把每种棋子各备好若干个已加载节点，之后任何一次落子都只是搬一个现成节点。 */
-export function preloadPieceArt(){
+export function preloadPieceArt(prepared=[]){
  ensureScope();
+ for(const node of prepared){const code=node.firstElementChild?.dataset.piece;if(!code||node.dataset.artScope!==artScope())continue;const key=artScope()+'|'+code;let list=POOL.get(key);if(!list)POOL.set(key,list=[]);list.push(node);}
  const want={p:9,n:3,b:3,r:3,q:2,k:2};
  for(const color of ['w','b'])for(const type of Object.keys(want)){
   const key=artKey(type,color),list=POOL.get(key)||[];

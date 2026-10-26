@@ -36,6 +36,7 @@ const output=path.resolve(__dirname,'../test-results');
   assert.deepEqual(await position(),original);assert.equal(await page.locator('#movelist').innerText(),notation);
   await page.unroute('**/assets/pieces-themed/sage/**');
   // Sample every animation frame, including delayed asset preparation and the style change.
+  await page.evaluate(()=>{window.styleDurations=[];const original=Element.prototype.animate;Element.prototype.animate=function(frames,options){if(this.classList.contains('piece'))window.styleDurations.push(options.duration);return original.call(this,frames,options);};});
   const sampled=page.evaluate(()=>new Promise(resolve=>{
    const frames=[];let count=0;
    const tick=()=>{
@@ -52,7 +53,7 @@ const output=path.resolve(__dirname,'../test-results');
     if(++count<105)requestAnimationFrame(tick);else resolve(frames);
    };requestAnimationFrame(tick);
   }));
-  await select('piece-style','chessnut');
+  await select('piece-style','fantasy');
   const frames=await sampled;await appearanceDone();
   assert.ok(frames.every(frame=>frame.pieces===32&&frame.cold===0),'no missing piece nodes or fallback shape during replacement');
   assert.ok(frames.every(frame=>frame.oldScale<.01||frame.incomingScale<.01),'old art must retract completely before the new art grows');
@@ -60,6 +61,7 @@ const output=path.resolve(__dirname,'../test-results');
   assert.ok(frames.some(frame=>frame.oldScale>.1&&frame.oldScale<.8&&frame.incomingScale<.01),'old art visibly shrinks first');
   assert.ok(frames.some(frame=>frame.oldScale<.01&&frame.incomingScale>.1&&frame.incomingScale<.8),'new art then grows from the center');
   assert.deepEqual(await position(),original);assert.equal(await page.locator('#movelist').innerText(),notation);
+  assert.ok(await page.evaluate(()=>window.styleDurations.length>=64&&window.styleDurations.every(duration=>duration===480)),'all old/new actual decoded nodes use the shared 480ms timeline');
   console.log('PASS: decoded assets swap without fallback; themes interpolate; old pieces shrink to zero before new pieces grow, preserving position/history');
   // Fast successive selections must commit the most recent theme AND style.
   await page.route('**/assets/pieces-themed/slate/**',async route=>{await new Promise(resolve=>setTimeout(resolve,220));await route.continue();});

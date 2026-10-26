@@ -670,7 +670,8 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
  const $=q=>document.querySelector(q);
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const cache=new Map();let timer=null,controller=null,sequence=0,enabled=true;
- const nextNote=setupRestNotes();
+ const nextNote=setupRestNotes();let lastBoardKey='';
+ function boardUpdated(){const boardKey=JSON.stringify([state.generation,state.origin,state.game.fen(),state.view,state.orientation,document.documentElement.dataset.theme,document.documentElement.dataset.pieceStyle]);if(boardKey!==lastBoardKey){lastBoardKey=boardKey;nextNote();}}
  const key=p=>JSON.stringify([p.origin,p.moves]);
  const remember=(k,data)=>{cache.delete(k);cache.set(k,data);while(cache.size>128)cache.delete(cache.keys().next().value);};
  function status(text,busy=false){
@@ -705,11 +706,12 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   state.analysis=data;
   if(data.terminal){
    odds(data.result==='1-0'?[1000,0,0]:data.result==='0-1'?[0,0,1000]:[0,1000,0]);
-   status('对局结束');empty('对局结束 · 可回退复盘');return;
+   status('对局结束');if(!state.postReview)empty('对局结束 · 可回退复盘');return;
   }
   const rows=variations(data,viewGame().fen());if(!rows.length)return;
   // Iterations update suggestions; probabilities settle only once per position.
   if(data.complete)odds(rows[0].wdl);
+  if(state.postReview){status(data.complete?'分析完成':'正在分析',!data.complete);if(data.complete)$('#retry-engine').classList.add('hidden');return;}
   $('#engine-insight').innerHTML=`<div class="engine-pvs">${rows.map(row=>`<button class="engine-pv" type="button" data-pv="${row.i}" title="${escape(row.moves.map(m=>m.san).join(' → '))}" aria-label="候选 ${row.i+1}：${escape(row.moves[0].san)}，在棋盘标记"><span class="engine-pv-rank">${row.i+1}</span><strong>${escape(row.moves[0].san)}</strong><span class="engine-pv-line">${escape(row.moves.slice(1).map(m=>m.san).join('  '))||'—'}</span></button>`).join('')}</div>`;
   status(data.complete?'分析完成':'正在分析',!data.complete);
   if(!state.engineError)$('#retry-engine').classList.add('hidden');
@@ -748,7 +750,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   }catch(error){status('本地引擎不可用');empty(error.message);$('#retry-engine').classList.remove('hidden');}
  }
  $('#analysis-toggle').addEventListener('click',()=>{
-  if(state.postReview){state.closeReview?.();return;}
+  if(state.postReview)state.closeReview?.();
   enabled=!enabled;$('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
   $('.coach-card').dataset.paused=String(!enabled);
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
@@ -768,14 +770,15 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
  });
  window.addEventListener('pagehide',()=>{clearTimeout(timer);controller?.abort();});
  function setReviewMode(on){
-  enabled=on;$('#analysis-toggle').setAttribute('aria-pressed',String(on));
-  $('#analysis-toggle span').textContent=state.postReview?'复盘分析':'实时分析';
-  $('#analysis-toggle').setAttribute('aria-label',state.postReview?'复盘分析':'实时分析');
-  $('.coach-card').dataset.paused=String(!on);$('.analysis-live').inert=!on;$('.analysis-live').setAttribute('aria-hidden',String(!on));
-  $('#analysis-rest').setAttribute('aria-hidden',String(on));$('#analysis-rest').tabIndex=on?-1:0;
-  if(!on)nextNote();scheduleEngine();
+  if(on)enabled=true;
+  $('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
+  $('#analysis-toggle span').textContent='实时分析';$('#analysis-toggle').setAttribute('aria-label','实时分析');
+  $('.coach-card').dataset.review=String(on);
+  $('.coach-card').dataset.paused=String(!enabled);$('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
+  $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
+  scheduleEngine();
  }
- return {scheduleEngine,refreshEngineStatus,setReviewMode,renderReview:render,reviewLoading:()=>{empty('正在分析当前局面…');status('复盘分析中',true);$('#engine-probability').dataset.pending='true';}};
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,boardUpdated,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
 }
 
 return { setupLocalAnalysis };
@@ -783,10 +786,10 @@ return { setupLocalAnalysis };
 const { setupPostReview }=(()=>{
 
 
-function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis}){
- const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='';
+function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis,whenFlightsIdle}){
+ const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='',annotationKey='',annotationJob=0;
  function stop(){clearTimeout(timer);timer=null;controller?.abort();controller=null;epoch++;}
- function clearMarks(){document.querySelectorAll('.review-mark').forEach(node=>node.remove());}
+ function clearMarks(){annotationKey='';annotationJob++;document.querySelectorAll('.review-mark').forEach(node=>node.remove());}
  function close(){stop();state.postReview=false;error='';$('post-review').hidden=true;clearMarks();state.arrow=null;drawArrow();analysis.setReviewMode(false);sync();}
  state.closeReview=close;state.retryReview=()=>{error='';stop();schedule();render();};
  function createRecord(){
@@ -807,18 +810,60 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
   for(const uci of pv.moves.split(/\s+/).slice(0,4)){try{moves.push(game.move(uci));}catch{break;}}
   return moves.length?moves:null;
  }
+ function positionSummary(data){
+  if(data?.terminal)return data.result==='1/2-1/2'?'本局和棋。':(data.result==='1-0'?'白方':'黑方')+'将死获胜。';
+  const best=data?.pvs?.[0];if(!best)return '';
+  if(Number.isFinite(best.mate))return scoreLabel(best)+'。';
+  if(!Number.isFinite(best.cp))return '';
+  const amount=Math.abs(best.cp),side=best.cp>=0?'白方':'黑方';
+  return amount<35?'引擎判断双方局势接近。':side+(amount<120?'略占优势。':amount<300?'占优。':'明显占优。');
+ }
+ function moveComment(index,current,quality){
+  if(error)return error;
+  if(!current)return '正在加载此步分析…';
+  if(!index)return positionSummary(current)+'按着法逐步查看；关闭复盘可自行推演。';
+  if(!quality)return '正在补全走前局面，完成后显示本步评价。';
+  if(quality.label==='将死')return positionSummary(current);
+  const text=quality.cls==='best'?'与引擎首选一致。':quality.cls==='good'?'与引擎首选的评分接近。':quality.loss>=10000?'这一步改变了将杀形势。':`相较走前的引擎参考，约损失 ${(quality.loss/100).toFixed(1)} 兵。`;
+  const previous=currentLine(record.results.get(index-1),index-1),alternative=previous?.[0];
+  return text+(quality.loss>=30&&alternative?'走前更优参考为 '+alternative.san+'。':'')+positionSummary(current);
+ }
+ function lineDescription(line){
+  if(!line?.length)return '';
+  const move=line[0],names={p:'兵',n:'马',b:'象',r:'车',q:'后',k:'王'};
+  const action=move.flags?.includes('k')?'短易位':move.flags?.includes('q')?'长易位':`${names[move.piece]}从 ${move.from} ${move.captured?'吃到':'走到'} ${move.to}`;
+  return `${move.color==='w'?'白':'黑'}方可考虑${action}${move.promotion?'，升变为'+names[move.promotion]:''}${move.san.includes('#')?'，形成将死':move.san.includes('+')?'，形成将军':''}。箭头标出第一着。`;
+ }
+ function annotate(index,move,quality,line){
+  const key=JSON.stringify([index,state.orientation,quality?.label,line?.map(m=>m.san)]);if(key===annotationKey)return;
+  clearMarks();annotationKey=key;const job=annotationJob,snapshot=record;
+  state.arrow=null;drawArrow();
+  // goto() draws the final board before registering the flight. Wait a frame first,
+  // then wait for the actual moving piece to land before revealing its annotation.
+  requestAnimationFrame(async()=>{await whenFlightsIdle();requestAnimationFrame(()=>{
+   if(job!==annotationJob||!state.postReview||record!==snapshot||state.view!==index)return;
+   if(line?.length){state.arrow={from:line[0].from,to:line[0].to};drawArrow();}
+   if(move&&quality){const cell=document.querySelector(`#board > [data-square="${move.to}"]`);if(cell?.querySelector('.piece')){
+    const badge=document.createElement('span');badge.className='review-mark review-'+quality.cls;
+    badge.textContent=quality.cls==='best'?'★':quality.cls==='good'?'✓':quality.cls==='ok'?'~':quality.loss>=250?'??':'?';
+    badge.title=move.san+' · '+quality.label+'（Stockfish 参考）';badge.setAttribute('aria-label',badge.title);cell.append(badge);
+   }}
+  });});
+ }
  function render(){
-  clearMarks();if(!state.postReview||!record)return;
+  if(!state.postReview||!record)return;
   const index=state.view,current=record.results.get(index),move=record.moves[index-1],quality=qualityAt(index);
   $('post-review').hidden=false;$('review-progress').textContent=`${record.results.size} / ${record.positions.length} 局面`;
   $('review-meter').style.width=(record.results.size/record.positions.length*100)+'%';
-  $('review-move-title').textContent=index?`${move?.color==='w'?'白':'黑'} ${move?.san||''}${quality?' · '+quality.label:''}`:'初始局面';
-  $('review-comment').textContent=error||(!current?'正在加载此步分析…':quality?quality.loss>=10000?'将杀形势发生变化。':quality.loss>0?`引擎参考：约损失 ${(quality.loss/100).toFixed(1)} 兵。`:'与引擎参考一致。':index?'正在补全前一局面的比较…':'按着法逐步查看；关闭复盘可自行推演。');
+  $('review-move-title').textContent=index?`第 ${Math.ceil(index/2)} 回合 · ${move?.color==='w'?'白':'黑'} ${move?.san||''}${quality?' · '+quality.label:''}`:'初始局面';
+  $('review-move-title').dataset.quality=quality?.cls||'';
+  $('review-comment').textContent=moveComment(index,current,quality);
   const line=currentLine(current,index),suggestion=$('review-suggestion');suggestion.hidden=!line;
-  suggestion.textContent=line?'参考：'+line.map(move=>move.san).join('  '):'';
-  suggestion.onclick=line?()=>{state.arrow={from:line[0].from,to:line[0].to};drawArrow();}:null;
+  suggestion.textContent=line?'后续参考：'+line.map(move=>move.san).join(' → '):'';
+  $('review-line-description').textContent=lineDescription(line);$('review-line-description').hidden=!line;
+  suggestion.onclick=line?()=>{annotationKey='';annotate(index,move,quality,line);}:null;
   if(current)analysis.renderReview(current,record.positions[index]);else analysis.reviewLoading();
-  if(move&&quality){const cell=document.querySelector(`#board > [data-square="${move.to}"]`);if(cell?.querySelector('.piece')){const badge=document.createElement('span');badge.className='review-mark review-'+quality.cls;badge.textContent=quality.cls==='best'?'★':quality.cls==='good'?'✓':quality.cls==='ok'?'~':quality.loss>=250?'??':'?';badge.title=move.san+' · '+quality.label+'（Stockfish 参考）';badge.setAttribute('aria-label',badge.title);cell.append(badge);}}
+  annotate(index,move,quality,line);
  }
  function schedule(){if(timer||controller||!state.postReview||!record||error)return;timer=setTimeout(pump,80);}
  async function pump(){
@@ -841,14 +886,14 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
   const button=$('side-badge');button.disabled=!available;button.classList.toggle('is-review-active',!!state.postReview);button.setAttribute('aria-pressed',String(!!state.postReview));
   if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止模型分析，恢复自行推演':'加载 Stockfish 逐步复盘';}
   else button.title='对弈结束后可复盘';
-  if(state.postReview){if(lastView!==state.view){stop();lastView=state.view;error='';}render();schedule();}
+  if(state.postReview){if(lastView!==state.view){stop();clearMarks();lastView=state.view;error='';}render();schedule();}
  }
  $('side-badge').addEventListener('click',()=>{
   if(state.postReview){close();return;}
   if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);goto(0);sync();
  });
  window.addEventListener('pagehide',stop);
- return {sync,close};
+ return {sync,close,motionSettled:()=>{if(state.postReview)render();}};
 }
 
 return { setupPostReview };
@@ -907,9 +952,7 @@ const choices=new Set(['fantasy','chessnut','rhosgfx']);
 const ART_REVISION='3';
 function setPieceStyle(v){document.documentElement.dataset.pieceStyle=choices.has(v)?v:'rhosgfx';}
 const cache=new Map();
-function pieceSvg(type,color){
- const style=document.documentElement.dataset.pieceStyle||'rhosgfx';
- const theme=document.documentElement.dataset.theme||'walnut';
+function pieceSvg(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'rhosgfx'){
  const code=(color==='w'?'w':'b')+type.toUpperCase();
  const key=theme+'|'+style+'|'+code;
  let html=cache.get(key);
@@ -943,20 +986,20 @@ function markWarm(node){
  if(!v)return;
  v.classList.remove('asset-failed');v.classList.add('asset-ready');
 }
-function buildNode(type,color){
+function buildNode(type,color,theme=document.documentElement.dataset.theme||'walnut',style=document.documentElement.dataset.pieceStyle||'rhosgfx'){
  const node=document.createElement('span');
  node.className='piece';
- node.dataset.artScope=artScope();
- node.innerHTML=pieceSvg(type,color);
+ node.dataset.artScope=theme+'|'+style;
+ node.innerHTML=pieceSvg(type,color,theme,style);
  const visual=node.firstElementChild;
  if(visual){
   visual.dataset.piece=(color==='w'?'w':'b')+type;
   const img=visual.querySelector('.piece-art-img');
-  const key=artKey(type,color);
+  const key=theme+'|'+style+'|'+color+type;
   img?.addEventListener('load',()=>WARM.add(key),{once:true});
   // src 命中内存缓存时 Chrome 会同步给 complete，此时可以直接判定为可用
-  if(img&&img.complete&&img.naturalWidth>0)WARM.add(artKey(type,color));
-  if(WARM.has(artKey(type,color)))markWarm(node);
+  if(img&&img.complete&&img.naturalWidth>0)WARM.add(key);
+  if(WARM.has(key))markWarm(node);
  }
  return node;
 }
@@ -986,7 +1029,7 @@ function releasePiece(node){
 function resetPiecePool(){POOL.clear();poolScope='';}
 // Decode the complete target set before replacing any visible pieces.
 const PREPARED=new Map();
-function preparePieceArt(theme,style){
+async function preparePieceArt(theme,style){
  const requests=[];
  for(const color of ['w','b'])for(const type of ['p','n','b','r','q','k']){
   const key=theme+'|'+style+'|'+color+type;
@@ -997,11 +1040,18 @@ function preparePieceArt(theme,style){
   }
   requests.push(PREPARED.get(key));
  }
- return Promise.all(requests);
+ await Promise.all(requests);
+ // Decode the actual nodes that will be inserted, not just separate Image objects.
+ // In particular, async SVG decoding can otherwise start halfway through a scale animation.
+ const nodes=[],want={p:9,n:3,b:3,r:3,q:2,k:2};
+ for(const color of ['w','b'])for(const type of Object.keys(want))for(let i=0;i<want[type];i++)nodes.push(buildNode(type,color,theme,style));
+ await Promise.all(nodes.map(async node=>{const image=node.querySelector('img');try{await image.decode();markWarm(node);}catch{}}));
+ return nodes;
 }
 /* 开局前把每种棋子各备好若干个已加载节点，之后任何一次落子都只是搬一个现成节点。 */
-function preloadPieceArt(){
+function preloadPieceArt(prepared=[]){
  ensureScope();
+ for(const node of prepared){const code=node.firstElementChild?.dataset.piece;if(!code||node.dataset.artScope!==artScope())continue;const key=artScope()+'|'+code;let list=POOL.get(key);if(!list)POOL.set(key,list=[]);list.push(node);}
  const want={p:9,n:3,b:3,r:3,q:2,k:2};
  for(const color of ['w','b'])for(const type of Object.keys(want)){
   const key=artKey(type,color),list=POOL.get(key)||[];
@@ -2257,7 +2307,7 @@ function searchBlob(x){
  if(s===undefined){s=(displayName(x)+' '+(x.white||'')+' '+(x.black||'')+' '+(x.stage||'')+' '+(x.origin||'')+' '+(x.eco||'')).toLowerCase();searchCache.set(x,s);}
  return s;
 }
-let postReview=null;
+let postReview=null,analysisUi=null;
 const state={game:new Chess(),origin:defaultFen,view:0,orientation:'w',side:'w',mode:'free',selected:null,legal:[],arrow:null,busy:false,generation:0,analysis:null,review:false,reviewTitle:'', local:[],tab:'notes', db:null,musicIndex:0, soundEnabled:true, hintsEnabled:true, animEnabled:true, catalogCount:0, classicsCount:0, archiveLoaded:new Set(), fullKeys:new Set(),duelStarted:false,currentScoreId:null,currentScoreSource:null,userPacks:[],pendingImportPack:'',packFocus:'我的棋谱',packConfirm:'',promo:null};
 // 列表常量：DOM 中同时存在的棋谱行上限，超出部分滚动时再追加。
 const LIST_PAGE=120;
@@ -2405,6 +2455,7 @@ function drawBoard(){
  else end.classList.add('hidden');
  $('#ply').textContent=state.view+' / '+moves.length;
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
+ analysisUi?.boardUpdated();
  postReview?.sync();
 }
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
@@ -2479,6 +2530,7 @@ function transition(m,reverse=false){
   for(const g of ghosts)g.remove();
   for(const h of hidden)if(h)h.style.opacity='';
   activeFlights.delete(flight);
+  postReview?.motionSettled();
   settle();
  };
  activeFlights.add(flight);
@@ -3142,9 +3194,9 @@ function confirmSaveGame(){
  dbTransaction('readwrite',store=>store.put(source)).then(()=>{state.local.push(source);collectionDirty=true;state.rebuildArchiveOptions?.();selectArchivePack(origin);renderCollection();renderPackDialog();toast('棋谱已保存到「'+origin+'」');}).catch(()=>toast('保存失败，请使用「导出 PGN」备份'));
 }
 function saveGame(){openSaveDialog();}
-const analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
+analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
 const {scheduleEngine,refreshEngineStatus}=analysisUi;
-postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi});
+postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi,whenFlightsIdle});
 const playIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"/></svg>';
 const pauseIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14M16 5v14"/></svg>';
 function stopPlayback({resumeComputer=false}={}){
@@ -3232,7 +3284,8 @@ async function changeAppearance(animate){
  clearOpeningMotion();clearAppearanceMotion();
  const themeChanged=root.dataset.theme!==theme,styleChanged=(root.dataset.pieceStyle||'rhosgfx')!==style;
  if(!themeChanged&&!styleChanged){setPieceStyle(style);return;}
- if(animate){await preparePieceArt(theme,style);if(sequence!==appearanceSequence)return;}
+ const prepared=animate?await preparePieceArt(theme,style):[];
+ if(sequence!==appearanceSequence)return;
  const motion=animate&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
  settleFlights();
  if(animate){await whenFlightsIdle();if(sequence!==appearanceSequence)return;}
@@ -3241,11 +3294,11 @@ async function changeAppearance(animate){
   // Reuse the already rendered image instead of cloning an image that must load again.
   node.remove();return {square,node};
  }):[];
- root.dataset.theme=theme;setPieceStyle(style);resetPiecePool();preloadPieceArt();drawBoard();
+ root.dataset.theme=theme;setPieceStyle(style);resetPiecePool();preloadPieceArt(prepared);drawBoard();
  if(motion){
   // Style changes have two halves: retract the old set completely, then grow the new set.
   // Keep both on one timeline; ghosts are removed rather than restored on completion.
-  const startTime=document.timeline.currentTime,duration=styleChanged?600:240;
+  const startTime=null,duration=styleChanged?480:240;
   for(const {square,node} of previous){
    node.classList.add('appearance-ghost');$('#board').querySelector(`[data-square="${square}"]`).append(node);
    appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.5,transform:'scale(0)',opacity:1},{transform:'scale(0)',opacity:1}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
@@ -3253,6 +3306,10 @@ async function changeAppearance(animate){
   for(const node of $('#board').querySelectorAll('.square > .piece:not(.appearance-ghost)')){
    appearanceAnimation(node,styleChanged?[{transform:'scale(0)',opacity:1},{offset:.5,transform:'scale(0)',opacity:1},{transform:'scale(1)',opacity:1}]:[{opacity:0},{offset:.7,opacity:1},{opacity:1}],duration,null,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
+  // Anchor the whole set to the first paint after all effects have been installed.
+  // A busy SVG/layout frame must not consume the shrink phase before it is visible.
+  const effects=appearanceMotion.map(entry=>entry.animation);for(const animation of effects)animation.pause();
+  requestAnimationFrame(time=>{if(sequence!==appearanceSequence)return;const active=new Set(appearanceMotion.map(entry=>entry.animation));for(const animation of effects){if(!active.has(animation))continue;animation.play();animation.startTime=time;}});
  }
 }
 function applyPieceStyle(value,{animate=true}={}){

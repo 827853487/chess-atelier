@@ -1,9 +1,9 @@
 import { Chess } from './vendor/chess.js';
-import { engineRequest, moveQuality } from './engine-client.js';
-export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis}){
- const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='';
+import { engineRequest, moveQuality, scoreLabel } from './engine-client.js';
+export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis,whenFlightsIdle}){
+ const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='',annotationKey='',annotationJob=0;
  function stop(){clearTimeout(timer);timer=null;controller?.abort();controller=null;epoch++;}
- function clearMarks(){document.querySelectorAll('.review-mark').forEach(node=>node.remove());}
+ function clearMarks(){annotationKey='';annotationJob++;document.querySelectorAll('.review-mark').forEach(node=>node.remove());}
  function close(){stop();state.postReview=false;error='';$('post-review').hidden=true;clearMarks();state.arrow=null;drawArrow();analysis.setReviewMode(false);sync();}
  state.closeReview=close;state.retryReview=()=>{error='';stop();schedule();render();};
  function createRecord(){
@@ -24,18 +24,60 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
   for(const uci of pv.moves.split(/\s+/).slice(0,4)){try{moves.push(game.move(uci));}catch{break;}}
   return moves.length?moves:null;
  }
+ function positionSummary(data){
+  if(data?.terminal)return data.result==='1/2-1/2'?'本局和棋。':(data.result==='1-0'?'白方':'黑方')+'将死获胜。';
+  const best=data?.pvs?.[0];if(!best)return '';
+  if(Number.isFinite(best.mate))return scoreLabel(best)+'。';
+  if(!Number.isFinite(best.cp))return '';
+  const amount=Math.abs(best.cp),side=best.cp>=0?'白方':'黑方';
+  return amount<35?'引擎判断双方局势接近。':side+(amount<120?'略占优势。':amount<300?'占优。':'明显占优。');
+ }
+ function moveComment(index,current,quality){
+  if(error)return error;
+  if(!current)return '正在加载此步分析…';
+  if(!index)return positionSummary(current)+'按着法逐步查看；关闭复盘可自行推演。';
+  if(!quality)return '正在补全走前局面，完成后显示本步评价。';
+  if(quality.label==='将死')return positionSummary(current);
+  const text=quality.cls==='best'?'与引擎首选一致。':quality.cls==='good'?'与引擎首选的评分接近。':quality.loss>=10000?'这一步改变了将杀形势。':`相较走前的引擎参考，约损失 ${(quality.loss/100).toFixed(1)} 兵。`;
+  const previous=currentLine(record.results.get(index-1),index-1),alternative=previous?.[0];
+  return text+(quality.loss>=30&&alternative?'走前更优参考为 '+alternative.san+'。':'')+positionSummary(current);
+ }
+ function lineDescription(line){
+  if(!line?.length)return '';
+  const move=line[0],names={p:'兵',n:'马',b:'象',r:'车',q:'后',k:'王'};
+  const action=move.flags?.includes('k')?'短易位':move.flags?.includes('q')?'长易位':`${names[move.piece]}从 ${move.from} ${move.captured?'吃到':'走到'} ${move.to}`;
+  return `${move.color==='w'?'白':'黑'}方可考虑${action}${move.promotion?'，升变为'+names[move.promotion]:''}${move.san.includes('#')?'，形成将死':move.san.includes('+')?'，形成将军':''}。箭头标出第一着。`;
+ }
+ function annotate(index,move,quality,line){
+  const key=JSON.stringify([index,state.orientation,quality?.label,line?.map(m=>m.san)]);if(key===annotationKey)return;
+  clearMarks();annotationKey=key;const job=annotationJob,snapshot=record;
+  state.arrow=null;drawArrow();
+  // goto() draws the final board before registering the flight. Wait a frame first,
+  // then wait for the actual moving piece to land before revealing its annotation.
+  requestAnimationFrame(async()=>{await whenFlightsIdle();requestAnimationFrame(()=>{
+   if(job!==annotationJob||!state.postReview||record!==snapshot||state.view!==index)return;
+   if(line?.length){state.arrow={from:line[0].from,to:line[0].to};drawArrow();}
+   if(move&&quality){const cell=document.querySelector(`#board > [data-square="${move.to}"]`);if(cell?.querySelector('.piece')){
+    const badge=document.createElement('span');badge.className='review-mark review-'+quality.cls;
+    badge.textContent=quality.cls==='best'?'★':quality.cls==='good'?'✓':quality.cls==='ok'?'~':quality.loss>=250?'??':'?';
+    badge.title=move.san+' · '+quality.label+'（Stockfish 参考）';badge.setAttribute('aria-label',badge.title);cell.append(badge);
+   }}
+  });});
+ }
  function render(){
-  clearMarks();if(!state.postReview||!record)return;
+  if(!state.postReview||!record)return;
   const index=state.view,current=record.results.get(index),move=record.moves[index-1],quality=qualityAt(index);
   $('post-review').hidden=false;$('review-progress').textContent=`${record.results.size} / ${record.positions.length} 局面`;
   $('review-meter').style.width=(record.results.size/record.positions.length*100)+'%';
-  $('review-move-title').textContent=index?`${move?.color==='w'?'白':'黑'} ${move?.san||''}${quality?' · '+quality.label:''}`:'初始局面';
-  $('review-comment').textContent=error||(!current?'正在加载此步分析…':quality?quality.loss>=10000?'将杀形势发生变化。':quality.loss>0?`引擎参考：约损失 ${(quality.loss/100).toFixed(1)} 兵。`:'与引擎参考一致。':index?'正在补全前一局面的比较…':'按着法逐步查看；关闭复盘可自行推演。');
+  $('review-move-title').textContent=index?`第 ${Math.ceil(index/2)} 回合 · ${move?.color==='w'?'白':'黑'} ${move?.san||''}${quality?' · '+quality.label:''}`:'初始局面';
+  $('review-move-title').dataset.quality=quality?.cls||'';
+  $('review-comment').textContent=moveComment(index,current,quality);
   const line=currentLine(current,index),suggestion=$('review-suggestion');suggestion.hidden=!line;
-  suggestion.textContent=line?'参考：'+line.map(move=>move.san).join('  '):'';
-  suggestion.onclick=line?()=>{state.arrow={from:line[0].from,to:line[0].to};drawArrow();}:null;
+  suggestion.textContent=line?'后续参考：'+line.map(move=>move.san).join(' → '):'';
+  $('review-line-description').textContent=lineDescription(line);$('review-line-description').hidden=!line;
+  suggestion.onclick=line?()=>{annotationKey='';annotate(index,move,quality,line);}:null;
   if(current)analysis.renderReview(current,record.positions[index]);else analysis.reviewLoading();
-  if(move&&quality){const cell=document.querySelector(`#board > [data-square="${move.to}"]`);if(cell?.querySelector('.piece')){const badge=document.createElement('span');badge.className='review-mark review-'+quality.cls;badge.textContent=quality.cls==='best'?'★':quality.cls==='good'?'✓':quality.cls==='ok'?'~':quality.loss>=250?'??':'?';badge.title=move.san+' · '+quality.label+'（Stockfish 参考）';badge.setAttribute('aria-label',badge.title);cell.append(badge);}}
+  annotate(index,move,quality,line);
  }
  function schedule(){if(timer||controller||!state.postReview||!record||error)return;timer=setTimeout(pump,80);}
  async function pump(){
@@ -58,12 +100,12 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
   const button=$('side-badge');button.disabled=!available;button.classList.toggle('is-review-active',!!state.postReview);button.setAttribute('aria-pressed',String(!!state.postReview));
   if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止模型分析，恢复自行推演':'加载 Stockfish 逐步复盘';}
   else button.title='对弈结束后可复盘';
-  if(state.postReview){if(lastView!==state.view){stop();lastView=state.view;error='';}render();schedule();}
+  if(state.postReview){if(lastView!==state.view){stop();clearMarks();lastView=state.view;error='';}render();schedule();}
  }
  $('side-badge').addEventListener('click',()=>{
   if(state.postReview){close();return;}
   if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);goto(0);sync();
  });
  window.addEventListener('pagehide',stop);
- return {sync,close};
+ return {sync,close,motionSettled:()=>{if(state.postReview)render();}};
 }

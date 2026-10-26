@@ -43,7 +43,7 @@ const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18765',output=path.reso
   await page.locator('#reset').click();await move('e2','e4');assert.equal(await page.locator('#movelist [data-ply]').count(),1);
   await page.locator('#settings-toggle').click();await select('piece-style','chessnut');
   await page.waitForFunction(()=>document.documentElement.dataset.pieceStyle==='chessnut'&&document.querySelector('.appearance-ghost'));
-  assert.equal(await page.locator('#board > .square > .piece:not(.appearance-ghost)').first().evaluate(n=>n.getAnimations()[0].effect.getTiming().duration),600);
+  assert.equal(await page.locator('#board > .square > .piece:not(.appearance-ghost)').first().evaluate(n=>n.getAnimations()[0].effect.getTiming().duration),480);
   await page.waitForFunction(()=>!document.querySelector('.appearance-ghost'));await page.locator('#settings-close').click();
   // Computer-first games wait for the opening instead of cancelling or overlapping it.
   let requestDuringOpening=false;
@@ -53,7 +53,7 @@ const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18765',output=path.reso
   assert.equal(await page.locator('#board > .square').first().getAttribute('data-square'),'h1');
   await page.locator('[data-play-mode=free]').click();await idle();
   await page.emulateMedia({reducedMotion:'reduce'});await page.locator('#reset').click();assert.equal(await page.locator('.opening-layer').count(),0);await initial();
-  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'opening-result.json'),JSON.stringify({passed:true,frameCount:frames.length,noOverlaps:true,maxCenterDrift:Math.max(...active.map(f=>f.drift)),threePiecePosition:true,flipped:true,rapidRestart:true,interruptible:true,styleMs:600,computerWaits:true,reducedMotion:true,pageErrors:errors},null,2));
-  console.log('PASS: centered opening from arbitrary positions, staggered non-overlapping entry, flipped seats, rapid restarts, 600 ms styles and computer synchronization');
+  assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'opening-result.json'),JSON.stringify({passed:true,frameCount:frames.length,noOverlaps:true,maxCenterDrift:Math.max(...active.map(f=>f.drift)),threePiecePosition:true,flipped:true,rapidRestart:true,interruptible:true,styleMs:480,computerWaits:true,reducedMotion:true,pageErrors:errors},null,2));
+  console.log('PASS: centered opening from arbitrary positions, staggered non-overlapping entry, flipped seats, rapid restarts, 480 ms styles and computer synchronization');
  }catch(error){await page.screenshot({path:path.join(output,'opening-failure.png'),fullPage:true});throw error;}finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

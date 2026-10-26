@@ -697,7 +697,7 @@ body[data-play-mode="book"] #status{min-height:0}
 }
 .brand-face-back{transform:rotateY(180deg)}
 .brand-knight{
- display:block;width:31px;height:31px;background:currentColor;
+ display:block;width:29px;height:29px;background:currentColor;
  -webkit-mask:url('./assets/logo-knight.svg?v=1') center/contain no-repeat;
  mask:url('./assets/logo-knight.svg?v=1') center/contain no-repeat;
  transform:translateX(-1px);-webkit-text-stroke:0;filter:none
