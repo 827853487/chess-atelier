@@ -2386,7 +2386,18 @@ function tracks(){
 function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:true,direction});}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
 function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');const artist=$('music-artist');artist.classList.toggle('is-overflowing',artist.scrollWidth>artist.clientWidth+1);}
-function syncPanelAnchor(){const header=document.querySelector('.masthead');document.documentElement.style.setProperty('--masthead-h',Math.round(header.getBoundingClientRect().height)+'px');}
+function syncPanelAnchor(){
+ const root=document.documentElement,header=document.querySelector('.masthead'),button=$('music-toggle').getBoundingClientRect(),viewport=window.visualViewport;
+ const width=viewport?.width||root.clientWidth,height=viewport?.height||innerHeight,x=viewport?.offsetLeft||0,y=viewport?.offsetTop||0;
+ const panelWidth=Math.min(414,width-24),center=(button.left+button.right)/2;
+ const left=Math.max(x+12,Math.min(center-panelWidth/2,x+width-12-panelWidth)),top=Math.max(y+8,button.bottom+10);
+ root.style.setProperty('--masthead-h',Math.round(header.getBoundingClientRect().height)+'px');
+ root.style.setProperty('--music-panel-left',left+'px');root.style.setProperty('--music-panel-top',top+'px');
+ root.style.setProperty('--music-panel-width',panelWidth+'px');root.style.setProperty('--music-panel-max-height',Math.max(80,y+height-top-12)+'px');
+ root.style.setProperty('--music-panel-origin',Math.max(0,Math.min(panelWidth,center-left))+'px');
+}
+let anchorFrame=0;
+function schedulePanelAnchor(){if(anchorFrame)return;anchorFrame=requestAnimationFrame(()=>{anchorFrame=0;syncPanelAnchor();});}
 function render(){
  const playing=state.playing&&!audio.paused;
  $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
@@ -2478,7 +2489,7 @@ function setupPeriodMusic(){
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
  audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
- $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open)showSurface($('music-panel'));else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
  $('music-close').addEventListener('click',closePanel);
  document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&surfaceOpen($('music-panel'))){event.preventDefault();closePanel();$('music-toggle').focus({preventScroll:true});}});
@@ -2490,7 +2501,9 @@ function setupPeriodMusic(){
  $('music-prev').addEventListener('click',()=>advance(-1));$('music-next').addEventListener('click',()=>advance(1));
  $('music-seek').addEventListener('input',event=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(event.target.value)/1000;});
  $('music-seek').addEventListener('pointerup',event=>event.target.blur());
- addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});new ResizeObserver(syncPanelAnchor).observe(document.querySelector('.masthead'));
+ addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});const anchorObserver=new ResizeObserver(schedulePanelAnchor);anchorObserver.observe(document.querySelector('.masthead'));anchorObserver.observe($('music-toggle'));
+ addEventListener('scroll',()=>{if(surfaceOpen($('music-panel')))schedulePanelAnchor();},{passive:true});
+ window.visualViewport?.addEventListener('resize',schedulePanelAnchor,{passive:true});window.visualViewport?.addEventListener('scroll',schedulePanelAnchor,{passive:true});
  addEventListener('pagehide',()=>{audio.pause();stopSpectrum();coverController?.abort();for(const img of document.querySelectorAll('.now-art img'))URL.revokeObjectURL(img.src);spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
  syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();if(!state.track)expandOnline();},2500);
 }

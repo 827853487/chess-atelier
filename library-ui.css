@@ -208,3 +208,6 @@ dialog[data-surface-state=closing]::backdrop{animation:surface-backdrop-out 160m
 #board.is-changing-art>.square>.piece{will-change:transform,opacity;backface-visibility:hidden}
 
 #side-badge.is-result,#status.is-result{font-weight:700!important;color:var(--ink)}
+
+/* Anchor to the music button, independent of the centered page container. */
+#music-panel{left:var(--music-panel-left,12px)!important;right:auto!important;top:var(--music-panel-top,76px)!important;bottom:auto!important;margin:0!important;width:var(--music-panel-width,min(414px,calc(100vw - 24px)))!important;max-width:none!important;max-height:var(--music-panel-max-height,calc(100dvh - 96px))!important;overflow-y:auto!important;transform-origin:var(--music-panel-origin,50%) top!important}
