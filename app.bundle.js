@@ -2138,7 +2138,7 @@ const LOCAL_MUSIC = [{"file": "baroque-01.mp3", "title": "巴赫 · 三部创意
 
 return { LOCAL_MUSIC };
 })();
-const { selectMusicTrack, musicDisplayTitle, musicCopyTitle }=(()=>{
+const { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer }=(()=>{
 // Pure selection logic shared by playback and its tests.
 function selectMusicTrack(pool,{currentId=null,recent=[],shuffle=true,direction=1,rng=Math.random}={}){
  if(!pool.length)return null;
@@ -2161,10 +2161,26 @@ function musicDisplayTitle(track){
  return title||track.title||track.file||'';
 }
 function musicCopyTitle(track){return [track?.composer,musicDisplayTitle(track)].filter(Boolean).join(' - ');}
+function musicPerformer(track){
+ let value=String(track?.performer||'').replace(/\s+/g,' ').trim();
+ // Old cached Commons entries used these UI placeholders as artist metadata.
+ if(/^(?:演奏者|演奏者信息)?\s*(?:见|详见|参见).*(?:来源|详情|页面|网页)|^(?:unknown|not specified|n\/a)$/i.test(value))return '';
+ const names=[track?.composer,...(COMPOSER_ALIASES[track?.composer]||[])].filter(Boolean).sort((a,b)=>b.length-a.length);
+ for(const name of names){
+  if(value.toLocaleLowerCase()===name.toLocaleLowerCase())return '';
+  if(value.toLocaleLowerCase().startsWith(name.toLocaleLowerCase())){
+   const rest=value.slice(name.length).replace(/^\s*[（(]\s*\d{4}\s*[-–—]\s*\d{4}\s*[)）]/,'').replace(/^\s*[（(](?:composer|作曲家)[)）]/i,'');
+   if(!rest.trim())return '';
+   if(/^[\s·:：|,;；–—-]+/.test(rest)){value=rest.replace(/^[\s·:：|,;；–—-]+/,'');break;}
+  }
+ }
+ return value;
+}
 
-return { selectMusicTrack, musicDisplayTitle, musicCopyTitle };
+return { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer };
 })();
 const { discoverMusic }=(()=>{
+
 // Optional, anonymous Commons discovery. Playback stays in period-music.js.
 // Sources and scope: data/ONLINE_MUSIC.md. No DOM or audio elements are used here.
 const ONLINE_COMPOSERS={
@@ -2242,7 +2258,9 @@ function onlineTrack(page,era,composer){
  if(duration!==undefined&&Number.isFinite(Number(duration))&&Number(duration)<35)return null;
  const sourceUrl=onlineUrl(info.descriptionurl,'commons.wikimedia.org')||'https://commons.wikimedia.org/wiki/'+encodeURIComponent('File:'+file).replace(/%20/g,'_');
  const credit=onlineText(meta.Attribution?.value||meta.Credit?.value||artist,240);
- return {id:'commons:'+file,file,title,composer:composer[1],performer:artist||'演奏者见来源页',era,sourceUrl,...license,credit,remoteUrl,online:true,bytes,mime};
+ const embeddedPerformer=(info.metadata||[]).find(row=>typeof row.value==='string'&&/^(?:performer|performers|musician|artist)$/i.test(row.name||''))?.value;
+ const performer=musicPerformer({composer:composer[1],performer:onlineText(meta.Performer?.value||meta.Performers?.value||embeddedPerformer,180)})||musicPerformer({composer:composer[1],performer:artist});
+ return {id:'commons:'+file,file,title,composer:composer[1],performer,era,sourceUrl,...license,credit,remoteUrl,online:true,bytes,mime};
 }
 function onlineCursor(value){
  if(!value||typeof value!=='object'||Array.isArray(value))return null;
@@ -2367,17 +2385,24 @@ function tracks(){
 }
 function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:true,direction});}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
-function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');}
+function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');const artist=$('music-artist');artist.classList.toggle('is-overflowing',artist.scrollWidth>artist.clientWidth+1);}
 function syncPanelAnchor(){const header=document.querySelector('.masthead');document.documentElement.style.setProperty('--masthead-h',Math.round(header.getBoundingClientRect().height)+'px');}
 function render(){
  const playing=state.playing&&!audio.paused;
  $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
  const button=$('music-play'),icon=playing?'pause':'play';if(button.dataset.icon!==icon){button.dataset.icon=icon;button.innerHTML=playing?pauseIcon:playIcon;button.setAttribute('aria-label',playing?'暂停':'播放');button.title=playing?'暂停':'播放';}
- $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';$('music-artist').textContent=[state.track?.composer,state.track?.performer].filter(Boolean).join(' · ')||'本地精选与在线曲库';
+ $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';
+ const artist=$('music-artist'),composer=state.track?.composer||'',performer=musicPerformer(state.track),creditKey=JSON.stringify([composer,performer]);
+ if(artist.dataset.creditKey!==creditKey){
+  artist.dataset.creditKey=creditKey;artist.replaceChildren();
+  if(composer){const name=document.createElement('strong');name.className='music-composer';name.textContent=composer;artist.append(name);}
+  if(performer){if(composer)artist.append(document.createTextNode(' '));const name=document.createElement('span');name.className='music-performer';name.textContent=performer;artist.append(name);}
+  if(!composer&&!performer)artist.textContent='本地精选与在线曲库';
+ }
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
  // Recording attribution remains on the compact artist line; no controls or
  // web prompts are inserted below the progress bar.
- const artist=$('music-artist');artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ');
+ artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[[composer,performer].filter(Boolean).join(' '),[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
  button.title=state.status||(playing?'暂停':'播放');$('music-panel').dataset.onlineCount=String(state.onlineTracks.length);$('music-panel').dataset.discovering=String(state.discovering);
  requestAnimationFrame(updateTrackOverflow);
 }
@@ -3672,11 +3697,11 @@ function setupEvents(){
  const applyHints=on=>{if(deferBoardAction(()=>applyHints(on)))return;state.hintsEnabled=on;const sel=$('#move-hints');if(sel)sel.value=on?'on':'off';try{localStorage.setItem('ChessAtelierMoveHints',on?'on':'off');}catch{}drawBoard();};
  applyHints((()=>{try{return localStorage.getItem('ChessAtelierMoveHints')!=='off';}catch{return true;}})());
  $('#move-hints')?.addEventListener('change',e=>applyHints(e.target.value!=='off'));
- // Center the result on the boundary between the board's two lowest visible ranks.
+ // Keep the compact result above the board's two lowest visible ranks.
  new ResizeObserver(()=>{
   const board=$('#board'),result=$('#game-result');
   result.style.left=(board.offsetLeft+board.offsetWidth/2)+'px';
-  result.style.top=(board.offsetTop+board.offsetHeight*7/8)+'px';
+  result.style.top=(board.offsetTop+board.offsetHeight*3/4)+'px';
  }).observe($('#board'));
  addEventListener('resize',()=>{clearBoardGeometry();},{passive:true});
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)||document.querySelector('dialog[open]'))return;if(e.key==='ArrowLeft'){e.preventDefault();stopPlayback();goto(state.view-1);}if(e.key==='ArrowRight'){e.preventDefault();stopPlayback();goto(state.view+1);}});

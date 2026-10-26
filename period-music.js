@@ -2,7 +2,7 @@ import { showSurface, hideSurface, surfaceOpen } from './surface-motion.js';
 import { readMusicCover } from './music-cover.js';
 import { MUSIC_SEED } from './music-library.js';
 import { LOCAL_MUSIC } from './local-music.js';
-import { selectMusicTrack, musicDisplayTitle, musicCopyTitle } from './music-order.js';
+import { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer } from './music-order.js';
 import { discoverMusic } from './online-music.js';
 const ERAS={baroque:'巴洛克',classical:'古典',romantic:'浪漫',modern:'近现代'};
 const $=id=>document.getElementById(id),audio=$('music-audio');
@@ -41,17 +41,24 @@ function tracks(){
 }
 function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:true,direction});}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
-function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');}
+function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');const artist=$('music-artist');artist.classList.toggle('is-overflowing',artist.scrollWidth>artist.clientWidth+1);}
 function syncPanelAnchor(){const header=document.querySelector('.masthead');document.documentElement.style.setProperty('--masthead-h',Math.round(header.getBoundingClientRect().height)+'px');}
 function render(){
  const playing=state.playing&&!audio.paused;
  $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
  const button=$('music-play'),icon=playing?'pause':'play';if(button.dataset.icon!==icon){button.dataset.icon=icon;button.innerHTML=playing?pauseIcon:playIcon;button.setAttribute('aria-label',playing?'暂停':'播放');button.title=playing?'暂停':'播放';}
- $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';$('music-artist').textContent=[state.track?.composer,state.track?.performer].filter(Boolean).join(' · ')||'本地精选与在线曲库';
+ $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';
+ const artist=$('music-artist'),composer=state.track?.composer||'',performer=musicPerformer(state.track),creditKey=JSON.stringify([composer,performer]);
+ if(artist.dataset.creditKey!==creditKey){
+  artist.dataset.creditKey=creditKey;artist.replaceChildren();
+  if(composer){const name=document.createElement('strong');name.className='music-composer';name.textContent=composer;artist.append(name);}
+  if(performer){if(composer)artist.append(document.createTextNode(' '));const name=document.createElement('span');name.className='music-performer';name.textContent=performer;artist.append(name);}
+  if(!composer&&!performer)artist.textContent='本地精选与在线曲库';
+ }
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
  // Recording attribution remains on the compact artist line; no controls or
  // web prompts are inserted below the progress bar.
- const artist=$('music-artist');artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ');
+ artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[[composer,performer].filter(Boolean).join(' '),[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
  button.title=state.status||(playing?'暂停':'播放');$('music-panel').dataset.onlineCount=String(state.onlineTracks.length);$('music-panel').dataset.discovering=String(state.discovering);
  requestAnimationFrame(updateTrackOverflow);
 }

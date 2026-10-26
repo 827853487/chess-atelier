@@ -1199,11 +1199,11 @@ function setupEvents(){
  const applyHints=on=>{if(deferBoardAction(()=>applyHints(on)))return;state.hintsEnabled=on;const sel=$('#move-hints');if(sel)sel.value=on?'on':'off';try{localStorage.setItem('ChessAtelierMoveHints',on?'on':'off');}catch{}drawBoard();};
  applyHints((()=>{try{return localStorage.getItem('ChessAtelierMoveHints')!=='off';}catch{return true;}})());
  $('#move-hints')?.addEventListener('change',e=>applyHints(e.target.value!=='off'));
- // Center the result on the boundary between the board's two lowest visible ranks.
+ // Keep the compact result above the board's two lowest visible ranks.
  new ResizeObserver(()=>{
   const board=$('#board'),result=$('#game-result');
   result.style.left=(board.offsetLeft+board.offsetWidth/2)+'px';
-  result.style.top=(board.offsetTop+board.offsetHeight*7/8)+'px';
+  result.style.top=(board.offsetTop+board.offsetHeight*3/4)+'px';
  }).observe($('#board'));
  addEventListener('resize',()=>{clearBoardGeometry();},{passive:true});
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)||document.querySelector('dialog[open]'))return;if(e.key==='ArrowLeft'){e.preventDefault();stopPlayback();goto(state.view-1);}if(e.key==='ArrowRight'){e.preventDefault();stopPlayback();goto(state.view+1);}});

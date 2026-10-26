@@ -118,7 +118,10 @@
 .piece-missing[hidden]{display:none}
 
 .source-external{display:inline-block;margin-left:3px;font-size:10px;line-height:1;vertical-align:super;opacity:.75}
-#music-artist{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}
+#music-panel #music-artist{display:block;min-width:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:clip!important;text-decoration:none;cursor:pointer;user-select:none;-webkit-user-select:none}
+#music-artist .music-composer{font-weight:700;color:var(--ink)}
+#music-artist .music-performer{font-weight:400}
+#music-artist.is-overflowing{mask-image:linear-gradient(90deg,#000 0%,#000 calc(100% - 20px),transparent 100%);-webkit-mask-image:linear-gradient(90deg,#000 0%,#000 calc(100% - 20px),transparent 100%)}
 #music-artist:hover{text-decoration:underline;text-underline-offset:2px}
 
 /* One visual transaction at a time; overlays tint cells beneath the real pieces. */

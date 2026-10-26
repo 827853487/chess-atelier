@@ -1,3 +1,4 @@
+import { musicPerformer } from './music-order.js';
 // Optional, anonymous Commons discovery. Playback stays in period-music.js.
 // Sources and scope: data/ONLINE_MUSIC.md. No DOM or audio elements are used here.
 const ONLINE_COMPOSERS={
@@ -75,7 +76,9 @@ function onlineTrack(page,era,composer){
  if(duration!==undefined&&Number.isFinite(Number(duration))&&Number(duration)<35)return null;
  const sourceUrl=onlineUrl(info.descriptionurl,'commons.wikimedia.org')||'https://commons.wikimedia.org/wiki/'+encodeURIComponent('File:'+file).replace(/%20/g,'_');
  const credit=onlineText(meta.Attribution?.value||meta.Credit?.value||artist,240);
- return {id:'commons:'+file,file,title,composer:composer[1],performer:artist||'演奏者见来源页',era,sourceUrl,...license,credit,remoteUrl,online:true,bytes,mime};
+ const embeddedPerformer=(info.metadata||[]).find(row=>typeof row.value==='string'&&/^(?:performer|performers|musician|artist)$/i.test(row.name||''))?.value;
+ const performer=musicPerformer({composer:composer[1],performer:onlineText(meta.Performer?.value||meta.Performers?.value||embeddedPerformer,180)})||musicPerformer({composer:composer[1],performer:artist});
+ return {id:'commons:'+file,file,title,composer:composer[1],performer,era,sourceUrl,...license,credit,remoteUrl,online:true,bytes,mime};
 }
 function onlineCursor(value){
  if(!value||typeof value!=='object'||Array.isArray(value))return null;
