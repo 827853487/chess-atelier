@@ -1,6 +1,6 @@
 # 棋境 · 本地 Stockfish 版
 
-源码仓库：[827853487/chess-atelier](https://github.com/827853487/chess-atelier)（私有）。网站发布地址：https://chess-atelier-827853487.pearlyyew22.chatgpt.site/ 。
+源码仓库：[827853487/chess-atelier](https://github.com/827853487/chess-atelier)（公开，可直接浏览和下载源码）。网站发布地址：https://chess-atelier-827853487.pearlyyew22.chatgpt.site/ 。
 
 另提供无需安装的公网浏览器构建：Stockfish 在访客设备上运行。GitHub 源码、静态导出、上线和更新方式见 [公网部署说明](公网部署说明.md)。源码仓库不包含 Windows 安装二进制；原工作目录中的本机安装继续保留。
 
