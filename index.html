@@ -5,12 +5,12 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=54" rel="stylesheet"/><link href="./engine-ui.css?v=54" rel="stylesheet"/><link href="./library-ui.css?v=54" rel="stylesheet"/>
+<link href="./app.css?v=55" rel="stylesheet"/><link href="./engine-ui.css?v=55" rel="stylesheet"/><link href="./library-ui.css?v=55" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
 <header class="masthead">
-<div class="brand-wrap"><a aria-label="棋境" class="brand" href="#" id="home"><span aria-hidden="true" class="brand-icon"><span class="brand-flip"><span class="brand-face brand-face-front"><span class="brand-knight">♞</span></span><span class="brand-face brand-face-back"><span class="brand-knight">♞</span></span></span></span><span class="brand-type"><b>棋境</b><small>国际象棋练习</small></span></a></div>
+<div class="brand-wrap"><a aria-label="棋境" class="brand" href="#" id="home"><span aria-hidden="true" class="brand-icon"><span class="brand-flip"><span class="brand-face brand-face-front"><span class="brand-knight"></span></span><span class="brand-face brand-face-back"><span class="brand-knight"></span></span></span></span><span class="brand-type"><b>棋境</b><small>国际象棋练习</small></span></a></div>
 <div class="top-tools"><button aria-controls="music-panel" aria-expanded="false" aria-label="古典乐，未播放" class="tool-icon tool-icon--music" id="music-toggle" title="古典音乐"><span aria-hidden="true" class="music-status-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.85" viewbox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><ellipse cx="6" cy="18" rx="3" ry="2"></ellipse><ellipse cx="18" cy="16" rx="3" ry="2"></ellipse></svg><i class="music-live-dot"></i></span><span class="tool-icon-label">古典乐</span></button><button aria-controls="settings-dialog" aria-expanded="false" aria-haspopup="dialog" class="tool-icon tool-icon--bare tool-icon--gear" id="settings-toggle" title="设置" type="button"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.85" viewbox="0 0 24 24"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h0a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h0a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v0a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"></path></svg></button></div>
 </header>
 <main class="studio">
@@ -68,7 +68,7 @@
 <dialog class="settings-dialog" id="settings-dialog"><div class="settings-head"><strong>设置</strong><button aria-label="关闭" id="settings-close" type="button">×</button></div><div class="settings-body">
 <p class="settings-section-title">外观</p>
 <div class="settings-row"><label for="theme">配色</label><select id="theme"><option selected="" value="walnut">浅胡桃</option><option value="sage">鼠尾草</option><option value="oat">燕麦灰</option><option value="blush">浅藕粉</option><option value="slate">雾霭蓝</option><option value="mist">冷雾灰</option></select></div>
-<div class="settings-row"><label for="piece-style">棋子</label><select id="piece-style"><option value="fantasy">雅致</option><option selected="" value="rhosgfx">经典</option><option value="chessnut">简约</option></select></div>
+<div class="settings-row"><label for="piece-style">棋子</label><select id="piece-style"><option selected="" value="rhosgfx">经典</option><option value="fantasy">雅致</option><option value="chessnut">简约</option></select></div>
 <div class="settings-row"><label for="animation-speed">走棋动画</label><select id="animation-speed"><option value="on">平滑</option><option value="off">关闭</option></select></div>
 <div class="settings-row"><label for="move-hints">走子提示</label><select id="move-hints"><option selected="" value="on">开启</option><option value="off">关闭</option></select></div>
 <p class="settings-section-title">来源</p>
@@ -91,6 +91,6 @@
 <div class="pack-create"><span></span><button class="inline-button" id="save-confirm" type="button">保存</button></div>
 </div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=54" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=54" defer></script>
+<script src="./app.bundle.js?v=55" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=55" defer></script>
 </body>
 </html>

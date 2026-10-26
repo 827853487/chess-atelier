@@ -675,7 +675,7 @@ body[data-play-mode="book"] #status{min-height:0}
 .masthead,.brand-wrap,.brand{overflow:visible}
 .brand-wrap{position:relative;flex:0 0 auto;min-width:0;perspective:720px}
 .brand-icon{
- --logo-ink:color-mix(in srgb,var(--accent) 78%,var(--ink));
+ --logo-ink:color-mix(in srgb,var(--accent) 35%,var(--ink));
  position:relative;display:block;flex:none;box-sizing:border-box;
  width:42px;height:42px;border-radius:12px;
  padding:0!important;overflow:visible!important;
@@ -691,12 +691,17 @@ body[data-play-mode="book"] #status{min-height:0}
  display:grid;place-items:center;
  background:conic-gradient(var(--dark) 0 25%,var(--light) 25% 50%,var(--dark) 50% 75%,var(--light) 75% 100%);color:var(--logo-ink);
  box-sizing:border-box;border:1.5px solid color-mix(in srgb,var(--accent) 55%,var(--paper));border-radius:12px;overflow:hidden;
- font:33px/1 Georgia,'Noto Sans Symbols 2',serif;
+ font:37px/1 Georgia,'Noto Sans Symbols 2',serif;
  padding:0;transform-origin:50% 50%;
  -webkit-backface-visibility:hidden;backface-visibility:hidden
 }
 .brand-face-back{transform:rotateY(180deg)}
-.brand-knight{display:block;transform:translateX(-1px);-webkit-text-stroke:0;filter:none}
+.brand-knight{
+ display:block;width:38px;height:38px;background:currentColor;
+ -webkit-mask:url('./assets/logo-knight.svg?v=1') center/contain no-repeat;
+ mask:url('./assets/logo-knight.svg?v=1') center/contain no-repeat;
+ transform:translateX(-1px);-webkit-text-stroke:0;filter:none
+}
 @keyframes brand-coin{
  0%{transform:rotateY(0deg)}
  100%{transform:rotateY(360deg)}

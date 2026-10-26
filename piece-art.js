@@ -3,7 +3,7 @@
 // 避免长棋谱每走一步都重新拼接同一段 SVG / img 标签。
 const choices=new Set(['fantasy','chessnut','rhosgfx']);
 // Bump when SVG artwork changes so an existing browser cache sees the new set.
-const ART_REVISION='2';
+const ART_REVISION='3';
 export function setPieceStyle(v){document.documentElement.dataset.pieceStyle=choices.has(v)?v:'rhosgfx';}
 const cache=new Map();
 export function pieceSvg(type,color){

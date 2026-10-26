@@ -1,6 +1,6 @@
 # 素材、代码与外部数据来源
 
-- **本地字形棋子 SVG（经典、简约共 24 枚）**：提取 DejaVu Sans（Bitstream Vera / DejaVu 字体授权）、FreeSerif（GNU GPL 及字体例外）、Noto Sans Symbols 2（SIL Open Font License 1.1）中现有国际象棋 Unicode 字形的矢量轮廓，重新标准化 SVG 画布与尺寸。经典白子采用相应实心字形轮廓，重新设置近白填充和深色描边；六套主题为配色衍生版本。包内不包含原始字体文件；原著作者及适用的源字体许可继续有效。界面风格名称及素材目录标识不表示对其他人同名 Chessnut 等棋子原作品的重分发。
+- **本地字形棋子 SVG（经典、简约共 24 枚）**：提取 DejaVu Sans（Bitstream Vera / DejaVu 字体授权）、FreeSerif（GNU GPL 及字体例外）、Noto Sans Symbols 2（SIL Open Font License 1.1）中现有国际象棋 Unicode 字形的矢量轮廓，重新标准化 SVG 画布与尺寸。经典与简约白子采用相应实心字形轮廓，重新设置近白填充和深色描边；六套主题为配色衍生版本。包内不包含原始字体文件；原著作者及适用的源字体许可继续有效。界面风格名称及素材目录标识不表示对其他人同名 Chessnut 等棋子原作品的重分发。
 - **备用棋子**：Font Awesome Free（CC BY 4.0），https://fontawesome.com/license/free 。
 - **浏览器棋规**：项目内置的 `vendor/chess.js`，提供合法着法、SAN 与 PGN；本次修正了 FEN 起始回合、PGN 转义和结果处理。
 - **本地棋规及 UCI 桥接**：python-chess，GPL-3.0-or-later，https://github.com/niklasf/python-chess 。通过 Python 依赖安装，不从 CDN 加载。
@@ -21,4 +21,4 @@
 
 - **本地音乐目录**：`assets/music/playlist.json` 默认为空。由使用者自行加入拥有合法使用许可的录音。
 
-- **雅致 SVG 棋子**：沿用早前版本项目内的 Fantasy 棋子素材；其原始文件应按项目所列来源和适用许可使用。
+- **雅致 SVG 棋子**：沿用早前版本项目内的 Fantasy 棋子素材，白子改用同套实心轮廓与浅色填充；其原始文件应按项目所列来源和适用许可使用。
