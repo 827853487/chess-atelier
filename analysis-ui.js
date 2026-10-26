@@ -52,6 +52,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
  }
  function scheduleEngine(){
   clearTimeout(timer);controller?.abort();controller=null;const seq=++sequence;
+  if(state.postReview)return;
   if(!enabled){status('实时分析已关闭');$('#engine-connection').dataset.state='paused';return;}
   const position=enginePosition(),k=key(position),cached=cache.get(k);
   if(cached)render(cached,position);
@@ -59,6 +60,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   if(cached?.complete)return;
   $('#engine-probability').dataset.pending='true';status('正在分析',true);
   timer=setTimeout(async()=>{
+   timer=null;
    const request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),12000);
    try{
     await engineRequest('/api/analyze',{...position,stream:true},{signal:request.signal,onUpdate:data=>{
@@ -82,6 +84,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   }catch(error){status('本地引擎不可用');empty(error.message);$('#retry-engine').classList.remove('hidden');}
  }
  $('#analysis-toggle').addEventListener('click',()=>{
+  if(state.postReview){state.closeReview?.();return;}
   enabled=!enabled;$('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
   $('.coach-card').dataset.paused=String(!enabled);
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
@@ -95,9 +98,18 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   if(row){state.arrow={from:row.moves[0].from,to:row.moves[0].to};drawArrow();}
  });
  $('#retry-engine').addEventListener('click',()=>{
+  if(state.postReview){state.retryReview?.();return;}
   refreshEngineStatus();cache.delete(key(enginePosition()));scheduleEngine();
   if(state.mode==='book'&&state.duelStarted&&!state.review&&viewGame().turn()!==state.side&&!state.busy)maybeBookReply();
  });
  window.addEventListener('pagehide',()=>{clearTimeout(timer);controller?.abort();});
- return {scheduleEngine,refreshEngineStatus};
+ function setReviewMode(on){
+  enabled=on;$('#analysis-toggle').setAttribute('aria-pressed',String(on));
+  $('#analysis-toggle span').textContent=state.postReview?'复盘分析':'实时分析';
+  $('#analysis-toggle').setAttribute('aria-label',state.postReview?'复盘分析':'实时分析');
+  $('.coach-card').dataset.paused=String(!on);$('.analysis-live').inert=!on;$('.analysis-live').setAttribute('aria-hidden',String(!on));
+  $('#analysis-rest').setAttribute('aria-hidden',String(on));$('#analysis-rest').tabIndex=on?-1:0;
+  if(!on)nextNote();scheduleEngine();
+ }
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,renderReview:render,reviewLoading:()=>{empty('正在分析当前局面…');status('复盘分析中',true);$('#engine-probability').dataset.pending='true';}};
 }

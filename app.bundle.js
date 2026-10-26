@@ -277,7 +277,7 @@ class UciWorker{
      }
      return false;
     },15000);
-    this.send('go movetime '+(analysis?1200:level.ms));
+    this.send('go movetime '+(analysis?(body.review?450:1200):level.ms));
     const answer=await best;
     if(aborted||signal?.aborted)throw abortError();
     if(analysis){
@@ -359,9 +359,196 @@ function moveQuality(previous,current,move){
 
 return { engineRequest, engineStatus, scoreValue, scoreLabel, moveQuality };
 })();
-const { CHESS_NOTES, setupRestNotes }=(()=>{
+const { CHESS_QUOTE_DATA }=(()=>{
+// Verified short extracts and original practice prompts. See data/CHESS_QUOTES.md.
+// Translations below were written for this project, not copied from modern editions.
+const QUOTE_SOURCES={
+ capablanca:'https://www.gutenberg.org/files/33870/33870-h/33870-h.htm',
+ franklin:'https://founders.archives.gov/documents/Franklin/01-29-02-0608',
+ lasker:'https://archive.org/details/commonsenseinche00laskrich',
+ zweig:'https://www.tha.de/homes/harsch/germanica/Chronologie/20Jh/Zweig/zwe_scha.html'
+};
+const VERIFIED_QUOTES=[
+ {text:'The control of the centre is of great importance.',translation:'控制中心具有重要意义。',source:'卡帕布兰卡《国际象棋基础》§7',sourceUrl:QUOTE_SOURCES.capablanca,kind:'quote'},
+ {text:'In all endings of this kind, care must be taken not to drift into a stale mate.',translation:'在这类残局中，必须留意不要走成逼和。',source:'卡帕布兰卡《国际象棋基础》§1（基础将杀）',sourceUrl:QUOTE_SOURCES.capablanca,kind:'quote'},
+ {text:'It is generally advisable to advance the Pawn that is free from opposition.',translation:'通常应优先考虑推进前方没有对方兵阻挡的兵。',source:'卡帕布兰卡《国际象棋基础》§3',sourceUrl:QUOTE_SOURCES.capablanca,kind:'quote'},
+ {text:'Naturally, these principles have sometimes to be modified to suit the exigencies of the position.',translation:'这些原则有时也须依照具体局面的要求作出调整。',source:'卡帕布兰卡《国际象棋基础》§14',sourceUrl:QUOTE_SOURCES.capablanca,kind:'quote'},
+ {text:'the value of a piece can often be measured by the number of squares it commands.',translation:'一枚棋子的价值，常可由它控制的格子数量来衡量。',source:'卡帕布兰卡《国际象棋基础》§14（节选）',sourceUrl:QUOTE_SOURCES.capablanca,kind:'quote'},
+ {text:'the co-operation of the King is needed.',translation:'王的协同是必要的。',source:'卡帕布兰卡《国际象棋基础》§1（基础将杀，节选）',sourceUrl:QUOTE_SOURCES.capablanca,kind:'quote'},
+ {text:'The game of Chess is not merely an idle amusement.',translation:'国际象棋并不只是消遣。',source:'本杰明·富兰克林《棋之道德》',sourceUrl:QUOTE_SOURCES.franklin,kind:'quote'},
+ {text:'For life is a kind of chess',translation:'因为人生也如同一盘棋。',source:'本杰明·富兰克林《棋之道德》（节选）',sourceUrl:QUOTE_SOURCES.franklin,kind:'quote'},
+ {text:'Foresight, which looks a little into futurity',translation:'远见，使人向未来多看一步。',source:'本杰明·富兰克林《棋之道德》（节选）',sourceUrl:QUOTE_SOURCES.franklin,kind:'quote'},
+ {text:'Caution, not to make our moves too hastily.',translation:'谨慎，不要过于仓促地落子。',source:'本杰明·富兰克林《棋之道德》（节选）',sourceUrl:QUOTE_SOURCES.franklin,kind:'quote'},
+ {text:'persevering in the search of resources.',translation:'坚持寻找可用的办法。',source:'本杰明·富兰克林《棋之道德》（节选）',sourceUrl:QUOTE_SOURCES.franklin,kind:'quote'},
+ {text:'common sense triumphs over trickery, and rightly so.',translation:'常识战胜了诡计，理当如此。',source:'伊曼纽尔·拉斯克《国际象棋常识》（节选）',sourceUrl:QUOTE_SOURCES.lasker,kind:'quote'},
+ {text:'However, I do not ask you to believe me blindly.',translation:'不过，我并不要求你盲目相信我。',source:'伊曼纽尔·拉斯克《国际象棋常识》',sourceUrl:QUOTE_SOURCES.lasker,kind:'quote'},
+ {text:'common sense tells us exactly how to proceed.',translation:'常识会告诉我们该如何着手。',source:'伊曼纽尔·拉斯克《国际象棋常识》（节选）',sourceUrl:QUOTE_SOURCES.lasker,kind:'quote'},
+ {text:'An attack will direct itself in the first instance against your weakest points',translation:'攻击首先会指向你最薄弱的地方。',source:'伊曼纽尔·拉斯克《国际象棋常识》（第91页，节选）',sourceUrl:QUOTE_SOURCES.lasker,kind:'quote'},
+ {text:'je mehr sich einer begrenzt, umso mehr ist er andererseits dem Unendlichen nah',translation:'一个人越是专注于狭窄的领域，另一方面便越接近无限。',source:'斯蒂芬·茨威格《象棋的故事》（叙述者谈专注，节选）',sourceUrl:QUOTE_SOURCES.zweig,kind:'quote'}
+];
+
+// Original prompts: these are not quotations and carry no historical attribution.
+const ORIGINAL_PRACTICE_NOTES=`
+开局时，先问新走出的棋子是否给下一枚棋子让出了路线。
+过早出后之前，数一数对手能带着节奏攻击它的着法。
+同一枚轻子走第二次前，看看其余棋子是否仍停在原位。
+易位不是仪式；先确认易位一侧的兵形和开放线。
+中心紧闭时，侧翼行动才更有时间慢慢展开。
+选择开局变例时，也要考虑自己愿意进入哪种残局。
+遇到陌生开局，不必先猜名字，先辨认中心兵形。
+对手偏离主线时，重新检查具体威胁，而不是机械惩罚。
+出子受阻时，找到挡路的那枚兵，再考虑它该怎样前进。
+开局里的多一个兵，可能要用几个出子节奏交换。
+王还在中央时，开线的收益应同时从双方角度计算。
+棋子看似都已出动，也要确认两辆车是否能够互相照应。
+边兵的推进也会改变主教的斜线，不只是增加侧翼空间。
+开局准备可以记住分岔点，不必只记一长串答案。
+面对弃兵，先比较接受后能否安全完成出子。
+每次后与车排成一线，都值得检查是否存在串击。
+双重攻击的目标未必是两枚棋子，也可能是棋子与将杀。
+发现牵制后，确认被牵制的子是否真的不能离开。
+吃子时先检查回吃是否打开了另一条攻击线。
+计算闪击时，别忽略移开棋子的落点也可能带着威胁。
+一枚棋子承担两项防守任务时，尝试分别攻击这两个目标。
+交换防守子之前，确认自己是否仍有力量进入弱点。
+诱离一个防守者之后，还要算它能否沿另一条路线返回。
+将杀网中的逃生格，有时比被攻击的格子更值得注意。
+逼迫对手走王之前，先确定王的新位置是否反而安全。
+计算中间着时，暂缓习惯性的回吃，再列出所有将军。
+底线战术不仅取决于有没有通气孔，也取决于重子能否侵入。
+马的叉击常以一个将军为起点，先查看双方王与后的距离。
+寻找组合时，把所有未被保护的棋子圈在心里。
+漂亮的弃子需要具体后续，不能只靠对手看起来难受。
+评价一枚马的站位，既看现在的控制格，也看它能否被兵驱赶。
+好象与坏象的区别，往往藏在己方兵占据的颜色里。
+交换对手最活跃的棋子，可能比立刻改善自己的棋子更有效。
+一个永久弱点只有在能够接近时，才成为实际目标。
+空间优势需要支撑；过多推进也可能留下难以保护的格子。
+在封闭局面中，找出双方能够打开局面的兵突破。
+开放线被争夺时，先计算进入格是否能站稳。
+把车放上半开放线之后，寻找可供重子进入的横线。
+局面没有弱点可攻时，可以考虑迫使对手作出一次选择。
+两翼都有目标时，比较转移子力需要多少步。
+限制对手的反击，常常能让自己的计划更容易执行。
+交换之前，分别想象双方剩下的最强与最差棋子。
+兵形固定之后，留意哪一种轻子更适合留下来。
+不要只给格子命名，也要判断对手能否利用它。
+一枚暂时退后的棋子，有时正在为更好的路线让路。
+兵链的根部通常比最前端更容易受到持续攻击。
+孤兵带来的开放线与活动力，可能补偿它的防守负担。
+叠兵并不总是缺点；先看它们打开了什么路线。
+形成远方通路兵之前，计算己王是否还能守住另一翼。
+兵突破往往要求精确次序，不妨把三种推进顺序都试算。
+留住一枚兵，有时能为残局保留关键的等着。
+翼兵多数的价值，需要能够推进的空间来兑现。
+向前推兵前，确定它留下的格子会不会成为对方据点。
+锁住中心时，也许同时锁住了自己的主教。
+兵交换能打开线，也能替对手修复一个结构弱点。
+过路兵权利只在当下有效；把它纳入这一着的计算。
+兵残局中，先画出双方王能否进入的关键格。
+通路兵进入第七横线后，升变格的控制常比保护兵本身更急。
+面对边兵残局，务必单独检查角落是否造成逼和。
+兵越少，每次交换所改变的局面性质可能越大。
+车残局里，活跃的车常能比被动守兵的车制造更多机会。
+让王参与残局时，仍要先确认对方是否拥有连续将军。
+车在通路兵后方的原则很有用，但要检查是否有具体战术例外。
+兵残局中多出一个节奏，可能改变整个对王关系。
+同色象残局里，尝试把对方的兵固定在己象能够攻击的颜色。
+异色象残局不要过早判和，王的进入路线仍须计算。
+后残局的第一项检查，是自己的王会不会遭到长将。
+残局转化为兵残局之前，把最后一段算到明确结果。
+车兵将杀时，先减少对方王的活动范围，再靠近自己的王。
+单后将杀时，为对方的王留意至少一个合法着法，避免逼和。
+弱升变不仅为了战术，有时也是避免立即逼和的办法。
+守残局时，可以把目标缩小为建立一个可重复维持的阵形。
+领先一兵不代表可以忽略活跃度；交换前先比较剩余子力。
+残局中的横向防守和侧面将军，常能比正面阻挡更灵活。
+一旦进入熟悉的基本残局，先认出模型，再计算具体细节。
+计算候选着法时，先写出两到三种真正不同的想法。
+一条变化算到局面安静时，再停下来评价结果。
+别把对手的自然应手当作唯一应手，专门寻找它的反击。
+计算的最后一着也要做一次漏着检查。
+连续强制着法结束后，重新清点双方子力与王的安全。
+如果分支越来越乱，回到起点核对第一着的必要性。
+想象棋盘时，特别留心已经移开的兵和新打开的斜线。
+只有当局面确实相同，才能把两条变化合并计算。
+估计一个计划之前，先数清它需要几着无强制性的准备。
+候选着法难以区分时，比较哪一着给对手留下的选择更少。
+将军不一定是最佳着法，但值得作为强制分支优先核对。
+进攻需要计算终点；防守同样需要计算终点。
+考虑重复局面时，把行棋方和易位权也纳入比较。
+一条看似赢子的变化，可能在最后遇到逼和或长将。
+停止计算之前，问一句：对方是否还有更强的将军？
+防守时先区分真正的威胁与只让人不舒服的姿态。
+对方准备进攻时，寻找能迫使其分心保护的目标。
+主动交换一枚攻击子，有时比增加第三个防守者更省力。
+遇到猛烈进攻，不妨先确认对手是否已经投入足够子力。
+王的逃跑路线也可以提前准备，而不是等到被将军才找。
+必须让步时，选择最容易恢复或最难被利用的弱点。
+劣势局面中的每一着，都可以争取增加对手的技术难度。
+防守要寻找资源，不必急着证明自己此前没有下错。
+对手在一翼集中子力时，检查另一翼是否存在及时的突破。
+不要因为一枚棋子被攻击，就自动移动它；也许有更强的反击。
+阻挡进攻线时，比较挡线子是否还会继续受到攻击。
+防守阵形的稳固程度，也取决于有没有足够的等待着法。
+用将军争取节奏之前，确保不会把对方的王送到更好的格子。
+守住一个威胁后，立即确认有没有新产生的第二个威胁。
+顽强并不等于拒绝交换；有些简化正是守和的机会。
+复盘可以先找最早的计划分歧，而不是只找最后的漏子。
+先写下自己的判断，再查看引擎，比较才会更具体。
+分析一盘大师棋时，可以在关键局面遮住后续着法。
+同一开局看两盘不同兵形的实战，比只背一条长主线更有帮助。
+把反复出错的局面按原因分类，而不是只记输赢。
+复习一题时，试着解释为什么其他自然着法不行。
+发现更好着法后，再找出它解决了自己原方案的哪个问题。
+结束复盘时，带走一条下次能够执行的检查习惯。
+一个引擎首选不是完整解释，继续观察它后续要求怎样配合。
+比较候选线时，先确认分析的起点与行棋方一致。
+评估值的轻微变化，不必立刻解释为一次明显失误。
+学习残局时，可以从同一阵形更换行棋方再练一次。
+重新做一题前，先独立回忆思路，而不是直接回忆答案。
+研究开局时，为每个关键兵突破配上一盘示范对局。
+PGN 能保存主线；重要的思考也可以另外写下自己的短笔记。
+输掉上一盘，不必把急于追回的心情带进下一盘。
+发现漏着之后，先检查当前局面，机会并没有因此自动消失。
+用掉很多时间的一步，落子前仍值得做最后一次检查。
+优势时可以放慢确认，劣势时也保留清醒判断的节奏。
+不熟悉的局面是学习材料，不是必须立即摆脱的错误。
+不要让刚看到的精彩战术遮住对手眼前的简单威胁。
+面对名气更大的对手，仍然只需处理棋盘上的这一步。
+一盘棋中的耐心，不是永远等待，而是愿意为计划做准备。
+走出被迫的一着之后，把注意力重新放回可选择的未来。
+如果思绪被结果占满，就回到棋子、格子和具体应手。
+暂时看不见计划时，先确认最需要改善的是哪一枚棋子。
+每盘棋都可以有一个小目标，例如少漏一条长斜线。
+复盘自己的胜局，也能发现被结果掩盖的问题。
+对手的好棋值得记录；它也是下一次训练的题目。
+清楚地理解一个基本局面，比模糊地看过十个更可靠。
+看谱时先认出上一着改变的线路，再按下一步。
+在大师对局中暂停一次，自己决定何时交换后。
+回放到转折点时，比较双方最差棋子的命运。
+遇到漂亮组合，往前退几着，找出它赖以成立的准备。
+收藏一盘棋时，可以给自己留下再次观看的理由。
+分析关闭时的棋句是一般提示，不能代替当前局面的计算。
+观察同一兵形的多盘棋，可以分清常见计划与偶然战术。
+从中间续走参考谱时，先确认当前行棋方和起始局面。
+放映可以帮助看整体，逐着暂停更适合练习独立判断。
+如果一盘棋显得过于复杂，先只追踪双方的中心兵。
+下一轮观看，可以改为追踪某一枚马如何找到据点。
+研究将杀局时，数清限制逃生格的每一枚棋子。
+不要把参考主线当成唯一合法答案，其他候选仍可独立检验。
+将一段残局从双方视角各走一遍，会更容易记住防守资源。
+学完一个主题后，回到完整实战中寻找它出现的条件。
+`.trim().split('\n').map(text=>({text,kind:'note'}));
+
+const CHESS_QUOTE_DATA=[...VERIFIED_QUOTES,...ORIGINAL_PRACTICE_NOTES];
+
+return { CHESS_QUOTE_DATA };
+})();
+const { CHESS_NOTES, createNoteDeck, setupRestNotes }=(()=>{
+
 // Original practice notes, not attributed quotations or position-specific engine advice.
-const CHESS_NOTES = [
+const ORIGINAL_NOTES = [
  ...`落子之前，先看看对手上一着改变了什么。
 将军、吃子、威胁，可以作为计算的起点。
 好棋也需要一个合适的时机。
@@ -446,22 +633,34 @@ const CHESS_NOTES = [
  {text:'Patience can turn a small edge into a lasting one.',translation:'耐心，可以让微小优势变得持久。'}
 ];
 
+const CHESS_NOTES=[...new Map([...ORIGINAL_NOTES,...CHESS_QUOTE_DATA].map(note=>[note.text,note])).values()];
+
+function createNoteDeck(notes,{storage,rng=Math.random}={}){
+ const signature=notes.map(note=>note.text).join('\n');let hash=2166136261;for(const char of signature){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);}
+ const version=String(hash>>>0),key='ChessAtelierNotesDeckV2';let remaining=[],last=-1;
+ try{const saved=JSON.parse(storage?.getItem(key)||'null');if(saved?.version===version&&Array.isArray(saved.remaining)){remaining=[...new Set(saved.remaining.filter(i=>Number.isInteger(i)&&i>=0&&i<notes.length))];last=saved.last;}}catch{}
+ return ()=>{
+  if(!remaining.length){remaining=notes.map((_,i)=>i);for(let i=remaining.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}if(remaining.length>1&&remaining[0]===last)[remaining[0],remaining[1]]=[remaining[1],remaining[0]];}
+  last=remaining.shift();try{storage?.setItem(key,JSON.stringify({version,remaining,last}));}catch{}
+  return notes[last];
+ };
+}
 function setupRestNotes(){
- const rest=document.querySelector('#analysis-rest'),text=document.querySelector('#chess-note'),translation=document.querySelector('#chess-note-translation');
- let index=-1;
+ const rest=document.querySelector('#analysis-rest'),text=document.querySelector('#chess-note'),translation=document.querySelector('#chess-note-translation'),source=document.querySelector('#chess-note-source');
+ let storage;try{storage=localStorage;}catch{}
+ const pick=createNoteDeck(CHESS_NOTES,{storage});
  function next(){
-  let pick=Math.floor(Math.random()*(CHESS_NOTES.length-(index>=0?1:0)));
-  if(index>=0&&pick>=index)pick++;
-  index=pick;const note=CHESS_NOTES[index];
-  text.textContent=note.text;text.lang=note.translation?'en':'zh-CN';
+  const note=pick();text.textContent=note.text;text.lang=note.lang||(note.source?.includes('茨威格')?'de':note.translation?'en':'zh-CN');
   translation.textContent=note.translation?'（'+note.translation+'）':'';translation.hidden=!note.translation;
+  source.replaceChildren();source.hidden=!note.source;
+  if(note.source){const label=document.createElement(note.sourceUrl?'a':'span');label.textContent='— '+note.source;if(note.sourceUrl){label.href=note.sourceUrl;label.target='_blank';label.rel='noopener noreferrer';}source.append(label);}
  }
- rest.addEventListener('dblclick',event=>{event.preventDefault();next();});
+ rest.addEventListener('dblclick',event=>{if(event.target.closest('a'))return;event.preventDefault();next();});
  rest.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();next();}});
  next();return next;
 }
 
-return { CHESS_NOTES, setupRestNotes };
+return { CHESS_NOTES, createNoteDeck, setupRestNotes };
 })();
 const { setupLocalAnalysis }=(()=>{
 
@@ -517,6 +716,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
  }
  function scheduleEngine(){
   clearTimeout(timer);controller?.abort();controller=null;const seq=++sequence;
+  if(state.postReview)return;
   if(!enabled){status('实时分析已关闭');$('#engine-connection').dataset.state='paused';return;}
   const position=enginePosition(),k=key(position),cached=cache.get(k);
   if(cached)render(cached,position);
@@ -524,6 +724,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   if(cached?.complete)return;
   $('#engine-probability').dataset.pending='true';status('正在分析',true);
   timer=setTimeout(async()=>{
+   timer=null;
    const request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),12000);
    try{
     await engineRequest('/api/analyze',{...position,stream:true},{signal:request.signal,onUpdate:data=>{
@@ -547,6 +748,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   }catch(error){status('本地引擎不可用');empty(error.message);$('#retry-engine').classList.remove('hidden');}
  }
  $('#analysis-toggle').addEventListener('click',()=>{
+  if(state.postReview){state.closeReview?.();return;}
   enabled=!enabled;$('#analysis-toggle').setAttribute('aria-pressed',String(enabled));
   $('.coach-card').dataset.paused=String(!enabled);
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
@@ -560,14 +762,96 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   if(row){state.arrow={from:row.moves[0].from,to:row.moves[0].to};drawArrow();}
  });
  $('#retry-engine').addEventListener('click',()=>{
+  if(state.postReview){state.retryReview?.();return;}
   refreshEngineStatus();cache.delete(key(enginePosition()));scheduleEngine();
   if(state.mode==='book'&&state.duelStarted&&!state.review&&viewGame().turn()!==state.side&&!state.busy)maybeBookReply();
  });
  window.addEventListener('pagehide',()=>{clearTimeout(timer);controller?.abort();});
- return {scheduleEngine,refreshEngineStatus};
+ function setReviewMode(on){
+  enabled=on;$('#analysis-toggle').setAttribute('aria-pressed',String(on));
+  $('#analysis-toggle span').textContent=state.postReview?'复盘分析':'实时分析';
+  $('#analysis-toggle').setAttribute('aria-label',state.postReview?'复盘分析':'实时分析');
+  $('.coach-card').dataset.paused=String(!on);$('.analysis-live').inert=!on;$('.analysis-live').setAttribute('aria-hidden',String(!on));
+  $('#analysis-rest').setAttribute('aria-hidden',String(on));$('#analysis-rest').tabIndex=on?-1:0;
+  if(!on)nextNote();scheduleEngine();
+ }
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,renderReview:render,reviewLoading:()=>{empty('正在分析当前局面…');status('复盘分析中',true);$('#engine-probability').dataset.pending='true';}};
 }
 
 return { setupLocalAnalysis };
+})();
+const { setupPostReview }=(()=>{
+
+
+function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis}){
+ const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='';
+ function stop(){clearTimeout(timer);timer=null;controller?.abort();controller=null;epoch++;}
+ function clearMarks(){document.querySelectorAll('.review-mark').forEach(node=>node.remove());}
+ function close(){stop();state.postReview=false;error='';$('post-review').hidden=true;clearMarks();state.arrow=null;drawArrow();analysis.setReviewMode(false);sync();}
+ state.closeReview=close;state.retryReview=()=>{error='';stop();schedule();render();};
+ function createRecord(){
+  const moves=cachedHistory().map(move=>({...move})),game=new Chess(state.origin),uci=[];
+  const positions=[{fen:game.fen(),origin:state.origin,moves:[]}];
+  for(const move of moves){game.move({from:move.from,to:move.to,promotion:move.promotion});uci.push(move.from+move.to+(move.promotion||''));positions.push({fen:game.fen(),origin:state.origin,moves:uci.slice()});}
+  return {game:state.game,length:moves.length,last:moves.at(-1)?.san,moves,positions,results:new Map()};
+ }
+ function qualityAt(index){
+  const before=record.results.get(index-1),after=record.results.get(index),move=record.moves[index-1];if(!before||!after||!move)return null;
+  if(after.terminal&&after.result!=='1/2-1/2')return {label:'将死',cls:'best',loss:0};
+  const adjusted=after.terminal?{...after,pvs:[{moves:'',cp:0}]}:after;
+  return moveQuality(before,adjusted,move);
+ }
+ function currentLine(data,index){
+  const pv=data?.pvs?.[0];if(!pv)return null;
+  const game=new Chess(record.positions[index].fen),moves=[];
+  for(const uci of pv.moves.split(/\s+/).slice(0,4)){try{moves.push(game.move(uci));}catch{break;}}
+  return moves.length?moves:null;
+ }
+ function render(){
+  clearMarks();if(!state.postReview||!record)return;
+  const index=state.view,current=record.results.get(index),move=record.moves[index-1],quality=qualityAt(index);
+  $('post-review').hidden=false;$('review-progress').textContent=`${record.results.size} / ${record.positions.length} 局面`;
+  $('review-meter').style.width=(record.results.size/record.positions.length*100)+'%';
+  $('review-move-title').textContent=index?`${move?.color==='w'?'白':'黑'} ${move?.san||''}${quality?' · '+quality.label:''}`:'初始局面';
+  $('review-comment').textContent=error||(!current?'正在加载此步分析…':quality?quality.loss>=10000?'将杀形势发生变化。':quality.loss>0?`引擎参考：约损失 ${(quality.loss/100).toFixed(1)} 兵。`:'与引擎参考一致。':index?'正在补全前一局面的比较…':'按着法逐步查看；关闭复盘可自行推演。');
+  const line=currentLine(current,index),suggestion=$('review-suggestion');suggestion.hidden=!line;
+  suggestion.textContent=line?'参考：'+line.map(move=>move.san).join('  '):'';
+  suggestion.onclick=line?()=>{state.arrow={from:line[0].from,to:line[0].to};drawArrow();}:null;
+  if(current)analysis.renderReview(current,record.positions[index]);else analysis.reviewLoading();
+  if(move&&quality){const cell=document.querySelector(`#board > [data-square="${move.to}"]`);if(cell?.querySelector('.piece')){const badge=document.createElement('span');badge.className='review-mark review-'+quality.cls;badge.textContent=quality.cls==='best'?'★':quality.cls==='good'?'✓':quality.cls==='ok'?'~':quality.loss>=250?'??':'?';badge.title=move.san+' · '+quality.label+'（Stockfish 参考）';badge.setAttribute('aria-label',badge.title);cell.append(badge);}}
+ }
+ function schedule(){if(timer||controller||!state.postReview||!record||error)return;timer=setTimeout(pump,80);}
+ async function pump(){
+  timer=null;if(!state.postReview||!record)return;
+  const order=[state.view,...(state.view?[state.view-1]:[]),...record.positions.map((_,i)=>i)],index=order.find(i=>!record.results.has(i));
+  if(index===undefined){render();return;}
+  const snapshot=record,token=epoch,request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),15000);
+  try{
+   const data=await engineRequest('/api/analyze',{...snapshot.positions[index],stream:true,review:true},{signal:request.signal,onUpdate:data=>{if(token===epoch&&state.postReview&&state.view===index)analysis.renderReview(data,snapshot.positions[index]);}});
+   if(token!==epoch||snapshot!==record||!state.postReview)return;
+   record.results.set(index,data);render();
+  }catch(exception){if(token===epoch&&state.postReview){error=exception.name==='AbortError'?'分析超时，请重试。':exception.message||'复盘分析暂不可用，请重试。';render();$('retry-engine').classList.remove('hidden');}}
+  finally{clearTimeout(timeout);if(controller===request)controller=null;if(token===epoch)schedule();}
+ }
+ function sync(){
+  const moves=cachedHistory(),available=state.mode==='free'||moves.length>0&&state.game.isGameOver();
+  if(record&&(record.game!==state.game||record.length!==moves.length||record.last!==moves.at(-1)?.san)){
+   const wasActive=state.postReview;stop();record=null;state.postReview=false;clearMarks();$('post-review').hidden=true;if(wasActive)analysis.setReviewMode(false);
+  }
+  const button=$('side-badge');button.disabled=!available;button.classList.toggle('is-review-active',!!state.postReview);button.setAttribute('aria-pressed',String(!!state.postReview));
+  if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止模型分析，恢复自行推演':'加载 Stockfish 逐步复盘';}
+  else button.title='对弈结束后可复盘';
+  if(state.postReview){if(lastView!==state.view){stop();lastView=state.view;error='';}render();schedule();}
+ }
+ $('side-badge').addEventListener('click',()=>{
+  if(state.postReview){close();return;}
+  if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);goto(0);sync();
+ });
+ window.addEventListener('pagehide',stop);
+ return {sync,close};
+}
+
+return { setupPostReview };
 })();
 const { LESSONS }=(()=>{
 // Curated, manually annotated chess lines. Historic scores are factual move records.
@@ -1621,201 +1905,330 @@ function writeStarredScores(storage,ids){storage.setItem(STAR_KEY,JSON.stringify
 
 return { readStarredScores, writeStarredScores };
 })();
+const { LOCAL_MUSIC }=(()=>{
+const LOCAL_MUSIC = [{"file": "baroque-01.mp3", "title": "巴赫 · 三部创意曲 No.1，BWV 787", "composer": "巴赫", "era": "baroque", "performer": "Randolph Hokanson", "credit": "Randolph Hokanson; Al Goldstein collection, Pandora Music / ibiblio.org", "license": "CC BY-SA 2.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bach_Sinfonien01.ogg", "originalFile": "Bach Sinfonien01.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Bach_Sinfonien01.ogg", "duration": 76.65, "bytes": 920703, "sha256": "c051433e3841d53784ee5c883555f251ebd9ff4a4472e8e1107752e548f120fb", "originalBytes": 1358960, "originalSha256": "d8ae7518f90781279b888165b95e666eb31aed5c273d70a15da9d8de5f8902db", "commonsSha1": "c416f652e2114dc7f8763c72310c0b5e612e1d04", "commonsPageId": 2893368, "commonsRevisionId": 1227002104, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "CC-BY-SA-2.0"}, {"file": "baroque-02.mp3", "title": "巴赫 · 三部创意曲 No.2，BWV 788", "composer": "巴赫", "era": "baroque", "performer": "Randolph Hokanson", "credit": "Randolph Hokanson; Al Goldstein collection, Pandora Music / ibiblio.org", "license": "CC BY-SA 2.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bach_Sinfonien02.ogg", "originalFile": "Bach Sinfonien02.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/4/44/Bach_Sinfonien02.ogg", "duration": 110.87, "bytes": 1331348, "sha256": "e5915d6db7f294fcab6cbec3d60d8a4969dcb982544a3bb0147f7dbe11ec005c", "originalBytes": 1971330, "originalSha256": "38b5d94cd897758ac77601c0e2a0b46dc08e1f0e9bd4a3dab9a8b55489a26225", "commonsSha1": "8d54323638aebfaa3f46bd8dc710c998defacc74", "commonsPageId": 2893377, "commonsRevisionId": 1227002113, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "CC-BY-SA-2.0"}, {"file": "baroque-03.mp3", "title": "维瓦尔第 · 四季《春》第二乐章", "composer": "维瓦尔第", "era": "baroque", "performer": "John Harrison；Robert Turizziani；Wichita State University Chamber Players", "credit": "Recording copyright John Harrison; violin John Harrison, conductor Robert Turizziani, Wichita State University Chamber Players", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.en", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vivaldi_-_Four_Seasons_1_Spring_mvt_2_Largo_-_John_Harrison_violin.oga", "originalFile": "Vivaldi - Four Seasons 1 Spring mvt 2 Largo - John Harrison violin.oga", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Vivaldi_-_Four_Seasons_1_Spring_mvt_2_Largo_-_John_Harrison_violin.oga", "duration": 171.64, "bytes": 2060478, "sha256": "a61c0768996a173ae0063b44b3c1bc72ac69b30303c144986d0bfa14f694443f", "originalBytes": 3288210, "originalSha256": "6cbca92e88c875f5ad1fa49480d83dac44138538a2c1f565462609f0cc071bc7", "commonsSha1": "372b38ce78af5fb8bc1b4b7de9c05e6f698255ac", "commonsPageId": 81855, "commonsRevisionId": 859454774, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "CC-BY-SA-4.0"}, {"file": "baroque-04.mp3", "title": "维瓦尔第 · 四季《夏》第三乐章", "composer": "维瓦尔第", "era": "baroque", "performer": "John Harrison；Robert Turizziani；Wichita State University Chamber Players", "credit": "Recording copyright John Harrison; violin John Harrison, conductor Robert Turizziani, Wichita State University Chamber Players", "license": "CC BY-SA 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.en", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vivaldi_-_Four_Seasons_2_Summer_mvt_3_Presto_-_John_Harrison_violin.oga", "originalFile": "Vivaldi - Four Seasons 2 Summer mvt 3 Presto - John Harrison violin.oga", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Vivaldi_-_Four_Seasons_2_Summer_mvt_3_Presto_-_John_Harrison_violin.oga", "duration": 158.96, "bytes": 1908445, "sha256": "a788a4e836b076922a26aea8b73ad799b811804407c6e7d9446fa88052dd167f", "originalBytes": 3009285, "originalSha256": "93017216c1967d288f4840861d300e3ff3047ff5df67d97e56ca82c1f24aadc8", "commonsSha1": "502ad0e427100729c11d4387a924130c31b35a66", "commonsPageId": 81931, "commonsRevisionId": 859454953, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "CC-BY-SA-4.0"}, {"file": "classical-05.mp3", "title": "莫扎特 · 降E大调嬉游曲 K.113 第一乐章", "composer": "莫扎特", "era": "classical", "performer": "Tsumugi Orchestra；Takashi Inoue", "credit": "The Tsumugi Orchestra, conducted by Takashi Inoue; recorded 15 August 2010, Fukuoka City Children’s Science and Culture Center Hall", "license": "CC BY 3.0", "licenseUrl": "https://creativecommons.org/licenses/by/3.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Divertimento_in_E-flat_major_-_KV_113_-_1st_movement.oga", "originalFile": "Divertimento in E-flat major - KV 113 - 1st movement.oga", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Divertimento_in_E-flat_major_-_KV_113_-_1st_movement.oga", "duration": 195.33, "bytes": 2344795, "sha256": "292dee135031dd1ea808d039eb35384bcc4a247f7fe81e4111e3e5d215c2bfe3", "originalBytes": 3632522, "originalSha256": "f11d69999c34214ed196154dba7f75346e978372fcff4faa31a0a03c432693c1", "commonsSha1": "debd4737e3bd562c7ebb9140f55716ce19f1508e", "commonsPageId": 22479217, "commonsRevisionId": 1069945948, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "CC-BY-3.0"}, {"file": "classical-06.mp3", "title": "莫扎特 · F大调嬉游曲 K.138 第一乐章", "composer": "莫扎特", "era": "classical", "performer": "Tsumugi Orchestra；Takashi Inoue", "credit": "The Tsumugi Orchestra, conducted by Takashi Inoue; recorded 15 August 2010, Fukuoka City Children’s Science and Culture Center Hall", "license": "CC BY 3.0", "licenseUrl": "https://creativecommons.org/licenses/by/3.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Divertimento_in_F_major%2C_K._138_%28125c%29_-_1st_movement.oga", "originalFile": "Divertimento in F major, K. 138 (125c) - 1st movement.oga", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Divertimento_in_F_major%2C_K._138_%28125c%29_-_1st_movement.oga", "duration": 251.93, "bytes": 3024083, "sha256": "5fad546a5a8c89c952a5c49bd54dc7f91bcc9eca404b066a3e86f4f668b954a4", "originalBytes": 9301667, "originalSha256": "63e359aa4cc44a3aaf7a6a32428f28af4bc7d1558bfc436314d799a835886ca3", "commonsSha1": "de6de325c868f4c5fe6b38fc97fd3787403e2b5c", "commonsPageId": 22463857, "commonsRevisionId": 1206996035, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "CC-BY-3.0"}, {"file": "classical-07.mp3", "title": "莫扎特 · D大调长笛四重奏 K.285 第二乐章", "composer": "莫扎特", "era": "classical", "performer": "Felix Skowronek；Philadelphia Quartet", "credit": "Felix Skowronek with the Philadelphia Quartet; Al Goldstein collection, Pandora Music / ibiblio.org", "license": "CC BY-SA 2.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wolfgang_Amadeus_Mozart_-_Flute_Quartet_No._1_in_D_Major_-_2._Adagio.ogg", "originalFile": "Wolfgang Amadeus Mozart - Flute Quartet No. 1 in D Major - 2. Adagio.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Wolfgang_Amadeus_Mozart_-_Flute_Quartet_No._1_in_D_Major_-_2._Adagio.ogg", "duration": 149.24, "bytes": 1791835, "sha256": "cf04f79ba8c25943b47a19399e8b85721043cb055c8cb85896d6cfca70fe894f", "originalBytes": 4473399, "originalSha256": "c8985c984a41f5277f69616f9d9fd6c70e33930f38e4110e2ec5311d843f0ae9", "commonsSha1": "1610a84eca076a2fc25c2cd079e2fc7976adbc84", "commonsPageId": 9997618, "commonsRevisionId": 650296457, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "CC-BY-SA-2.0"}, {"file": "classical-08.mp3", "title": "贝多芬 · 月光奏鸣曲 第二乐章", "composer": "贝多芬", "era": "classical", "performer": "Bernd Krueger（数码钢琴录制）", "credit": "Bernd Krueger; piano-midi.de; created in MIDI and recorded from a digital piano", "license": "CC BY-SA 2.0 de", "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/de/deed.en", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Beethoven_Moonlight_2nd_movement.ogg", "originalFile": "Beethoven Moonlight 2nd movement.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/4/47/Beethoven_Moonlight_2nd_movement.ogg", "duration": 124.97, "bytes": 1500308, "sha256": "ea0fb263347164902280522627eea4dadedca2c28c3458dda0193b0f043ffaa0", "originalBytes": 2317258, "originalSha256": "1ed00a13f9bf930ebb4a46deca354321c86289680e0f99777dd6e13855f317d8", "commonsSha1": "7a3bceb2828a189b437cfe9b44b10eade33ecfec", "commonsPageId": 1908097, "commonsRevisionId": 1158867894, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "LicenseRef-CC-BY-SA-2.0-DE"}, {"file": "romantic-09.mp3", "title": "肖邦 · 摇篮曲 Op.57", "composer": "肖邦", "era": "romantic", "performer": "Veronica van der Knaap", "credit": "Veronica van der Knaap; public concert, Christchurch, New Zealand", "license": "Public domain", "licenseUrl": "https://commons.wikimedia.org/wiki/Commons:Copyright_tags#Public_domain", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chopin-Berceuse.ogg", "originalFile": "Chopin-Berceuse.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Chopin-Berceuse.ogg", "duration": 290.24, "bytes": 3483629, "sha256": "7929a5930432ab476cd597bf55a3605e5f5fbecfc40b570fce494abbf92fa3cb", "originalBytes": 5052936, "originalSha256": "4fe734920ea60a84d38a73c77233f885f557488a47eccf53da1da7548a3caf12", "commonsSha1": "6307873ca99d7745f92da377c5bd29f51f62e77d", "commonsPageId": 389414, "commonsRevisionId": 857610399, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:08:28.472360+00:00", "licenseId": "LicenseRef-Public-Domain"}, {"file": "romantic-10.mp3", "title": "勃拉姆斯 · 间奏曲 Op.76 No.7", "composer": "勃拉姆斯", "era": "romantic", "performer": "Dysprosia", "credit": "Copyright © Dysprosia; redistribution under the accompanying BSD notice", "license": "BSD", "licenseId": "BSD-3-Clause", "licenseUrl": "http://opensource.org/licenses/bsd-license.php", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Brahms_Intermezzo_Op._76_No._7.ogg", "originalFile": "Brahms Intermezzo Op. 76 No. 7.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/5/57/Brahms_Intermezzo_Op._76_No._7.ogg", "duration": 236.14, "bytes": 2834434, "sha256": "9292a2b91981bfe792976d4fb4d897106609b7e7b28908fca11cbe23aa539379", "originalBytes": 1877928, "originalSha256": "b00dd84bac332493362f3542782819cb71ffe3326f0eb1ef5d15dbc227393bf3", "commonsSha1": "eb0f0115347be0a74b6853aa97a4aae6fafcbbcf", "commonsPageId": 56736, "commonsRevisionId": 1227002547, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:25:11.215858+00:00", "licenseNotice": "LICENSE-Dysprosia-BSD.txt"}, {"file": "romantic-11.mp3", "title": "肖邦 · 第一即兴曲 Op.29", "composer": "肖邦", "era": "romantic", "performer": "Jason M. C., Han", "credit": "Jason M. C., Han; own recording published on Wikimedia Commons", "license": "CC BY-SA 4.0", "licenseId": "CC-BY-SA-4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chopin_Impromptus_Op.29%2C_JMC%2C_Han.ogg", "originalFile": "Chopin Impromptus Op.29, JMC, Han.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Chopin_Impromptus_Op.29%2C_JMC%2C_Han.ogg", "duration": 285.93, "bytes": 3431906, "sha256": "b148c877283725fe28b73c955aa8a0d77a65374c243b74e67007fd5f69f829b4", "originalBytes": 3410416, "originalSha256": "fb5ecf1fd70ad7c54cd0033b8ab6ae167cc8d3e951b2674d9fa14b70bd0533e0", "commonsSha1": "5f58d5b6bf8af7637b5232fb23ec632930470655", "commonsPageId": 107680897, "commonsRevisionId": 857612049, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:25:11.215858+00:00"}, {"file": "romantic-12.mp3", "title": "格里格 · 特罗尔豪根的婚礼日 Op.65 No.6", "composer": "格里格", "era": "romantic", "performer": "Harald Vetter", "credit": "Harald Vetter; recording made available through IMSLP / Wikimedia Commons", "license": "CC BY 4.0", "licenseId": "CC-BY-4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Edvard-Grieg-Lyric-Pieces-Op-65_-No-6-Wedding-Day-at-Troldhaugen.ogg", "originalFile": "Edvard-Grieg-Lyric-Pieces-Op-65 -No-6-Wedding-Day-at-Troldhaugen.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/7/74/Edvard-Grieg-Lyric-Pieces-Op-65_-No-6-Wedding-Day-at-Troldhaugen.ogg", "duration": 416.02, "bytes": 4992984, "sha256": "47de15cf0104468cda7fbd7e422eec9fcb0d3bb96461320039d639334094997d", "originalBytes": 4844665, "originalSha256": "756c33f773e8cd82ea61447ee1d94e1b87360b4945037b068d93e302d3c5cf23", "commonsSha1": "c56120b2749eada2ee79aecc8fd73707e1ca547a", "commonsPageId": 158393522, "commonsRevisionId": 1227004369, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:25:11.215858+00:00"}, {"file": "modern-13.mp3", "title": "德彪西 · 第二阿拉伯风格曲", "composer": "德彪西", "era": "modern", "performer": "Jason M. C., Han", "credit": "Jason M. C., Han; own recording, 11 July 2017", "license": "CC BY-SA 4.0", "licenseId": "CC-BY-SA-4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Claude_Debussy_-_2nd_Arabesque_%28JMC%2C_Han%29.oga", "originalFile": "Claude Debussy - 2nd Arabesque (JMC, Han).oga", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/Claude_Debussy_-_2nd_Arabesque_%28JMC%2C_Han%29.oga", "duration": 269.97, "bytes": 3240690, "sha256": "00890683ee1196605b885421c3b2c66b573ed41e8a4cdecda40ccdc81c952ca2", "originalBytes": 2893410, "originalSha256": "6564591d0860d491065e43f69c4740e20243f8092cb10367bf29a36753c32042", "commonsSha1": "9bda231bc83c86310fb40a5894c691f14e0dfaf4", "commonsPageId": 60836249, "commonsRevisionId": 1227003717, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:25:11.215858+00:00"}, {"file": "modern-14.mp3", "title": "德彪西 · 亚麻色头发的少女", "composer": "德彪西", "era": "modern", "performer": "Patrizia Prati", "credit": "Patrizia Prati, piano; live performance at Museum of Romanticism, Madrid", "license": "CC BY-SA 4.0", "licenseId": "CC-BY-SA-4.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Claude_Debussy_-_I_Livre_Prelude_VIII..._%28...La_fille_aux_cheveux_de_lin%29_-_Patrizia_Prati.ogg", "originalFile": "Claude Debussy - I Livre Prelude VIII... (...La fille aux cheveux de lin) - Patrizia Prati.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Claude_Debussy_-_I_Livre_Prelude_VIII..._%28...La_fille_aux_cheveux_de_lin%29_-_Patrizia_Prati.ogg", "duration": 169.33, "bytes": 2032579, "sha256": "fda5265a5e7ce104bd14149725121403c90d5960759e82e068476fc9bb6cc8a6", "originalBytes": 8987598, "originalSha256": "5e2649f2c80fee6b83cef07684439656a122ecac3c3d87114223f787a9247bad", "commonsSha1": "8d2ca9cfcbff634128c68715362e325cd4772154", "commonsPageId": 49096186, "commonsRevisionId": 1180994390, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:25:11.215858+00:00"}, {"file": "modern-15.mp3", "title": "萨蒂 · 第一吉姆诺佩迪", "composer": "萨蒂", "era": "modern", "performer": "Kevin MacLeod", "credit": "Erik Satie: Gymnopedie No 1 by Kevin MacLeod", "license": "CC BY 3.0", "licenseId": "CC-BY-3.0", "licenseUrl": "https://creativecommons.org/licenses/by/3.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kevin_MacLeod_-_Erik_Satie_Gymnopedie_No_1.ogg", "originalFile": "Kevin MacLeod - Erik Satie Gymnopedie No 1.ogg", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/6/68/Kevin_MacLeod_-_Erik_Satie_Gymnopedie_No_1.ogg", "duration": 187.09, "bytes": 2245738, "sha256": "8172ca74293ca6a7963fcbef19c3a9fee1e2807520ad22cfae54ce025da5c90a", "originalBytes": 3572839, "originalSha256": "67a914a1e3e00d2381fed9d2c0278c47b1088d9077789a973a04189f013fd76b", "commonsSha1": "b8d8b104f3216e6cf81e3023f1e4e957fa74668f", "commonsPageId": 88993389, "commonsRevisionId": 1044293663, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:25:11.215858+00:00"}, {"file": "modern-16.mp3", "title": "拉威尔 · 鹅妈妈《睡美人的帕凡舞曲》", "composer": "拉威尔", "era": "modern", "performer": "Duo Campion/Vachon", "credit": "Duo Campion/Vachon; piano duet interpretation", "license": "CC BY-SA 3.0", "licenseId": "CC-BY-SA-3.0", "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ravel_Duo_Campion-Vachon_Ma_Mere_l%27oye_1_Pavane_de_la_Belle_au_bois_dormant.OGG", "originalFile": "Ravel Duo Campion-Vachon Ma Mere l'oye 1 Pavane de la Belle au bois dormant.OGG", "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/1/12/Ravel_Duo_Campion-Vachon_Ma_Mere_l%27oye_1_Pavane_de_la_Belle_au_bois_dormant.OGG", "duration": 99.33, "bytes": 1192795, "sha256": "d1e0abd92dffed43ba6f6f4dd8de37aaade70f373618102b929cb4a708e37562", "originalBytes": 1113011, "originalSha256": "e451f40995617fd8488cd81c4f463f7f072a0d8b5f6dbc75b6080f701a47906d", "commonsSha1": "7bbaf7a44b96679f56f5c1cd7a810487f58baadd", "commonsPageId": 2958355, "commonsRevisionId": 689895345, "changeNote": "Transcoded from the original recording to MP3, stereo 44.1 kHz / 96 kbit/s; complete recording, no cuts or musical edits.", "fetchedAt": "2026-10-26T03:25:11.215858+00:00"}];
+
+return { LOCAL_MUSIC };
+})();
+const { selectMusicTrack, musicDisplayTitle, musicCopyTitle }=(()=>{
+// Pure selection logic shared by playback and its tests.
+function selectMusicTrack(pool,{currentId=null,recent=[],shuffle=true,direction=1,rng=Math.random}={}){
+ if(!pool.length)return null;
+ if(!shuffle){const index=pool.findIndex(track=>track.id===currentId);return pool[index<0?(direction<0?pool.length-1:0):(index+direction+pool.length)%pool.length];}
+ const fresh=pool.filter(track=>track.id!==currentId&&!recent.slice(-2).includes(track.id));
+ const other=pool.filter(track=>track.id!==currentId),choices=fresh.length?fresh:other.length?other:pool;
+ return choices[Math.min(choices.length-1,Math.floor(rng()*choices.length))];
+}
+const COMPOSER_ALIASES={
+ 巴赫:['Johann Sebastian Bach','J. S. Bach','JS Bach','Bach'],亨德尔:['George Frideric Handel','Handel','Händel'],维瓦尔第:['Antonio Vivaldi','Vivaldi'],斯卡拉蒂:['Domenico Scarlatti','Scarlatti'],
+ 莫扎特:['Wolfgang Amadeus Mozart','W. A. Mozart','Mozart'],海顿:['Joseph Haydn','Haydn'],贝多芬:['Ludwig van Beethoven','Beethoven'],格鲁克:['Christoph Willibald Gluck','Gluck'],
+ 肖邦:['Frédéric Chopin','Frederic Chopin','Chopin, Frédéric','Chopin'],舒伯特:['Franz Schubert','Schubert'],舒曼:['Robert Schumann','Schumann'],勃拉姆斯:['Johannes Brahms','Brahms'],
+ 德彪西:['Claude Debussy','Debussy'],萨蒂:['Erik Satie','Satie'],拉威尔:['Maurice Ravel','Ravel'],拉赫玛尼诺夫:['Sergei Rachmaninoff','Rachmaninoff']
+};
+function musicDisplayTitle(track){
+ if(!track)return '';
+ let title=String(track.title||track.file||'').trim();
+ const names=[track.composer,...(COMPOSER_ALIASES[track.composer]||[])].filter(Boolean).sort((a,b)=>b.length-a.length);
+ for(const name of names){if(title.toLocaleLowerCase().startsWith(name.toLocaleLowerCase())){const rest=title.slice(name.length);if(/^[\s·:：|,–—-]+/.test(rest)){title=rest.replace(/^[\s·:：|,–—-]+/,'');break;}}}
+ return title||track.title||track.file||'';
+}
+function musicCopyTitle(track){return [track?.composer,musicDisplayTitle(track)].filter(Boolean).join(' - ');}
+
+return { selectMusicTrack, musicDisplayTitle, musicCopyTitle };
+})();
+const { discoverMusic }=(()=>{
+// Optional, anonymous Commons discovery. Playback stays in period-music.js.
+// Sources and scope: data/ONLINE_MUSIC.md. No DOM or audio elements are used here.
+const ONLINE_COMPOSERS={
+ baroque:[
+  ['Johann Sebastian Bach','巴赫',/Bach|\bBWV\b|Goldberg|Wohltemperiert|Well[- ]Tempered/i],
+  ['George Frideric Handel','亨德尔',/Handel|Händel|Haendel|\bHWV\b/i],
+  ['Antonio Vivaldi','维瓦尔第',/Vivaldi|\bRV\s*\d/i],
+  ['Domenico Scarlatti','斯卡拉蒂',/Scarlatti/i]
+ ],
+ classical:[
+  ['Wolfgang Amadeus Mozart','莫扎特',/Mozart/i],
+  ['Joseph Haydn','海顿',/Haydn|\bHob\./i],
+  ['Ludwig van Beethoven','贝多芬',/Beethoven/i],
+  ['Christoph Willibald Gluck','格鲁克',/Gluck/i]
+ ],
+ romantic:[
+  ['Frédéric Chopin','肖邦',/Chopin/i],
+  ['Franz Schubert','舒伯特',/Schubert/i],
+  ['Robert Schumann','舒曼',/Schumann/i],
+  ['Johannes Brahms','勃拉姆斯',/Brahms/i]
+ ],
+ modern:[
+  ['Claude Debussy','德彪西',/Debussy/i],
+  ['Maurice Ravel','拉威尔',/Ravel/i],
+  ['Erik Satie','萨蒂',/Satie|Gymnopédie|Gymnopedie|Gnossienne/i],
+  ['Sergei Rachmaninoff','拉赫玛尼诺夫',/Rachmaninoff|Rachmaninov/i]
+ ]
+};
+const ONLINE_CACHE_KEY='ChessAtelierOnlineMusicV1',ONLINE_ERAS=Object.keys(ONLINE_COMPOSERS);
+const ONLINE_PER_ERA=60,ONLINE_MAX_BYTES=30*1024*1024,ONLINE_CACHE_AGE=14*86400000;
+const ONLINE_ENTITIES={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',ndash:'–',mdash:'—',hellip:'…',eacute:'é',Eacute:'É',aacute:'á',agrave:'à',ouml:'ö',uuml:'ü',auml:'ä',szlig:'ß',ccedil:'ç'};
+function onlineText(value,limit=160){
+ return String(value??'').replace(/<!--[\s\S]*?-->|<(?:script|style)\b[^>]*>[\s\S]*?<\/(?:script|style)>/gi,' ')
+  .replace(/<[^>]*>/g,' ').replace(/&#(x[\da-f]+|\d+);/gi,(_,code)=>{
+   const point=code[0].toLowerCase()==='x'?parseInt(code.slice(1),16):Number(code);
+   return point>0&&point<=0x10ffff&&!(point>=0xd800&&point<=0xdfff)?String.fromCodePoint(point):' ';
+  }).replace(/&([a-z][a-z0-9]+);/gi,(_,name)=>ONLINE_ENTITIES[name]??' ')
+  .replace(/[\u0000-\u001f\u007f]/g,' ').replace(/\s+/g,' ').trim().slice(0,limit);
+}
+function onlineUrl(value,host){
+ try{const url=new URL(String(value));return url.protocol==='https:'&&url.hostname===host&&!url.username&&!url.password?url.href:null;}catch{return null;}
+}
+function onlineLicense(meta){
+ const label=onlineText(meta.LicenseShortName?.value||meta.UsageTerms?.value,100),usage=onlineText(meta.UsageTerms?.value,180);
+ if(/\b(?:NC|ND)\b|non[- ]?commercial|no derivatives|fair use|permission required/i.test(label+' '+usage))return null;
+ const raw=onlineText(meta.LicenseUrl?.value,350);let url;
+ try{url=new URL(raw);}catch{}
+ if(url?.protocol==='https:'&&url.hostname==='creativecommons.org'){
+  if(/^\/licenses\/by(?:-sa)?\/(?:1\.0|2\.0|2\.5|3\.0|4\.0)\/?$/.test(url.pathname))return {license:label||'Creative Commons '+url.pathname.split('/')[2],licenseUrl:url.href};
+  if(/^\/publicdomain\/zero\/1\.0\/?$/.test(url.pathname))return {license:'CC0',licenseUrl:url.href};
+  if(/^\/publicdomain\/mark\/1\.0\/?$/.test(url.pathname))return {license:'Public domain',licenseUrl:url.href};
+ }
+ if(/^(?:CC0(?: 1\.0)?|Public domain)$/i.test(label))return {license:label,licenseUrl:/CC0/i.test(label)?'https://creativecommons.org/publicdomain/zero/1.0/':'https://creativecommons.org/publicdomain/mark/1.0/'};
+ if(/^CC[ -]BY(?:[ -]SA)?[ -](?:1\.0|2\.0|2\.5|3\.0|4\.0)$/i.test(label)){
+  const share=/[ -]SA/i.test(label),version=label.match(/\d\.\d/)[0];
+  return {license:label,licenseUrl:`https://creativecommons.org/licenses/${share?'by-sa':'by'}/${version}/`};
+ }
+ if(/^BSD(?: [23]-Clause)?$/i.test(label)&&url?.protocol==='https:'&&url.hostname==='opensource.org'&&/bsd/i.test(url.pathname))return {license:label,licenseUrl:url.href};
+ return null;
+}
+function onlineTrack(page,era,composer){
+ const info=page?.imageinfo?.[0],file=String(page?.title||'').replace(/^File:/,''),meta=info?.extmetadata||{};
+ if(page?.ns!==6||!info||file.length>250||!file||!/\.(?:mp3|ogg|oga|wav|flac|opus|webm)$/i.test(file))return null;
+ if(/(?:^|[\s_\-.])(?:excerpt|preview|sample|test|spoken|speech|interview|tutorial|midi)(?:[\s_\-.]|$)/i.test(file))return null;
+ const bytes=Number(info.size),mime=String(info.mime||'').toLowerCase();
+ if(!Number.isFinite(bytes)||bytes<200000||bytes>ONLINE_MAX_BYTES||(!mime.startsWith('audio/')&&mime!=='application/ogg')||String(info.mediatype).toUpperCase()==='VIDEO')return null;
+ const remoteUrl=onlineUrl(info.url,'upload.wikimedia.org'),license=onlineLicense(meta);
+ if(!remoteUrl||!license)return null;
+ const title=onlineText(meta.ObjectName?.value||meta.Title?.value||file.replace(/_/g,' ').replace(/\.[^.]+$/,''),120);
+ const description=onlineText(meta.ImageDescription?.value,2400),artist=onlineText(meta.Artist?.value,180);
+ // A broad category can contain medleys, arrangements and unrelated material.
+ // Require additional textual evidence for the attributed composer/work family.
+ if(!composer[2].test(file+' '+title+' '+description+' '+artist))return null;
+ const duration=(info.metadata||[]).find(row=>/^(?:playtime_seconds|duration)$/i.test(row.name||''))?.value;
+ if(duration!==undefined&&Number.isFinite(Number(duration))&&Number(duration)<35)return null;
+ const sourceUrl=onlineUrl(info.descriptionurl,'commons.wikimedia.org')||'https://commons.wikimedia.org/wiki/'+encodeURIComponent('File:'+file).replace(/%20/g,'_');
+ const credit=onlineText(meta.Attribution?.value||meta.Credit?.value||artist,240);
+ return {id:'commons:'+file,file,title,composer:composer[1],performer:artist||'演奏者见来源页',era,sourceUrl,...license,credit,remoteUrl,online:true,bytes,mime};
+}
+function onlineCursor(value){
+ if(!value||typeof value!=='object'||Array.isArray(value))return null;
+ const rows=Object.entries(value);if(rows.length>8)return null;
+ if(rows.some(([key,text])=>!/^(?:continue|[a-z]+continue)$/.test(key)||typeof text!=='string'||text.length>1600))return null;
+ return Object.fromEntries(rows);
+}
+function onlineEmptyState(){return Object.fromEntries(ONLINE_ERAS.map(era=>[era,{composerIndex:0,cursor:null,tracks:[],round:0}]));}
+function onlineReadCache(){
+ const state=onlineEmptyState();
+ try{
+  const raw=globalThis.localStorage?.getItem(ONLINE_CACHE_KEY);if(!raw||raw.length>400000)return state;
+  const saved=JSON.parse(raw);if(saved.version!==1||!Number.isFinite(saved.savedAt)||Date.now()-saved.savedAt>ONLINE_CACHE_AGE)return state;
+  for(const era of ONLINE_ERAS){
+   const row=saved.eras?.[era];if(!row||typeof row!=='object')continue;
+   state[era].composerIndex=Number.isInteger(row.composerIndex)&&row.composerIndex>=0&&row.composerIndex<ONLINE_COMPOSERS[era].length?row.composerIndex:0;
+   state[era].cursor=onlineCursor(row.cursor);state[era].round=Number.isInteger(row.round)&&row.round>=0?Math.min(row.round,1000000):0;
+   const unique=new Map();
+   for(const track of Array.isArray(row.tracks)?row.tracks:[]){
+    if(!track||track.era!==era||typeof track.file!=='string'||track.id!=='commons:'+track.file||!onlineUrl(track.remoteUrl,'upload.wikimedia.org')||!onlineUrl(track.sourceUrl,'commons.wikimedia.org'))continue;
+    if(!Number.isFinite(track.bytes)||track.bytes<=0||track.bytes>ONLINE_MAX_BYTES||typeof track.mime!=='string')continue;
+    const license=onlineLicense({LicenseShortName:{value:track.license},LicenseUrl:{value:track.licenseUrl}});if(!license)continue;
+    unique.set(track.id,{...track,...license,title:onlineText(track.title,120),composer:onlineText(track.composer,40),performer:onlineText(track.performer,180),credit:onlineText(track.credit,240),online:true});
+   }
+   state[era].tracks=[...unique.values()].slice(-ONLINE_PER_ERA);
+  }
+ }catch{}
+ return state;
+}
+const onlineState=onlineReadCache(),onlineInFlight=new Map();
+let onlineQueue=Promise.resolve(),onlineLastRequest=0,onlineAllTurn=0,onlineCooldown=0;
+function onlineSaveCache(){
+ try{globalThis.localStorage?.setItem(ONLINE_CACHE_KEY,JSON.stringify({version:1,savedAt:Date.now(),eras:onlineState}));}catch{}
+}
+async function onlineDiscoverPage(era){
+ const state=onlineState[era];
+ if(Date.now()<onlineCooldown)return {tracks:state.tracks.slice(),hasMore:true,message:'在线目录暂时限流，先使用已缓存的曲目。'};
+ const [name]=ONLINE_COMPOSERS[era][state.composerIndex],params=new URLSearchParams({action:'query',format:'json',formatversion:'2',origin:'*',generator:'categorymembers',gcmtitle:'Category:Audio files of music by '+name,gcmtype:'file',gcmlimit:'35',prop:'imageinfo',iiprop:'url|size|mime|mediatype|metadata|extmetadata',iiextmetadatalanguage:'en',...state.cursor});
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
+ try{
+  const response=await fetch('https://commons.wikimedia.org/w/api.php?'+params,{signal:controller.signal,credentials:'omit',headers:{'Api-User-Agent':'ChessAtelier/1.2 (https://github.com/827853487/chess-atelier)'}});
+  if(!response.ok){
+   if(response.status===429||response.status===503){const wait=Number(response.headers.get('Retry-After'));onlineCooldown=Date.now()+Math.min(300,Number.isFinite(wait)&&wait>0?wait:30)*1000;}
+   throw Error('Commons HTTP '+response.status);
+  }
+  const data=await response.json();
+  if(data.error){if(/continue/i.test(String(data.error.code)))state.cursor=null;throw Error('Commons API error');}
+  const composer=ONLINE_COMPOSERS[era][state.composerIndex],page=[];
+  for(const entry of data.query?.pages||[]){const track=onlineTrack(entry,era,composer);if(track&&!page.some(row=>row.id===track.id))page.push(track);}
+  const known=new Map(state.tracks.map(track=>[track.id,track]));for(const track of page)known.set(track.id,track);
+  state.tracks=[...known.values()].slice(-ONLINE_PER_ERA);state.cursor=onlineCursor(data.continue);
+  let hasMore=true;
+  if(!state.cursor){state.composerIndex=(state.composerIndex+1)%ONLINE_COMPOSERS[era].length;if(state.composerIndex===0){state.round++;hasMore=false;}}
+  onlineSaveCache();
+  return {tracks:page.length?page:state.tracks.slice(),hasMore,message:page.length?undefined:hasMore?'本页没有合适录音，可继续读取下一页。':'本轮作曲家目录已读取完成。'};
+ }catch(error){
+  return {tracks:state.tracks.slice(),hasMore:true,message:error.name==='AbortError'?'在线目录读取超时，先使用本地或缓存曲目。':'暂时无法读取在线目录，先使用本地或缓存曲目。'};
+ }finally{clearTimeout(timeout);}
+}
+
+function discoverMusic(era='all'){
+ const requested=era==='all'||ONLINE_ERAS.includes(era)?era:'all';
+ if(onlineInFlight.has(requested))return onlineInFlight.get(requested);
+ const actual=requested==='all'?ONLINE_ERAS[onlineAllTurn++%ONLINE_ERAS.length]:requested;
+ if(onlineInFlight.has(actual)){
+  const existing=onlineInFlight.get(actual);onlineInFlight.set(requested,existing);
+  const clear=()=>{if(onlineInFlight.get(requested)===existing)onlineInFlight.delete(requested);};existing.then(clear,clear);
+  return existing;
+ }
+ const task=onlineQueue.catch(()=>{}).then(async()=>{
+  const wait=Math.max(0,900-(Date.now()-onlineLastRequest));if(wait)await new Promise(resolve=>setTimeout(resolve,wait));
+  onlineLastRequest=Date.now();return onlineDiscoverPage(actual);
+ });
+ onlineQueue=task.then(()=>{},()=>{});onlineInFlight.set(requested,task);onlineInFlight.set(actual,task);
+ const clear=()=>{for(const [key,value] of onlineInFlight)if(value===task)onlineInFlight.delete(key);};task.then(clear,clear);
+ return task;
+}
+
+return { discoverMusic };
+})();
 const { setupPeriodMusic }=(()=>{
 
-const ERAS={
- baroque:{label:'巴洛克',names:['巴赫','亨德尔','维瓦尔第','斯卡拉蒂'],composers:['Johann Sebastian Bach','George Frideric Handel','Antonio Vivaldi','Domenico Scarlatti']},
- classical:{label:'古典',names:['莫扎特','贝多芬','海顿'],composers:['Wolfgang Amadeus Mozart','Ludwig van Beethoven','Joseph Haydn']},
- romantic:{label:'浪漫',names:['肖邦','勃拉姆斯','舒伯特','舒曼','李斯特','柴可夫斯基','巴拉基列夫'],composers:['Frédéric Chopin','Johannes Brahms','Franz Schubert','Robert Schumann','Franz Liszt','Pyotr Ilyich Tchaikovsky']},
- modern:{label:'近现代',names:['德彪西','拉威尔','萨蒂','拉赫玛尼诺夫'],composers:['Claude Debussy','Maurice Ravel','Erik Satie','Sergei Rachmaninoff']}
-};
-const $=id=>document.getElementById(id),players=[$('music-audio'),$('music-next-audio')],state={era:'all',shuffle:true,active:0,track:null,history:[],known:new Map(),seen:new Set(),failed:new Set(),fetching:new Set(),count:new Map(),upNext:null,preloaded:null,serial:0,errors:0,playing:false};
-const catalog=MUSIC_SEED.map(([file,title,composer,form])=>({id:file,file,title,composer,form,era:Object.keys(ERAS).find(k=>ERAS[k].names.some(n=>composer.includes(n)))||'modern'}));catalog.forEach(t=>state.seen.add(t.id));
-const audio=()=>players[state.active],standby=()=>players[1-state.active],rand=a=>a[Math.floor(Math.random()*a.length)],isLocal=location.protocol==='http:'||location.protocol==='https:';
-// 音频直连 Wikimedia Commons：这条路径在任何托管方式下都可用，
-// 不依赖本机代理，因此在线版与本地版行为完全一致。
-const source=t=>t.localUrl||fallback(t);
-const fallback=t=>'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(t.file).replace(/%20/g,'_');
-const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8 18.7 12 8 18.2z"/></svg>',pauseIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>';
-function tracks(){const out=[...catalog,...[...state.known.values()].flat()];const ids=new Set();return out.filter(t=>(state.era==='all'||t.era===state.era)&&!state.failed.has(t.id)&&!ids.has(t.id)&&!!ids.add(t.id));}
-function choose(direction=1){const all=tracks();if(!all.length)return null;if(state.shuffle){const recent=new Set(state.history.slice(-6)),pool=all.filter(t=>!recent.has(t.id));return rand(pool.length?pool:all);}const index=all.findIndex(t=>t.id===state.track?.id);return all[(index+direction+all.length)%all.length];}
-const time=s=>Number.isFinite(s)&&s>=0?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'):'0:00';
-function resetProgress(){
- $('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';
- $('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');
-}
-function progressReady(p){return p&&!p.paused&&p.readyState>=3&&Number.isFinite(p.currentTime);}
-function render(){const playing=state.playing&&!audio().paused;document.querySelector('#music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
- // 只在图标真正变化时重绘。innerHTML 替换会摧毁事件目标，
- // 使外层「点击组件外才收起」的 contains 判定失效。
- const play=$('music-play'),want=playing?pauseIcon:playIcon;
- if(play.dataset.icon!==(playing?'pause':'play')){play.dataset.icon=playing?'pause':'play';play.innerHTML=want;play.setAttribute('aria-label',playing?'暂停':'播放');play.title=playing?'暂停':'播放';}
- const title=state.track?.title||'选择时期后播放';if($('music-title').textContent!==title){$('music-title').textContent=title;queueMicrotask(updateTrackOverflow);}const artist=state.track?.composer||'钢琴与管弦乐';if($('music-artist').textContent!==artist)$('music-artist').textContent=artist;$('music-shuffle').setAttribute('aria-pressed',String(state.shuffle));$('music-shuffle').title=state.shuffle?'切换为顺序播放':'切换为随机播放';document.querySelectorAll('.era-btn').forEach(b=>{const on=b.dataset.era===state.era;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',String(on));});const countEl=$('music-count');if(countEl)countEl.textContent=String(tracks().length);}
-function updateTrackOverflow(){
- const title=$('music-title'),wrap=title?.closest('.music-title-viewport');if(!title||!wrap)return;
- const overflow=title.scrollWidth>wrap.clientWidth+6;
- // 曲名长短会改变面板内部布局进而让面板跳动：固定单行高度并裁掉多余部分
- title.classList.toggle('title-scroll',overflow);
- title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');
-}
-// 面板定位跟随顶栏实际高度：顶栏在不同断点下高度不一，交给 JS 测量避免错位。
-function syncPanelAnchor(){
- const head=document.querySelector('.masthead');
- if(!head)return;
- const h=Math.round(head.getBoundingClientRect().height);
- if(h>0&&h<200)document.documentElement.style.setProperty('--masthead-h',h+'px');
-}
-window.addEventListener('resize',()=>{syncPanelAnchor();if(!$('music-panel').classList.contains('hidden'))requestAnimationFrame(updateTrackOverflow);},{passive:true});
-if(window.ResizeObserver)new ResizeObserver(syncPanelAnchor).observe(document.querySelector('.masthead')||document.body);
-syncPanelAnchor();
-// Load a candidate into the standby player before it is needed, so switching
-// tracks (or pressing play for the first time) starts almost instantly.
-function preloadTrack(item){
- if(!item)return;
- state.upNext=item;
- const p=standby();
- if(state.preloaded?.id===item.id&&state.preloaded.index===1-state.active&&p.src)return;
- state.preloaded={id:item.id,index:1-state.active};
- p.dataset.fallback='0';p.preload='auto';p.src=source(item);p.load();
- p.addEventListener('error',()=>{
-  if(state.preloaded?.id===item.id){state.preloaded=null;state.upNext=null;}
- },{once:true});
-}
-function prefetch(){const next=choose(1);if(!next)return;preloadTrack(next);}
-// Warm the server-side Commons URL cache for a batch of recordings with one API
-// call; each first playback then skips the metadata round trip (~1s saved).
-// The browser still streams through the local proxy, which works on networks
-// where Wikimedia is not directly reachable.
-const warmedFiles=new Set();
-let warmApiUsable=null;
-async function warmAudioUrls(){
- if(globalThis.CHESS_ENGINE_MODE==='browser')return;
- const files=tracks().map(t=>t.file).filter(f=>!warmedFiles.has(f)).slice(0,50);
- if(!files.length||!isLocal)return;
- if(warmApiUsable===false)return;
- files.forEach(f=>warmedFiles.add(f));
- try{
-  const response=await fetch('/api/remote/audio-urls?files='+encodeURIComponent(files.join('|')),{cache:'force-cache'});
-  // 仅本机serve.py 提供该预热接口；静态托管时收到 404，标记一次就不再试
-  if(response.status===404||response.status===405){warmApiUsable=false;return;}
-  if(!response.ok)return;
-  await response.json();warmApiUsable=true;
- }catch{warmApiUsable=false;}
-}
-function preloadFirst(){const next=choose(1);if(next)preloadTrack(next);}
-async function start(item){if(!item)return;const serial=++state.serial,was=audio();
- // "ready" means: this exact track was preloaded on the standby player AND it
- // actually has usable data (readyState >= 2). A preloaded track that errored
- // (429 etc.) will have readyState 0 — we must reload it fresh.
- const ready=state.preloaded?.id===item.id&&state.preloaded.index===1-state.active&&standby().src&&standby().readyState>=2;
- was.pause();state.active=1-state.active;const now=audio();
- if(!ready){now.pause();now.dataset.fallback='0';now.src=source(item);now.preload='auto';now.load();}
- state.track=item;resetProgress();state.history.push(item.id);if(state.history.length>32)state.history.shift();state.playing=false;state.errors=0;state.upNext=null;state.preloaded=null;render();
- try{await now.play();if(state.serial===serial){state.playing=!now.paused;render();prefetch();}}
- catch(e){if(serial!==state.serial)return;if(e.name==='NotAllowedError'){state.playing=false;render();}else retry(now);}}
 
-function advance(dir=1){const next=dir===1&&state.upNext&&!state.failed.has(state.upNext.id)?state.upNext:choose(dir);if(next)start(next);}
-function retry(p){if(p!==audio()||!state.track)return;if(!state.track.localUrl&&p.dataset.fallback!=='1'){p.dataset.fallback='1';p.src=fallback(state.track);p.load();p.play().then(()=>{state.playing=true;render();prefetch();}).catch(()=>fail(p));}else fail(p);}
-function fail(p){if(p!==audio()||!state.track)return;state.failed.add(state.track.id);state.errors++;if(state.errors>=6||!tracks().length){state.playing=false;render();}else advance();}
-function wire(p){p.preload='auto';p.volume=.25;
- p.addEventListener('playing',()=>{if(p===audio()){state.playing=true;render();if(Number.isFinite(p.duration))$('music-duration').textContent=time(p.duration);}});
- p.addEventListener('play',()=>{if(p===audio()&&p.readyState>=3){state.playing=true;render();}});
- p.addEventListener('pause',()=>{if(p===audio()){state.playing=false;render();}});
- p.addEventListener('durationchange',()=>{if(p===audio()&&Number.isFinite(p.duration)&&p.duration>0)$('music-duration').textContent=time(p.duration);});
- p.addEventListener('timeupdate',()=>{if(p!==audio()||!progressReady(p))return;$('music-elapsed').textContent=time(p.currentTime);if(Number.isFinite(p.duration)&&p.duration>0){$('music-seek').value=Math.round(p.currentTime/p.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(p.currentTime/p.duration*100)+'%');if(p.duration-p.currentTime<45&&!state.upNext)prefetch();}});
- p.addEventListener('ended',()=>{if(p===audio()){resetProgress();advance();}});
- p.addEventListener('error',()=>{if(p===audio()&&state.playing)retry(p);});
+
+
+const ERAS={baroque:'巴洛克',classical:'古典',romantic:'浪漫',modern:'近现代'};
+const $=id=>document.getElementById(id),audio=$('music-audio');
+const local=LOCAL_MUSIC.map(track=>({...track,id:'local:'+track.file,localUrl:'./assets/music/'+encodeURIComponent(track.file)}));
+const remoteSeed=MUSIC_SEED.map(([file,title,composer])=>({id:'seed:'+file,file,title,composer,era:/巴赫|亨德尔|维瓦尔第|斯卡拉蒂/.test(composer)?'baroque':/莫扎特|贝多芬|海顿/.test(composer)?'classical':/德彪西|拉威尔|萨蒂/.test(composer)?'modern':'romantic',sourceUrl:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file)}));
+const state={era:'all',shuffle:true,online:false,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
+const source=track=>track.localUrl||track.remoteUrl||'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(track.file).replace(/%20/g,'_');
+const time=seconds=>Number.isFinite(seconds)&&seconds>=0?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'0:00';
+const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8 18.7 12 8 18.2z"/></svg>',pauseIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>';
+function tracks(){
+ const valid=track=>(state.era==='all'||track.era===state.era)&&!state.failed.has(track.id)&&(!track.mime||!!audio.canPlayType(track.mime));
+ const locals=local.filter(valid),online=state.onlineTracks.filter(valid);
+ const recordingKey=track=>String(track.originalFile||track.file).replace(/[_ ]+/g,' ').normalize('NFC').toLowerCase();
+ const localKeys=new Set(locals.map(recordingKey));
+ return state.online&&online.length?[...online.filter(track=>!localKeys.has(recordingKey(track))),...locals]:locals.length?locals:remoteSeed.filter(valid);
 }
-async function query(params){for(const url of ['https://commons.wikimedia.org/w/api.php?'+params]){const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);try{const r=await fetch(url,{signal:controller.signal});if(r.ok){const data=await r.json();if(data.query?.pages)return data;}}catch{}finally{clearTimeout(timeout);}}return null;}
-// Commons 文件名常是上传者随手写的（988-aria lehman1 之类），直接当曲名
-// 既难读也像乱码。优先用 extmetadata 里的真实作品名；取不到时再从文件名里
-// 剥掉编号与上传者后缀，实在认不出来就退回「作曲家 + 时期」而不是原样展示。
-function prettyTitle(file,meta,composer){
- const listed=String(meta?.['ObjectName']?.value||meta?.['Title']?.value||'').trim();
- const source=listed||file.replace(/_/g,' ').replace(/\.(ogg|oga|mp3|opus|flac|wav)$/i,'');
- let t=source
-  .replace(/\b(File|Audio|Recording|Track|Ogg Vorbis|MP3)\b/gi,' ')
-  .replace(/\.(ogg|oga|mp3|opus|flac|wav)$/i,' ')
-  // 开头形如 "988-" "01 -" "988_v11." 的纯编号
-  .replace(/^[\s._-]*(?:\d{1,4}[a-z]?[-_\s.])+/i,'')
-  // 结尾形如 "-lehman1" "-v11" "v11 lehman1" 的上传者 / 版本后缀
-  .replace(/[-_]?\s*v\d{1,3}\b\s*[-_]?\s*[a-z]{2,14}\d{0,3}\s*$/i,'')
-  .replace(/[-_]?\s*[a-z]{2,14}\s*\d{1,3}\s*$/i,'')
-  .replace(/\s*v\d{1,3}\b\s*$/i,' ')
-  .replace(/[._]+/g,' ')
-  .replace(/\s+/g,' ')
-  .replace(/^[\s·—\-.,]+|[\s·—\-.,]+$/g,'');
- // 清洗后仍像编号、版本号或单个无意义词：Commons 上这类文件多为拼凑的
- // 试录，既看不出作品名也不保证录得好，宁可跳过也不要出现在列表里。
- // 有效曲名至少包含一个长度 >=3 的单词（Op. / No. / 奏鸣曲之类缩写也算），
- // 否则视为上传者随手命名的噪声文件，直接不收录。
- if(!t||t.length<4||!/[A-Za-z\u4e00-\u9fa5]{3,}/.test(t))return null;
- return t.slice(0,70);
+function pick(direction=1,forceRandom=false){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:forceRandom||state.shuffle,direction});}
+function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
+function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');}
+function syncPanelAnchor(){const header=document.querySelector('.masthead');document.documentElement.style.setProperty('--masthead-h',Math.round(header.getBoundingClientRect().height)+'px');}
+function render(){
+ const playing=state.playing&&!audio.paused;
+ $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
+ const button=$('music-play'),icon=playing?'pause':'play';if(button.dataset.icon!==icon){button.dataset.icon=icon;button.innerHTML=playing?pauseIcon:playIcon;button.setAttribute('aria-label',playing?'暂停':'播放');button.title=playing?'暂停':'播放';}
+ $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';$('music-artist').textContent=[state.track?.composer,state.track?.performer].filter(Boolean).join(' · ')||'本地精选与在线曲库';
+ $('music-shuffle').setAttribute('aria-pressed',String(state.shuffle));$('music-shuffle').title=state.shuffle?'乱序：上一首也会选择新曲；点击切换顺序':'顺序：可以向前和向后切换';
+ document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
+ $('music-online')?.setAttribute('aria-pressed',String(state.online));
+ $('music-status').textContent=state.status;
+ const link=$('music-source');link.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';link.textContent=state.track?`${state.track.localUrl?'本地录音':'在线录音'} · ${state.track.license||'Wikimedia Commons'} ↗`:'Wikimedia Commons 录音来源 ↗';
+ const pool=tracks();$('music-count').textContent=String(pool.length);
+ const list=$('music-list');list.replaceChildren();for(const track of pool){const row=document.createElement('button');row.type='button';row.dataset.musicId=track.id;row.textContent=musicDisplayTitle(track);row.title=[track.composer,track.performer].filter(Boolean).join(' · ');row.setAttribute('aria-current',String(track.id===state.track?.id));list.append(row);}
+ requestAnimationFrame(updateTrackOverflow);
 }
-function ingest(era,composer,data){const bucket=state.known.get(era)||[];let added=0;
- for(const page of data?.query?.pages||[]){
-  const file=String(page.title||'').replace(/^File:/,''),info=page.imageinfo?.[0];
-  if(page.ns!==6||!info||!/\.(ogg|oga|mp3|opus|flac|wav)$/i.test(file)||info.size<600000||info.size>160000000||/midi|excerpt|preview|sample|test|spoken/i.test(file)||state.seen.has(file))continue;
-  const title=prettyTitle(file,page.extmetadata,composer);
-  if(!title)continue;
-  state.seen.add(file);
-  bucket.push({id:file,file,title,composer,era});
-  added++;
- }
- state.known.set(era,bucket);return added;}
-async function discover(){const era=state.era==='all'?rand(Object.keys(ERAS)):state.era;if(state.fetching.has(era))return;const k=state.count.get(era)||0,composer=ERAS[era].composers[k%ERAS[era].composers.length];state.count.set(era,k+1);state.fetching.add(era);try{let q=new URLSearchParams({action:'query',format:'json',formatversion:'2',origin:'*',generator:'categorymembers',gcmtitle:'Category:Audio files of music by '+composer,gcmtype:'file',gcmlimit:'70',prop:'imageinfo|extmetadata',iiprop:'url|size|mime|extmetadata'});const first=await query(q);if(ingest(era,composer,first)<6){q=new URLSearchParams({action:'query',format:'json',formatversion:'2',origin:'*',generator:'search',gsrsearch:`"${composer}" filetype:audio`,gsrnamespace:'6',gsrlimit:'55',prop:'imageinfo|extmetadata',iiprop:'url|size|mime|extmetadata'});ingest(era,composer,await query(q));}render();warmAudioUrls();if(!state.upNext)prefetch();}finally{state.fetching.delete(era);}}
-async function localManifest(){try{const r=await fetch('./assets/music/playlist.json');if(!r.ok)return;const rows=await r.json();if(!Array.isArray(rows))return;for(const t of rows){if(typeof t.file!=='string'||!/^[\w .()\-]+\.(mp3|ogg|oga|flac|wav)$/i.test(t.file))continue;const id='local:'+t.file;if(state.seen.has(id))continue;state.seen.add(id);catalog.unshift({id,localUrl:'./assets/music/'+encodeURIComponent(t.file),title:t.title||t.file,composer:t.composer||'',era:ERAS[t.era]?t.era:'romantic'});}}catch{}}
-function closeMusicPanel(){const p=$('music-panel');if(!p||p.classList.contains('hidden'))return;p.classList.add('hidden');$('music-toggle').setAttribute('aria-expanded','false');}
+function disposeBuffer(id){const entry=state.buffers.get(id);if(!entry)return;entry.controller.abort();if(entry.url)URL.revokeObjectURL(entry.url);state.buffers.delete(id);}
+function bufferTrack(track){
+ if(state.buffers.has(track.id))return;
+ const entry={controller:new AbortController(),status:'loading',url:null};state.buffers.set(track.id,entry);
+ entry.promise=(async()=>{
+  if(track.bytes>8_000_000){entry.status='stream';return;}
+  const response=await fetch(source(track),{signal:entry.controller.signal,cache:'force-cache'});if(!response.ok)throw Error('Audio HTTP '+response.status);
+  if(Number(response.headers.get('Content-Length'))>8_000_000){entry.status='stream';entry.controller.abort();return;}
+  const reader=response.body.getReader(),chunks=[];let size=0;
+  while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>8_000_000){entry.status='stream';await reader.cancel();return;}chunks.push(value);}
+  if(state.buffers.get(track.id)!==entry)return;
+  entry.url=URL.createObjectURL(new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'}));entry.status='ready';
+ })().catch(()=>{if(entry.status==='loading')entry.status='failed';}).finally(()=>{
+  $('music-panel').dataset.buffered=String([...state.buffers.values()].filter(value=>value.status==='ready').length);
+ });
+}
+function prefetch(){
+ if(!local.length&&!state.online&&!state.track)return;
+ const pool=tracks(),plan=[],first=pick(1);if(first&&first.id!==state.track?.id)plan.push(first);
+ const remaining=pool.filter(track=>track.id!==state.track?.id&&!plan.some(item=>item.id===track.id));
+ if(state.shuffle)for(let i=remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}
+ else if(state.track){const index=pool.findIndex(track=>track.id===state.track.id);remaining.sort((a,b)=>((pool.indexOf(a)-index+pool.length)%pool.length)-((pool.indexOf(b)-index+pool.length)%pool.length));}
+ plan.push(...remaining.slice(0,3-plan.length));state.plan=plan;
+ const keep=new Set([state.track?.id,...plan.map(track=>track.id)]);for(const id of state.buffers.keys())if(!keep.has(id))disposeBuffer(id);
+ for(const track of plan)bufferTrack(track);
+ $('music-panel').dataset.preloadCount=String(plan.length);
+}
+function start(track){
+ if(!track)return;
+ const serial=++state.serial;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
+ state.history.push(track.id);if(state.history.length>32)state.history.shift();
+ audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
+ // play() stays in the user's click stack, including on iPhone. Do not await a manifest/fetch first.
+ const request=audio.play();render();prefetch();
+ request.then(()=>{if(serial===state.serial){state.playing=!audio.paused;render();}}).catch(error=>{
+  if(serial!==state.serial||error.name==='AbortError')return;
+  if(error.name==='NotAllowedError'){state.status='浏览器暂停了播放，请点播放继续。';state.playing=false;render();}
+  else fail(serial);
+ });
+}
+function advance(direction=1){
+ const target=state.shuffle&&state.plan[0]&&!state.failed.has(state.plan[0].id)?state.plan[0]:pick(direction);
+ if(target)start(target);
+}
+function fail(serial=state.serial){
+ if(serial!==state.serial||!state.track)return;
+ state.failed.add(state.track.id);state.errors++;state.playing=false;
+ if(state.online&&state.errors>=3){state.online=false;state.plan=[];start(pick(1,true));state.status='在线录音暂不可用，已切换本地精选。';render();return;}
+ if(state.errors>=6||!tracks().length){state.status='暂时无法播放，请检查网络后重试。';render();return;}
+ state.plan=[];advance();
+}
+async function expandOnline(){
+ if(!state.online||state.discovering)return;state.discovering=true;
+ const era=state.era;state.status='正在扩充在线曲库…';render();
+ try{
+  const result=await discoverMusic(era);const seen=new Set(state.onlineTracks.map(track=>track.id));for(const track of result.tracks)if(!seen.has(track.id)){state.onlineTracks.push(track);seen.add(track.id);}
+  if(state.online&&state.era===era){state.status=result.tracks.length?'已加入可播放的在线录音。':result.message||'当前网络无法扩充曲库，仍可播放本地精选。';prefetch();render();}
+ }catch{if(state.era===era){state.status='在线曲库暂不可用，本地精选可继续播放。';render();}}
+ finally{state.discovering=false;}
+}
+function closePanel(){$('music-panel').classList.add('hidden');$('music-toggle').setAttribute('aria-expanded','false');}
 function setupPeriodMusic(){
- players.forEach(wire);
- $('music-toggle').addEventListener('click',e=>{e.stopPropagation();const open=!$('music-panel').classList.toggle('hidden');$('music-toggle').setAttribute('aria-expanded',String(open));if(open){discover();preloadFirst();warmAudioUrls();requestAnimationFrame(updateTrackOverflow);}});
- $('music-close').addEventListener('click',closeMusicPanel);
- // 点击组件外部才收起。面板内的播放、切歌、时期切换都会替换 innerHTML，
- // 因此不能用「事件到达时 target 是否仍在面板内」判断——改为在捕获阶段
- // 记录路径（此时 target 尚未被替换），再在冒泡阶段比对。
- let insidePath=null;
- document.addEventListener('pointerdown',e=>{
-  const panel=$('music-panel');
-  insidePath=panel.classList.contains('hidden')?null:[...e.composedPath()].includes(panel);
- },true);
- document.addEventListener('click',e=>{
-  const panel=$('music-panel');if(panel.classList.contains('hidden'))return;
-  if(e.composedPath().includes(panel))return;
-  if(insidePath){insidePath=null;return;}
-  if(e.target.closest?.('#music-toggle'))return;
-  closeMusicPanel();
- });
- // 键盘操作也要能关闭面板，避免焦点停留在已收起的内容上
- $('music-panel').addEventListener('keydown',e=>{if(e.key==='Escape')closeMusicPanel();});
- document.querySelectorAll('.era-btn').forEach(b=>{
-  // Start buffering the era's first recording on press, before the click lands,
-  // so playback begins immediately when the era button is activated.
-  b.addEventListener('pointerdown',()=>{
-   const era=b.dataset.era;if(era===state.era)return;
-   const previous=state.era;state.era=era;
-   const pick=choose(1);
-   state.era=previous;
-   if(pick)preloadTrack(pick);
-  });
-  b.addEventListener('click',()=>{
-   state.era=b.dataset.era;state.history=[];
-   const wanted=b.dataset.era;
-   if(!state.upNext||(wanted!=='all'&&state.upNext.era!==wanted)){state.preloaded=null;state.upNext=null;preloadFirst();}
-   render();advance();discover();warmAudioUrls();
-  });
- });
- $('music-play').addEventListener('click',()=>{const p=audio();if(p.paused){if(p.src)p.play().then(()=>{state.playing=true;render();prefetch();}).catch(()=>retry(p));else advance();}else{p.pause();render();}});
+ let copyTimer;
+ const copyTitle=async()=>{if(!state.track)return;const label=musicCopyTitle(state.track),toast=$('music-copy-toast');try{await navigator.clipboard.writeText(label);toast.textContent='已复制';}catch{toast.textContent='复制失败，请允许剪贴板权限';}clearTimeout(copyTimer);toast.hidden=false;copyTimer=setTimeout(()=>toast.hidden=true,1400);};
+ $('music-copy').addEventListener('click',copyTitle);$('music-copy').addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyTitle();}});
+ audio.volume=.25;$('music-next-audio').preload='none';
+ audio.addEventListener('playing',()=>{state.playing=true;state.errors=0;state.status='';render();});
+ audio.addEventListener('pause',()=>{state.playing=false;render();});
+ audio.addEventListener('durationchange',()=>{if(Number.isFinite(audio.duration))$('music-duration').textContent=time(audio.duration);});
+ audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
+ audio.addEventListener('ended',()=>{resetProgress();advance();if(state.online)expandOnline();});
+ audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=$('music-panel').classList.contains('hidden');$('music-panel').classList.toggle('hidden',!open);$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();if(state.online)expandOnline();}});
+ $('music-close').addEventListener('click',closePanel);
+ document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
+ $('music-panel').addEventListener('keydown',event=>{if(event.key==='Escape')closePanel();});
+ document.querySelectorAll('.era-btn').forEach(button=>button.addEventListener('click',()=>{
+  state.era=button.dataset.era;if(state.era==='all')state.shuffle=true;state.plan=[];state.errors=0;
+  start(pick(1,true));if(state.online)expandOnline();
+ }));
+ $('music-play').addEventListener('click',()=>{if(!audio.paused){audio.pause();return;}if(state.track&&!state.failed.has(state.track.id))audio.play().catch(()=>fail());else{state.failed.clear();state.errors=0;start(pick(1,true));}});
  $('music-prev').addEventListener('click',()=>advance(-1));$('music-next').addEventListener('click',()=>advance(1));
- $('music-shuffle').addEventListener('click',()=>{state.shuffle=!state.shuffle;state.preloaded=null;state.upNext=null;render();prefetch();});
- $('music-seek').addEventListener('input',e=>{e.target.style.setProperty('--seek-progress',Math.round(Number(e.target.value)/10)+'%');const p=audio();if(Number.isFinite(p.duration)&&p.duration>0)p.currentTime=p.duration*Number(e.target.value)/1000;});
- $('music-seek').addEventListener('pointerup',e=>e.target.blur());
- $('music-seek').addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' ')e.target.blur();});
- localManifest().then(render);render();requestAnimationFrame(updateTrackOverflow);
- document.fonts?.ready?.then(()=>{syncPanelAnchor();requestAnimationFrame(updateTrackOverflow);});
+ $('music-shuffle').addEventListener('click',()=>{state.shuffle=!state.shuffle;prefetch();render();});
+ $('music-online').addEventListener('click',()=>{state.online=!state.online;state.plan=[];prefetch();render();if(state.online){if(audio.paused)start(pick(1,true));expandOnline();}});
+ $('music-list').addEventListener('click',event=>{const button=event.target.closest('[data-music-id]');if(button)start(tracks().find(track=>track.id===button.dataset.musicId));});
+ $('music-more').addEventListener('click',()=>{state.online=true;render();expandOnline();});
+ $('music-seek').addEventListener('input',event=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(event.target.value)/1000;});
+ $('music-seek').addEventListener('pointerup',event=>event.target.blur());
+ addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});new ResizeObserver(syncPanelAnchor).observe(document.querySelector('.masthead'));
+ addEventListener('pagehide',()=>{audio.pause();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
+ syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();},2500);
 }
 
 return { setupPeriodMusic };
 })();
+
 
 
 
@@ -1844,6 +2257,7 @@ function searchBlob(x){
  if(s===undefined){s=(displayName(x)+' '+(x.white||'')+' '+(x.black||'')+' '+(x.stage||'')+' '+(x.origin||'')+' '+(x.eco||'')).toLowerCase();searchCache.set(x,s);}
  return s;
 }
+let postReview=null;
 const state={game:new Chess(),origin:defaultFen,view:0,orientation:'w',side:'w',mode:'free',selected:null,legal:[],arrow:null,busy:false,generation:0,analysis:null,review:false,reviewTitle:'', local:[],tab:'notes', db:null,musicIndex:0, soundEnabled:true, hintsEnabled:true, animEnabled:true, catalogCount:0, classicsCount:0, archiveLoaded:new Set(), fullKeys:new Set(),duelStarted:false,currentScoreId:null,currentScoreSource:null,userPacks:[],pendingImportPack:'',packFocus:'我的棋谱',packConfirm:'',promo:null};
 // 列表常量：DOM 中同时存在的棋谱行上限，超出部分滚动时再追加。
 const LIST_PAGE=120;
@@ -1904,10 +2318,19 @@ function finishBanner(g,moves){
 }
 function locationFor(r,c){return (state.orientation==='w'?FILES[c]:FILES[7-c])+(state.orientation==='w'?8-r:r+1);}
 function centerFor(s){let c=FILE_INDEX[s[0]],r=+s[1];return state.orientation==='w'?{x:50+c*100,y:50+(8-r)*100}:{x:50+(7-c)*100,y:50+(r-1)*100};}
-function drawArrow(){const line=$('#candidate-arrow');if(!state.arrow){line.setAttribute('visibility','hidden');return;}const a=centerFor(state.arrow.from),b=centerFor(state.arrow.to);const dx=b.x-a.x,dy=b.y-a.y,l=Math.hypot(dx,dy)||1;line.setAttribute('x1',a.x);line.setAttribute('y1',a.y);line.setAttribute('x2',b.x-dx/l*28);line.setAttribute('y2',b.y-dy/l*28);line.setAttribute('visibility','visible');}
+function drawArrow(){
+ const path=$('#candidate-arrow');if(!state.arrow){path.setAttribute('visibility','hidden');return;}
+ const a=centerFor(state.arrow.from),b=centerFor(state.arrow.to),length=Math.hypot(b.x-a.x,b.y-a.y)||1;
+ const dx=(b.x-a.x)/length,dy=(b.y-a.y)/length,nx=-dy,ny=dx;
+ const tail={x:a.x+dx*12,y:a.y+dy*12},tip={x:b.x-dx*14,y:b.y-dy*14},base={x:tip.x-dx*26,y:tip.y-dy*26};
+ const point=(p,width)=>`${p.x+nx*width},${p.y+ny*width}`;
+ path.setAttribute('d',`M${point(tail,6)} L${point(base,6)} L${point(base,16)} L${tip.x},${tip.y} L${point(base,-16)} L${point(base,-6)} L${point(tail,-6)} A6,6 0 0 0 ${point(tail,6)} Z`);
+ path.setAttribute('visibility','visible');
+}
 // 坐标标签只在翻转棋盘时重写
 let lastOrientation=null;
 function drawBoard(){
+ clearOpeningMotion();
  clearAppearanceMotion();
  const g=viewGame(),moves=cachedHistory(),last=state.view?moves[state.view-1]:null,b=$('#board');
  // 重绘前先把仍在半空飞行的棋子立刻落定。否则 .floating-piece 会在动画中途
@@ -1982,6 +2405,7 @@ function drawBoard(){
  else end.classList.add('hidden');
  $('#ply').textContent=state.view+' / '+moves.length;
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
+ postReview?.sync();
 }
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
 let animationSerial=0;
@@ -2085,7 +2509,10 @@ function highlightCheck(mate=false){const king=$('#board .square.check');if(!kin
 function nudgeCheckedKing(g){
  if(!g?.isCheck())return;
  const king=$('#board .square.check');if(!king)return;
- king.classList.remove('check-nudge');void king.offsetWidth;king.classList.add('check-nudge');
+ king.classList.add('check-nudge');
+ const pulse=king.getAnimations({subtree:true}).find(animation=>animation.animationName==='check-response');
+ // Repeated clicks during the same short pulse do not restart or stack it.
+ if(!pulse)king.classList.remove('check-nudge');
  king.onanimationend=event=>{if(event.animationName==='check-response'){king.classList.remove('check-nudge');king.onanimationend=null;}};
 }
 function showFinalCelebration(){const e=$('#game-result');if(e.classList.contains('hidden'))return;e.classList.remove('result-enter');void e.offsetWidth;e.classList.add('result-enter');}
@@ -2103,7 +2530,7 @@ function playChosen(moves){
  if(moves.some(m=>m.flags?.includes('p'))){askPromotion(from,to,moves[0].color||'w');return;}
  makeMove({from,to,promotion:moves[0].promotion});
 }
-function clickSquare(square){if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
+function clickSquare(square){clearOpeningMotion();if(state.postReview){toast('关闭复盘后可自行推演');return;}if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
  stopPlayback();
  if(state.mode==='book'&&!state.duelStarted){toast('请先点击「开始对弈」');return;}
  if(state.mode==='book'&&!state.review&&g.turn()!==state.side){toast('电脑行棋中；可切换为「打谱研究」操作双方');return;}
@@ -2163,7 +2590,13 @@ function makeMove(m,{auto=false,quiet=false}={}){
 }
 let playController=null;
 function cancelBusy(){state.generation++;state.busy=false;playController?.abort();playController=null;}
-function reset(){stopPlayback();cancelBusy();hidePromotion();state.currentScoreId=null;state.currentScoreSource=null;state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;state.review=false;state.reviewTitle='';invalidateViewMemo();clearHints();if(state.mode==='book'){state.orientation=state.side;beginDuel();return;}$('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();}
+function reset(){
+ if(state.mode==='book'){beginDuel();return;}
+ animateOpening(()=>{
+  stopPlayback();cancelBusy();hidePromotion();state.currentScoreId=null;state.currentScoreSource=null;state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;state.review=false;state.reviewTitle='';invalidateViewMemo();clearHints();
+  $('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();
+ });
+}
 function goto(p,{resumeComputer=true}={}){cancelBusy();const old=state.view,next=Math.min(history().length,Math.max(0,p)),m=Math.abs(old-next)===1?history()[Math.min(old,next)]:null;state.view=next;state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;drawAll();if(m)transition(m,next<old);else $('#move-cue').textContent=next?'已跳转到第 '+next+' 半回合':'初始局面 · 点击棋子开始';
  const g=viewGame(),moves=cachedHistory();
  if(finishBanner(g,moves))showFinalCelebration();
@@ -2189,7 +2622,9 @@ function enginePosition(g=viewGame()){
  return {fen:g.fen(),origin:state.origin,moves:cachedHistory().slice(0,state.view).map(moveUci)};
 }
 async function maybeBookReply(){
- await whenFlightsIdle();
+ const requestedGeneration=state.generation;
+ await whenFlightsIdle();await whenOpeningIdle();
+ if(requestedGeneration!==state.generation)return;
  if(state.mode!=='book'||!state.duelStarted||state.review||playbackTimer!==null||state.view!==history().length)return;
  const g=viewGame();if(g.turn()===state.side||g.isGameOver()){state.busy=false;drawBoard();return;}
  const token=++state.generation,fen=g.fen();
@@ -2707,7 +3142,9 @@ function confirmSaveGame(){
  dbTransaction('readwrite',store=>store.put(source)).then(()=>{state.local.push(source);collectionDirty=true;state.rebuildArchiveOptions?.();selectArchivePack(origin);renderCollection();renderPackDialog();toast('棋谱已保存到「'+origin+'」');}).catch(()=>toast('保存失败，请使用「导出 PGN」备份'));
 }
 function saveGame(){openSaveDialog();}
-const {scheduleEngine,refreshEngineStatus}=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
+const analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
+const {scheduleEngine,refreshEngineStatus}=analysisUi;
+postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi});
 const playIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"/></svg>';
 const pauseIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14M16 5v14"/></svg>';
 function stopPlayback({resumeComputer=false}={}){
@@ -2734,6 +3171,48 @@ function togglePlayback(){
   if(state.view>=target)stopPlayback({resumeComputer:true});
  },850);
 }
+let openingMotion=null;
+function clearOpeningMotion(){
+ const active=openingMotion;if(!active)return;openingMotion=null;
+ for(const animation of active.animations)animation.cancel();
+ for(const node of active.oldNodes)releasePiece(node);
+ active.layer?.remove();$('#board').classList.remove('is-opening');$('#board').removeAttribute('aria-busy');
+ active.resolve();
+}
+function whenOpeningIdle(){return openingMotion?.done||Promise.resolve();}
+function animateOpening(update,{animate=true}={}){
+ clearOpeningMotion();clearAppearanceMotion();settleFlights();
+ const board=$('#board'),motion=animate&&state.animEnabled&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const layer=document.createElement('div'),oldNodes=[];
+ layer.className='opening-layer';layer.setAttribute('aria-hidden','true');
+ if(motion)for(const cell of board.querySelectorAll(':scope > .square')){
+  const slot=document.createElement('div');slot.className='opening-cell';layer.append(slot);
+  const node=cell.querySelector(':scope > .piece');
+  if(node){slot.append(node);oldNodes.push(node);cell.dataset.pieceKey='';}
+ }
+ update();
+ if(!motion)return;
+ let resolve;const done=new Promise(ready=>resolve=ready),active={animations:[],oldNodes,layer,resolve,done};
+ openingMotion=active;board.classList.add('is-opening');board.setAttribute('aria-busy','true');
+ const startTime=document.timeline.currentTime;
+ const run=(node,frames,options)=>{
+  const animation=node.animate(frames,{...options,fill:'both'});animation.startTime=startTime;active.animations.push(animation);
+ };
+ if(oldNodes.length){
+  board.append(layer);
+  // Scaling one grid keeps all old piece sizes and distances proportional.
+  run(layer,[{transform:'scale(1)',opacity:1},{offset:.65,opacity:.8},{transform:'scale(0)',opacity:0}],{duration:320,easing:'cubic-bezier(.55,.055,.675,.19)'});
+ }
+ for(const [index,cell] of [...board.querySelectorAll(':scope > .square')].entries()){
+  const node=cell.querySelector(':scope > .piece');if(!node)continue;
+  const row=Math.floor(index/8),col=index%8,edge=Math.min(row,7-row,col,7-col);
+  let x=0,y=0;if(col===edge)x=-26;if(7-col===edge)x=26;if(row===edge)y=-26;if(7-row===edge)y=26;
+  const along=x?Math.min(row,7-row):Math.min(col,7-col),delay=(oldNodes.length?330:0)+edge*95+along*14;
+  run(node,[{transform:`translate(${x}%,${y}%) scale(.45)`,opacity:0},{transform:'translate(0,0) scale(1)',opacity:1}],{duration:340,delay,easing:'cubic-bezier(.16,1,.3,1)'});
+ }
+ Promise.all(active.animations.map(animation=>animation.finished.catch(()=>{}))).then(()=>{if(openingMotion===active)clearOpeningMotion();});
+ return done;
+}
 let requestedTheme='walnut',requestedPieceStyle='rhosgfx',appearanceSequence=0,appearanceMotion=[];
 function clearAppearanceMotion(){
  for(const {animation,ghost} of appearanceMotion){animation.cancel();ghost?.remove();}
@@ -2750,7 +3229,7 @@ function appearanceAnimation(node,frames,duration,ghost=null,startTime=null,easi
 }
 async function changeAppearance(animate){
  const sequence=++appearanceSequence,theme=requestedTheme,style=requestedPieceStyle,root=document.documentElement;
- clearAppearanceMotion();
+ clearOpeningMotion();clearAppearanceMotion();
  const themeChanged=root.dataset.theme!==theme,styleChanged=(root.dataset.pieceStyle||'rhosgfx')!==style;
  if(!themeChanged&&!styleChanged){setPieceStyle(style);return;}
  if(animate){await preparePieceArt(theme,style);if(sequence!==appearanceSequence)return;}
@@ -2766,7 +3245,7 @@ async function changeAppearance(animate){
  if(motion){
   // Style changes have two halves: retract the old set completely, then grow the new set.
   // Keep both on one timeline; ghosts are removed rather than restored on completion.
-  const startTime=document.timeline.currentTime,duration=styleChanged?1200:240;
+  const startTime=document.timeline.currentTime,duration=styleChanged?600:240;
   for(const {square,node} of previous){
    node.classList.add('appearance-ghost');$('#board').querySelector(`[data-square="${square}"]`).append(node);
    appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.5,transform:'scale(0)',opacity:1},{transform:'scale(0)',opacity:1}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
@@ -2795,9 +3274,9 @@ function initializeThemeMotion(){
  }
  root.classList.add('appearance-ready');
 }
-function setPlayMode(mode){
+function setPlayMode(mode,{animate=true}={}){
  const next=mode==='book'?'book':'free';
- stopPlayback();settleFlights();cancelBusy();
+ stopPlayback();settleFlights();cancelBusy();hidePromotion();
  state.mode=next;
  state.currentScoreId=null;state.currentScoreSource=null;
  state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;
@@ -2813,8 +3292,8 @@ function setPlayMode(mode){
  $$('.mode-free-only').forEach(el=>el.classList.toggle('hidden',next==='book'));
  document.body.dataset.playMode=next;$('#right-heading').textContent=next==='book'?'对局':'棋谱';
  $('#record-heading').textContent=next==='book'?'着法记录':'棋谱着法';
- if(next==='book')beginDuel();
- else{$('#duel-start').textContent='开始对弈';$('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();}
+ if(next==='book')beginDuel({animate});
+ else animateOpening(()=>{$('#duel-start').textContent='开始对弈';$('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();},{animate});
 }
 function syncSideSelect(side){
  const sel=$('#side');if(!sel)return;
@@ -2853,8 +3332,9 @@ function stampDuelRecord(){
  if(elos[level])state.game.header(state.side==='w'?'BlackElo':'WhiteElo',String(elos[level]));
 }
 function stampNewRecord(){state.engineError='';state.game.header('Event','Casual Game','Site','Local','Date',pgnDate(),'Round','-','White','?','Black','?','Result','*');}
-function beginDuel(){
- stopPlayback();settleFlights();cancelBusy();
+function beginDuel({animate=true}={}){
+ animateOpening(()=>{
+ stopPlayback();settleFlights();cancelBusy();hidePromotion();
  state.currentScoreId=null;state.currentScoreSource=null;state.duelStarted=true;
  state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;
  state.review=false;state.reviewTitle='';
@@ -2868,16 +3348,25 @@ function beginDuel(){
    requestAnimationFrame(()=>{if(gen===state.generation)maybeBookReply();});
   });
  }
+ },{animate});
 }
+let brandSpin=null,brandQueued=false;
 function flipBrandKnight(){
- const icon=document.querySelector('.brand-icon');
- const flip=icon&&icon.querySelector('.brand-flip');
- if(!icon||!flip)return;
- icon.classList.remove('is-flipping');
- void icon.offsetWidth;
- icon.classList.add('is-flipping');
- flip.onanimationend=()=>icon.classList.remove('is-flipping');
+ const flip=document.querySelector('.brand-flip');if(!flip||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ if(brandSpin){brandQueued=true;return;}
+ const turn=()=>{
+  const animation=flip.animate([{transform:'rotateY(0deg)'},{transform:'rotateY(360deg)'}],{duration:1120,easing:'linear',fill:'forwards'});
+  brandSpin=animation;
+  animation.finished.then(()=>{
+   if(brandSpin!==animation)return;
+   // 360° and 0° have the same pixels; never cancel a rotation in the middle.
+   flip.style.transform='rotateY(0deg)';brandSpin=null;animation.cancel();
+   if(brandQueued){brandQueued=false;turn();}
+  }).catch(()=>{});
+ };
+ turn();
 }
+window.addEventListener('pagehide',()=>{brandQueued=false;brandSpin?.cancel();brandSpin=null;});
 function setupEvents(){
  document.addEventListener('pointerdown',event=>{const guide=$('#collection-guide');if(guide?.open&&!guide.contains(event.target))guide.open=false;});
  $('#board').addEventListener('error',e=>{if(e.target.matches('.piece-art-img'))e.target.closest('.assetpiece')?.classList.add('asset-fallback-mode');},true);
@@ -2979,6 +3468,6 @@ initializeThemeMotion();
 preloadPieceArt();
 preparePieceArt(requestedTheme,requestedPieceStyle);
 refreshEngineStatus();
-setPlayMode('free');drawAll();initLocal();
+setPlayMode('free',{animate:false});drawAll();initLocal();
 
 })();

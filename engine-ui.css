@@ -58,10 +58,10 @@ html.appearance-ready{transition:--bg .32s ease,--paper .32s ease,--sub .32s eas
 body[data-play-mode=book] #panel-notes{display:block!important}
 body[data-play-mode=free] #save,body[data-play-mode=free] #export{display:none!important}
 body[data-play-mode=free] .board-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
-.square.check::before{background:rgba(239,137,133,.23)!important;box-shadow:inset 0 0 0 2px rgba(207,100,91,.72)!important;opacity:1}
+.square.check::before{background:rgba(239,137,133,.23)!important;box-shadow:inset 0 0 0 2px rgba(207,100,91,.72)!important;opacity:1;will-change:opacity}
 .square.check-flash,.square.check-mate-flash{animation:none!important}
-.square.check-nudge::before{animation:check-response .28s ease-in-out 2!important}
-@keyframes check-response{0%,100%{opacity:.48}50%{opacity:1}}
+.square.check-nudge::before{animation:check-response .18s ease-in-out 1!important}
+@keyframes check-response{0%,100%{opacity:1}50%{opacity:.35}}
 @media(prefers-reduced-motion:reduce){.engine-probability-bar>span,.engine-toggle>i,.engine-toggle>i::after{transition:none}.square.check-nudge::before{animation:none!important}}
 /* Only text-entry fields display a text caret; board and notation controls keep their interaction cursors. */
 body{cursor:default;caret-color:transparent}

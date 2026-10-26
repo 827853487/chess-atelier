@@ -84,7 +84,7 @@ class UciWorker{
      }
      return false;
     },15000);
-    this.send('go movetime '+(analysis?1200:level.ms));
+    this.send('go movetime '+(analysis?(body.review?450:1200):level.ms));
     const answer=await best;
     if(aborted||signal?.aborted)throw abortError();
     if(analysis){

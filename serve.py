@@ -196,7 +196,7 @@ class Handler(SimpleHTTPRequestHandler):
             if play:
                 level = int(data.get('level', 2))
                 return self.payload(PLAY_ENGINE.play(board, level))
-            seconds = 4.0 if data.get('deep') else 1.2
+            seconds = 4.0 if data.get('deep') else .45 if data.get('review') else 1.2
             updates = ANALYSIS_ENGINE.analyze(board, seconds)
             # Acquire the engine before sending HTTP headers, so busy/unavailable remain real errors.
             first = next(updates)

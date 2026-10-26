@@ -1,4 +1,4 @@
-可以将有合法使用权限的本地音乐文件放到此处，在 playlist.json 内配置：
-[{"file":"my-recording.mp3","title":"作品名","composer":"作曲家","era":"romantic"}]
-时期 era 可选 baroque / classical / romantic / modern。
-本地曲目参与相应时期的顺序、随机播放；播放器优先加载下一首以减少切换等待。
+本目录含 16 首按录音许可再分发的古典音乐 MP3。
+完整署名、原文件、许可版本与校验值见 playlist.json、source-metadata.json 及 ../../data/MUSIC_SOURCES.md。
+Dysprosia 的 BSD 录音须同时保留 LICENSE-Dysprosia-BSD.txt。
+MP3 仅重新编码，没有裁切或改编；不得将录音许可误解为整个网站的许可。

@@ -12,13 +12,13 @@
 - **大师棋手增补**：从 [PGN Mentor](https://www.pgnmentor.com/files.html) 收录卡斯帕罗夫本次谱源中合格的 2,126 盘及其他九位棋手的 1,400 盘年代精选；保留事实性标签与标准棋主线，移除文字讲解。
 - **经典教材整理谱**：卡帕布兰卡《Chess Fundamentals》，原书参考 [Project Gutenberg #33870](https://www.gutenberg.org/ebooks/33870)；局面及主线来自 [lordlinks/Chess_Fundamentals](https://github.com/lordlinks/Chess_Fundamentals) 链接的两份公开整理谱，该项目标注 CC0。保留章节与出处，不打包整段原书或整理者注释；1 处错误易位标记的规范化有独立记录。
 - **分级专题练习**：[Lichess 公开数据库](https://database.lichess.org/#puzzles)，CC0-1.0；本地收录 776 道、26 个主题。保留原始题目 ID、来源链接及原始 CSV 子集，先应用准备着后建立练习局面，分析仅由本机 Stockfish 提供。
-- **关闭分析时的短句**：`chess-notes.js` 内含 82 条原创练习短句与常规提示，包括 12 条带中文翻译的英文短句；未冒用棋手名言署名，也不作为当前局面的引擎结论。
+- **关闭分析时的短句**：提示池合计 248 条，包含原有短句、150 条新增原创提示和 16 条经核对的历史短引语；出处与自译边界见 `data/CHESS_QUOTES.md`。英文/德文引语附本项目中文自译，不复制现代商业译本。通用短句不作为当前局面的引擎结论。
 - **局面分析**：仅使用本机 Stockfish；已移除远程局面引擎和 Opening Explorer 接口。
 - **公网浏览器引擎**：[Stockfish.js 19.0.1](https://github.com/nmrugg/stockfish.js/releases/tag/v19.0.1)，Nathan Rugg、Stockfish 团队及贡献者，GPL-3.0。原样分发 lite-single JS/WASM，浏览器内计算，不调用远程棋力服务；较小网络与原生完整版强度不同。固定发行版源码、构建脚本、AUTHORS、GPL 和运行文件摘要均在 `vendor/stockfish/`，对应源码包可与运行文件从同一站点下载。
-- **古典录音**：Wikimedia Commons，https://commons.wikimedia.org/wiki/Category:Audio_files_of_classical_music 。每条录音的著作权、演奏者与授权以其文件页面为准；项目未捆绑录音。
+- **古典录音**：Wikimedia Commons，https://commons.wikimedia.org/wiki/Category:Audio_files_of_classical_music 。每条录音的著作权、演奏者与授权以其文件页面为准；现已收录 16 首合法再分发录音，转为 MP3 并保留原曲，逐首演奏者、许可与转码说明见 `assets/music/playlist.json` 及 `data/MUSIC_SOURCES.md`；BSD 录音的完整声明位于 `assets/music/LICENSE-Dysprosia-BSD.txt`。
 - **字体**：网站优先使用操作系统已有的中文无衬线字体。若能联网加载 Google Fonts 使用者需遵循对应字体许可；项目没有分发字体文件。
 - **视觉原则**：参考 Google Material Design 3 的布局、触控目标及状态反馈原则，但没有声称由 Google 设计或使用其官方组件库。
 
-- **本地音乐目录**：`assets/music/playlist.json` 默认为空。由使用者自行加入拥有合法使用许可的录音。
+- **本地音乐目录**：`assets/music/playlist.json` 收录四时期共 16 首录音及其独立许可，原始 Commons 元数据保存在 source-metadata.json。
 
 - **雅致 SVG 棋子**：沿用早前版本项目内的 Fantasy 棋子素材，白子改用同套实心轮廓与浅色填充；其原始文件应按项目所列来源和适用许可使用。

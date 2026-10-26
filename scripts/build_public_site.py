@@ -26,6 +26,19 @@ def main():
     files += list(ROOT.glob('*.css'))
     files += list((ROOT / 'assets').rglob('*.svg'))
     files += [ROOT / 'assets/music/playlist.json']
+    playlist=json.loads((ROOT / 'assets/music/playlist.json').read_text(encoding='utf-8'))
+    for track in playlist:
+        filename=track.get('file','')
+        if Path(filename).name!=filename or not filename.lower().endswith(('.mp3','.ogg','.oga','.flac','.wav')):
+            raise ValueError('Invalid local music filename')
+        file=ROOT / 'assets/music' / filename
+        if track.get('sha256') and hashlib.sha256(file.read_bytes()).hexdigest()!=track['sha256']:
+            raise ValueError('Local recording checksum mismatch: '+filename)
+        files.append(file)
+    files += list((ROOT / 'assets/music').glob('*.txt'))
+    files += list((ROOT / 'assets/music').glob('*.json'))
+    files += [p for p in [ROOT/'data/MUSIC_SOURCES.md',ROOT/'data/CHESS_QUOTES.md',ROOT/'data/ONLINE_MUSIC.md'] if p.is_file()]
+    files=list(dict.fromkeys(files))
     files += list((ROOT / 'data/complete').glob('*.pgn'))
     manifest = json.loads((ROOT / 'vendor/stockfish/manifest.json').read_text(encoding='utf-8'))
     for name, meta in manifest['files'].items():

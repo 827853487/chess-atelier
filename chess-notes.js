@@ -1,5 +1,6 @@
+import { CHESS_QUOTE_DATA } from './chess-quote-data.js';
 // Original practice notes, not attributed quotations or position-specific engine advice.
-export const CHESS_NOTES = [
+const ORIGINAL_NOTES = [
  ...`落子之前，先看看对手上一着改变了什么。
 将军、吃子、威胁，可以作为计算的起点。
 好棋也需要一个合适的时机。
@@ -84,17 +85,29 @@ export const CHESS_NOTES = [
  {text:'Patience can turn a small edge into a lasting one.',translation:'耐心，可以让微小优势变得持久。'}
 ];
 
+export const CHESS_NOTES=[...new Map([...ORIGINAL_NOTES,...CHESS_QUOTE_DATA].map(note=>[note.text,note])).values()];
+
+export function createNoteDeck(notes,{storage,rng=Math.random}={}){
+ const signature=notes.map(note=>note.text).join('\n');let hash=2166136261;for(const char of signature){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);}
+ const version=String(hash>>>0),key='ChessAtelierNotesDeckV2';let remaining=[],last=-1;
+ try{const saved=JSON.parse(storage?.getItem(key)||'null');if(saved?.version===version&&Array.isArray(saved.remaining)){remaining=[...new Set(saved.remaining.filter(i=>Number.isInteger(i)&&i>=0&&i<notes.length))];last=saved.last;}}catch{}
+ return ()=>{
+  if(!remaining.length){remaining=notes.map((_,i)=>i);for(let i=remaining.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}if(remaining.length>1&&remaining[0]===last)[remaining[0],remaining[1]]=[remaining[1],remaining[0]];}
+  last=remaining.shift();try{storage?.setItem(key,JSON.stringify({version,remaining,last}));}catch{}
+  return notes[last];
+ };
+}
 export function setupRestNotes(){
- const rest=document.querySelector('#analysis-rest'),text=document.querySelector('#chess-note'),translation=document.querySelector('#chess-note-translation');
- let index=-1;
+ const rest=document.querySelector('#analysis-rest'),text=document.querySelector('#chess-note'),translation=document.querySelector('#chess-note-translation'),source=document.querySelector('#chess-note-source');
+ let storage;try{storage=localStorage;}catch{}
+ const pick=createNoteDeck(CHESS_NOTES,{storage});
  function next(){
-  let pick=Math.floor(Math.random()*(CHESS_NOTES.length-(index>=0?1:0)));
-  if(index>=0&&pick>=index)pick++;
-  index=pick;const note=CHESS_NOTES[index];
-  text.textContent=note.text;text.lang=note.translation?'en':'zh-CN';
+  const note=pick();text.textContent=note.text;text.lang=note.lang||(note.source?.includes('茨威格')?'de':note.translation?'en':'zh-CN');
   translation.textContent=note.translation?'（'+note.translation+'）':'';translation.hidden=!note.translation;
+  source.replaceChildren();source.hidden=!note.source;
+  if(note.source){const label=document.createElement(note.sourceUrl?'a':'span');label.textContent='— '+note.source;if(note.sourceUrl){label.href=note.sourceUrl;label.target='_blank';label.rel='noopener noreferrer';}source.append(label);}
  }
- rest.addEventListener('dblclick',event=>{event.preventDefault();next();});
+ rest.addEventListener('dblclick',event=>{if(event.target.closest('a'))return;event.preventDefault();next();});
  rest.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();next();}});
  next();return next;
 }
