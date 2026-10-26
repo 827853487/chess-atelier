@@ -2,7 +2,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18865/dist/';
 (async()=>{const browser=await chromium.launch({channel:'msedge',headless:true}),context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage(),errors=[],api=[];
- page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))api.push(r.url());});await context.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());
+ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))api.push(r.url());});await context.route(/https:\/\/(?:commons|upload)\.wikimedia\.org\//,r=>r.abort());
  const idle=async()=>{await page.waitForFunction(()=>!document.querySelector('#board.is-opening,.floating-piece,.appearance-ghost'));await page.waitForTimeout(60);};
  try{
   await page.goto(base);await page.waitForFunction(()=>document.querySelector('#collection').getAttribute('aria-busy')==='false',null,{timeout:120000});assert.equal(await page.locator('#ply').innerText(),'0 / 12');
