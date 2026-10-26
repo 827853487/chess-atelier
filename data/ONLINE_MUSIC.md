@@ -53,3 +53,7 @@ iiprop=url|size|mime|mediatype|metadata|extmetadata
 | [Open Opus](https://openopus.org/) | 免费无注册、开放的作曲家和作品元数据 | 官网 FAQ 明确当前不提供录音数据；不能把它当作可播放音频源。可以帮助整理时期、作品名与目录，不会自动获得 Spotify 等服务的流播权限。 |
 
 Internet Archive 参考：[Item Metadata API](https://archive.org/developers/md-read.html)。长期扩充优先维护“人工核对的本地精选 + 后台自动连接的分页在线目录”，把质量、网络、许可和缓存边界清楚区分。
+
+### 录音封面
+
+播放器只解析当前录音自带的ID3 APIC、FLAC PICTURE、Vorbis/Opus METADATA_BLOCK_PICTURE等图片；本地转码无图片时可读取已登记的同一原始录音。不使用仅按标题匹配到的其他专辑封面。无封面保持中性图标。元信息接口参考 [MediaWiki imageinfo](https://www.mediawiki.org/wiki/API:Imageinfo) 与 [TimedMediaHandler API](https://www.mediawiki.org/wiki/Extension:TimedMediaHandler/API)；这些接口不保证每个录音都有专辑图片。当前界面固定随机播放，已移除随机/顺序开关。

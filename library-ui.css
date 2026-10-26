@@ -187,3 +187,19 @@
 #music-panel .wave-bars{height:32px!important;width:25px!important;flex-basis:25px!important;align-items:flex-end!important}
 #music-panel .wave-bars i,#music-panel.is-playing .wave-bars i{width:3px!important;min-width:3px!important;max-width:3px!important;height:30px!important;max-height:30px!important;border-radius:1px}
 @media(max-width:360px){.engine-controls{gap:8px}}
+
+/* Floating surfaces retain their layout until a reversible exit completes. */
+[data-surface-state]{animation:none!important}
+[data-surface-state=closing]{pointer-events:none!important}
+dialog[data-surface-state=closing]::backdrop{animation:surface-backdrop-out 160ms ease-out both!important}
+@keyframes surface-backdrop-out{to{background-color:transparent;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}}
+#settings-dialog .settings-floating-menu[data-surface-state=closing]{visibility:visible}
+#music-panel .music-controls{display:flex!important;justify-content:center!important;gap:0!important}
+#music-panel .now-playing{grid-template-columns:56px minmax(0,1fr) 30px!important}
+#music-panel .wave-bars{width:30px!important;flex-basis:30px!important;height:30px!important;gap:3px!important;align-items:center!important;justify-content:center!important;overflow:visible!important}
+#music-panel .wave-bars i,#music-panel.is-playing .wave-bars i{display:block!important;flex:0 0 3px!important;width:3px!important;min-width:3px!important;max-width:3px!important;height:24px!important;max-height:24px!important;border-radius:999px!important;transform-origin:center!important;transition:transform 75ms linear!important;will-change:transform}
+#music-panel .now-art{position:relative}
+#music-panel .now-art img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+@media(prefers-reduced-motion:reduce){dialog[data-surface-state=closing]::backdrop{animation:none!important}}
+
+#board.is-changing-art>.square>.piece{will-change:transform,opacity;backface-visibility:hidden}

@@ -1,6 +1,119 @@
 /* Chess Atelier V13 offline: bundled rules, vector pieces and lesson data. */
 (()=>{
 'use strict';
+const { surfaceOpen, showSurface, hideSurface, installDialogMotion }=(()=>{
+// One reversible lifecycle for floating surfaces. DOM removal/native close only
+// happens after the exit, so a quick reopen cannot be closed by an older task.
+const surfaceEffects=new WeakMap();
+const reducedSurfaceMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function surfaceOpen(element){return !!element&&element.dataset.surfaceState!=='closing'&&(element.tagName==='DIALOG'?element.open:!element.hidden&&!element.classList.contains('hidden'));}
+function surfaceTransition(element,opening,commit){
+ if(!element)return Promise.resolve();
+ const prior=surfaceEffects.get(element);
+ if(prior?.opening===opening)return prior.done;
+ const visible=element.tagName==='DIALOG'?element.open:!element.hidden&&!element.classList.contains('hidden');
+ const computed=getComputedStyle(element),continuing=visible&&(!opening||!!prior||element.dataset.surfaceState==='open');
+ const opacity=continuing?Number(computed.opacity):0,transform=continuing?computed.transform:'translateY(-5px) scale(.985)';
+ prior?.animation.cancel();
+ if(!opening&&!visible){commit();return Promise.resolve();}
+ element.hidden=false;element.classList.remove('hidden');element.inert=!opening;
+ element.dataset.surfaceState=opening?'open':'closing';
+ if(reducedSurfaceMotion()){surfaceEffects.delete(element);commit();return Promise.resolve();}
+ const visibility=element.style.visibility;element.style.visibility='visible';
+ const animation=element.animate([{opacity,transform},{opacity:opening?1:0,transform:opening?'none':'translateY(-5px) scale(.985)'}],{duration:opening?180:160,easing:'cubic-bezier(.2,0,.2,1)',fill:'both'});
+ const entry={opening,animation,done:null};surfaceEffects.set(element,entry);
+ entry.done=animation.finished.catch(()=>{}).then(()=>{
+  if(surfaceEffects.get(element)!==entry)return;
+  surfaceEffects.delete(element);element.style.visibility=visibility;
+  commit();animation.cancel();
+ });return entry.done;
+}
+function showSurface(element){return surfaceTransition(element,true,()=>{});}
+function hideSurface(element,commit=()=>{element.hidden=true;element.classList.add('hidden');}){return surfaceTransition(element,false,commit);}
+function installDialogMotion(dialogs){
+ for(const dialog of dialogs){
+  const close=dialog.close.bind(dialog),show=dialog.showModal.bind(dialog);
+  const trigger=()=>document.querySelector(`[aria-controls="${dialog.id}"]`);
+  dialog.showModal=()=>{if(!dialog.open)show();trigger()?.setAttribute('aria-expanded','true');showSurface(dialog);};
+  dialog.close=value=>{trigger()?.setAttribute('aria-expanded','false');return hideSurface(dialog,()=>{if(dialog.open)close(value);dialog.inert=false;});};
+  dialog.addEventListener('cancel',event=>{event.preventDefault();dialog.close();});
+ }
+}
+// custom-select.js is a small standalone script loaded after the bundle.
+globalThis.ChessSurfaces={show:showSurface,hide:hideSurface,isOpen:surfaceOpen};
+
+return { surfaceOpen, showSurface, hideSurface, installDialogMotion };
+})();
+const { extractEmbeddedCover, readMusicCover }=(()=>{
+// Read artwork from THIS recording, never guess an album by composer/title.
+// ID3 APIC, FLAC PICTURE and Vorbis/Opus METADATA_BLOCK_PICTURE are supported.
+const COVER_LIMIT=2*1024*1024;
+const coverAscii=(b,a,n)=>String.fromCharCode(...b.subarray(a,a+n));
+function coverImage(bytes){
+ if(bytes.length<12||bytes.length>COVER_LIMIT)return null;
+ const mime=bytes[0]===255&&bytes[1]===216?'image/jpeg':coverAscii(bytes,1,3)==='PNG'?'image/png':coverAscii(bytes,0,4)==='RIFF'&&coverAscii(bytes,8,4)==='WEBP'?'image/webp':null;
+ return mime?{mime,bytes:bytes.slice()}:null;
+}
+function flacPicture(bytes){
+ const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);let at=0;
+ const uint=()=>{if(at+4>bytes.length)throw Error('Short picture');const value=view.getUint32(at);at+=4;return value;};
+ try{const type=uint(),mimeLength=uint();at+=mimeLength;const descriptionLength=uint();at+=descriptionLength;for(let i=0;i<4;i++)uint();const size=uint();if(size>COVER_LIMIT||at+size>bytes.length)return null;const image=coverImage(bytes.subarray(at,at+size));return image?{...image,type}:null;}catch{return null;}
+}
+function coverBase64(text){try{if(text.length>COVER_LIMIT*1.4)return null;return Uint8Array.from(atob(text),c=>c.charCodeAt(0));}catch{return null;}}
+function commentCover(packet){
+ const offset=coverAscii(packet,0,8)==='OpusTags'?8:packet[0]===3&&coverAscii(packet,1,6)==='vorbis'?7:-1;if(offset<0)return null;
+ const view=new DataView(packet.buffer,packet.byteOffset,packet.byteLength);let at=offset;
+ const uint=()=>{if(at+4>packet.length)throw Error('Short comment');const value=view.getUint32(at,true);at+=4;return value;};
+ try{const vendor=uint();at+=vendor;const count=Math.min(256,uint());for(let i=0;i<count;i++){const size=uint();if(size>COVER_LIMIT*1.4||at+size>packet.length)return null;const text=new TextDecoder().decode(packet.subarray(at,at+size));at+=size;const eq=text.indexOf('='),name=text.slice(0,eq).toUpperCase(),value=text.slice(eq+1);if(name==='METADATA_BLOCK_PICTURE'){const b=coverBase64(value),image=b&&flacPicture(b);if(image)return image;}if(name==='COVERART'){const b=coverBase64(value),image=b&&coverImage(b);if(image)return image;}}}catch{}return null;
+}
+function extractEmbeddedCover(input){
+ const bytes=input instanceof Uint8Array?input:new Uint8Array(input);if(bytes.length<10||bytes.length>COVER_LIMIT)return null;
+ const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),sync=at=>((bytes[at]&127)<<21)|((bytes[at+1]&127)<<14)|((bytes[at+2]&127)<<7)|(bytes[at+3]&127);
+ if(coverAscii(bytes,0,3)==='ID3'&&[3,4].includes(bytes[3])){
+  const version=bytes[3],end=Math.min(bytes.length,10+sync(6));let at=10,fallback=null;
+  if(bytes[5]&64){if(at+4>end)return null;at+=version===4?sync(at):4+view.getUint32(at);}
+  for(let n=0;n<128&&at+10<=end;n++){
+   const id=coverAscii(bytes,at,4),size=version===4?sync(at+4):view.getUint32(at+4),flags=bytes[at+9];at+=10;
+   if(!size||size>COVER_LIMIT||at+size>end)break;
+   if(id==='APIC'&&!(flags&(version===4?12:192))){
+    let data=bytes.subarray(at,at+size);
+    if((bytes[5]&128)||(version===4&&(flags&2))){const clean=[];for(let i=0;i<data.length;i++){clean.push(data[i]);if(data[i]===255&&data[i+1]===0)i++;}data=Uint8Array.from(clean);}
+    const encoding=data[0];let pos=1;while(pos<data.length&&data[pos])pos++;const type=data[++pos];pos++;
+    if(encoding===1||encoding===2){while(pos+1<data.length&&(data[pos]||data[pos+1]))pos+=2;pos+=2;}else{while(pos<data.length&&data[pos])pos++;pos++;}
+    const image=coverImage(data.subarray(pos));if(image){if(type===3)return image;fallback=image;}
+   }at+=size;
+  }return fallback;
+ }
+ if(coverAscii(bytes,0,4)==='fLaC'){
+  for(let at=4,n=0;n<128&&at+4<=bytes.length;n++){
+   const type=bytes[at]&127,last=!!(bytes[at]&128),size=(bytes[at+1]<<16)|(bytes[at+2]<<8)|bytes[at+3];at+=4;if(at+size>bytes.length)break;
+   if(type===6){const image=flacPicture(bytes.subarray(at,at+size));if(image)return image;}at+=size;if(last)break;
+  }
+ }
+ if(coverAscii(bytes,0,4)==='OggS'){
+  let parts=[],length=0;
+  for(let at=0,n=0;n<64&&at+27<=bytes.length;n++){
+   if(coverAscii(bytes,at,4)!=='OggS')break;const count=bytes[at+26],start=at+27+count;if(start>bytes.length)break;let data=start;
+   for(let i=0;i<count;i++){const size=bytes[at+27+i];if(data+size>bytes.length)return null;parts.push(bytes.subarray(data,data+size));length+=size;data+=size;if(size<255){const packet=new Uint8Array(length);let p=0;for(const part of parts){packet.set(part,p);p+=part.length;}const image=commentCover(packet);if(image)return image;parts=[];length=0;}}
+   at=data;
+  }
+ }return null;
+}
+async function readMusicCover(url,{signal,blob}={}){
+ try{
+  if(blob)return extractEmbeddedCover(await blob.slice(0,COVER_LIMIT).arrayBuffer());
+  const response=await fetch(url,{signal,headers:{Range:`bytes=0-${COVER_LIMIT-1}`},credentials:'omit',cache:'force-cache'});if(!response.ok)return null;
+  const reader=response.body.getReader(),parts=[];let size=0;
+  let required=COVER_LIMIT;
+  try{while(size<required){const row=await reader.read();if(row.done)break;const part=row.value.subarray(0,COVER_LIMIT-size);parts.push(part);size+=part.length;
+   if(parts.length===1&&part.length>=10&&coverAscii(part,0,3)==='ID3')required=Math.min(COVER_LIMIT,10+((part[6]&127)<<21)+((part[7]&127)<<14)+((part[8]&127)<<7)+(part[9]&127));
+  }}finally{await reader.cancel().catch(()=>{});}
+  const data=new Uint8Array(size);let at=0;for(const part of parts){data.set(part,at);at+=part.length;}return extractEmbeddedCover(data);
+ }catch{return null;}
+}
+
+return { extractEmbeddedCover, readMusicCover };
+})();
 const { Chess }=(()=>{
 /* Chess Atelier bundled chess rules: complete legal move generation, SAN and PGN.
    Designed to initialize and operate without CDN/network availability. */
@@ -984,7 +1097,7 @@ const LESSONS = [
 
 return { LESSONS };
 })();
-const { pieceSvg, setPieceStyle, acquirePiece, releasePiece, resetPiecePool, preloadPieceArt, preparePieceArt }=(()=>{
+const { pieceSvg, setPieceStyle, acquirePiece, releasePiece, resetPiecePool, preloadPieceArt, preparePieceArt, warmPieceStyles }=(()=>{
 // Original Lichess artwork: Cburnett (Colin M. L. Burnett, GPL-2.0+),
 // Maestro (sadsnake1, CC-BY-NC-SA-4.0), Mpchess (Maxime Chupin, GPL-3.0+),
 // Totoy (Kosal Sen, CC-BY-4.0). Exact source commit/hash and licenses:
@@ -1074,7 +1187,18 @@ function releasePiece(node){
 function resetPiecePool(){POOL.clear();poolScope='';}
 // Decode the complete target set before replacing any visible pieces.
 const PREPARED=new Map();
+const PREPARED_NODES=new Map();
 async function preparePieceArt(theme,style){
+ const scope=theme+'|'+style;
+ if(PREPARED_NODES.has(scope))return PREPARED_NODES.get(scope).promise;
+ const entry={nodes:null,promise:null};
+ entry.promise=prepareNodes(theme,style).then(nodes=>{entry.nodes=nodes;return nodes;}).catch(error=>{PREPARED_NODES.delete(scope);throw error;});
+ PREPARED_NODES.set(scope,entry);
+ // Keep a few decoded sets, without retaining every theme ever visited.
+ if(PREPARED_NODES.size>8)PREPARED_NODES.delete(PREPARED_NODES.keys().next().value);
+ return entry.promise;
+}
+async function prepareNodes(theme,style){
  const requests=[];
  for(const color of ['w','b'])for(const type of ['p','n','b','r','q','k']){
   const key=theme+'|'+style+'|'+color+type;
@@ -1089,13 +1213,22 @@ async function preparePieceArt(theme,style){
  // Decode the actual nodes that will be inserted, not just separate Image objects.
  // In particular, async SVG decoding can otherwise start halfway through a scale animation.
  const nodes=[],want={p:9,n:3,b:3,r:3,q:2,k:2};
- for(const color of ['w','b'])for(const type of Object.keys(want))for(let i=0;i<want[type];i++)nodes.push(buildNode(type,color,theme,style));
+ for(const color of ['w','b'])for(const type of Object.keys(want)){
+  for(let i=0;i<want[type];i++)nodes.push(buildNode(type,color,theme,style));
+  // Yield between small batches so decoding never freezes a menu fade or a click.
+  await new Promise(resolve=>setTimeout(resolve,0));
+ }
  await Promise.all(nodes.map(async node=>{const image=node.querySelector('img');try{await image.decode();markWarm(node);}catch{}}));
  return nodes;
+}
+function warmPieceStyles(theme){
+ for(const style of choices)preparePieceArt(theme,style).catch(()=>{});
 }
 /* 开局前把每种棋子各备好若干个已加载节点，之后任何一次落子都只是搬一个现成节点。 */
 function preloadPieceArt(prepared=[]){
  ensureScope();
+ const scope=prepared[0]?.dataset.artScope;
+ if(scope&&PREPARED_NODES.get(scope)?.nodes===prepared)PREPARED_NODES.delete(scope);
  for(const node of prepared){const code=node.firstElementChild?.dataset.piece;if(!code||node.dataset.artScope!==artScope())continue;const key=artScope()+'|'+code;let list=POOL.get(key);if(!list)POOL.set(key,list=[]);list.push(node);}
  const want={p:9,n:3,b:3,r:3,q:2,k:2};
  for(const color of ['w','b'])for(const type of Object.keys(want)){
@@ -1105,7 +1238,7 @@ function preloadPieceArt(prepared=[]){
  }
 }
 
-return { pieceSvg, setPieceStyle, acquirePiece, releasePiece, resetPiecePool, preloadPieceArt, preparePieceArt };
+return { pieceSvg, setPieceStyle, acquirePiece, releasePiece, resetPiecePool, preloadPieceArt, preparePieceArt, warmPieceStyles };
 })();
 const { MUSIC_SEED, MUSIC_GROUPS, EXTENDED_GROUPS }=(()=>{
 // Actual filenames verified against Wikimedia Commons category listings, Oct 2026.
@@ -2195,21 +2328,33 @@ const { setupPeriodMusic }=(()=>{
 
 
 
+
+
 const ERAS={baroque:'巴洛克',classical:'古典',romantic:'浪漫',modern:'近现代'};
 const $=id=>document.getElementById(id),audio=$('music-audio');
 const local=LOCAL_MUSIC.map(track=>({...track,id:'local:'+track.file,localUrl:'./assets/music/'+encodeURIComponent(track.file)}));
 const remoteSeed=MUSIC_SEED.map(([file,title,composer])=>({id:'seed:'+file,file,title,composer,era:/巴赫|亨德尔|维瓦尔第|斯卡拉蒂/.test(composer)?'baroque':/莫扎特|贝多芬|海顿/.test(composer)?'classical':/德彪西|拉威尔|萨蒂/.test(composer)?'modern':'romantic',sourceUrl:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file)}));
-const state={era:'all',shuffle:true,onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
+const state={era:'all',onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
 const source=track=>track.localUrl||track.remoteUrl||'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(track.file).replace(/%20/g,'_');
+const coverCache=new Map();let coverCacheBytes=0;
+function cacheCover(id,cover){coverCacheBytes-=coverCache.get(id)?.bytes.length||0;coverCache.set(id,cover);coverCacheBytes+=cover?.bytes.length||0;while(coverCache.size>24||coverCacheBytes>6*1024*1024){const first=coverCache.keys().next().value;coverCacheBytes-=coverCache.get(first)?.bytes.length||0;coverCache.delete(first);}}
+let coverController=null,coverSequence=0;
+function updateCover(track){
+ const sequence=++coverSequence;coverController?.abort();coverController=new AbortController();
+ const box=document.querySelector('.now-art');for(const old of box.querySelectorAll('img'))hideSurface(old,()=>{URL.revokeObjectURL(old.src);old.remove();});
+ const controller=coverController,timeout=setTimeout(()=>controller.abort(),8000),signal=controller.signal;
+ const load=coverCache.has(track.id)?Promise.resolve(coverCache.get(track.id)):(async()=>{const cover=await readMusicCover(source(track),{signal,blob:state.buffers.get(track.id)?.blob});if(cover||signal.aborted||!track.localUrl||!track.downloadUrl?.startsWith('https://upload.wikimedia.org/'))return cover;return readMusicCover(track.downloadUrl,{signal});})();
+ load.then(async cover=>{clearTimeout(timeout);if(signal.aborted||sequence!==coverSequence)return;cacheCover(track.id,cover);if(!cover)return;const img=new Image();img.alt='';img.title='当前录音内嵌封面';img.src=URL.createObjectURL(new Blob([cover.bytes],{type:cover.mime}));try{await img.decode();if(sequence!==coverSequence){URL.revokeObjectURL(img.src);return;}box.append(img);img.hidden=true;showSurface(img);}catch{URL.revokeObjectURL(img.src);}}).catch(()=>clearTimeout(timeout));
+}
 let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0;
 audio.crossOrigin='anonymous';
 function stopSpectrum(){cancelAnimationFrame(spectrumFrame);spectrumFrame=0;for(const bar of document.querySelectorAll('.wave-bars i'))bar.style.transform='scaleY(.12)';}
 function ensureSpectrum(){
- try{if(!spectrumContext){const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;spectrumContext=new Context();spectrumSource=spectrumContext.createMediaElementSource(audio);spectrum=spectrumContext.createAnalyser();spectrum.fftSize=256;spectrum.smoothingTimeConstant=.72;spectrumSource.connect(spectrum);spectrum.connect(spectrumContext.destination);}spectrumContext.resume().catch(()=>{});}catch{}
+ try{if(!spectrumContext){const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;spectrumContext=new Context();spectrumSource=spectrumContext.createMediaElementSource(audio);spectrum=spectrumContext.createAnalyser();spectrum.fftSize=1024;spectrum.smoothingTimeConstant=.72;spectrumSource.connect(spectrum);spectrum.connect(spectrumContext.destination);}spectrumContext.resume().catch(()=>{});}catch{}
 }
 function startSpectrum(){
- stopSpectrum();if(!spectrum)return;const data=new Uint8Array(spectrum.frequencyBinCount),groups=[[1,3],[3,6],[6,12],[12,24],[24,48]],bars=[...document.querySelectorAll('.wave-bars i')];
- const frame=()=>{if(audio.paused||$('music-panel').classList.contains('hidden')){spectrumFrame=0;return;}spectrum.getByteFrequencyData(data);groups.forEach(([from,to],i)=>{let total=0;for(let j=from;j<to;j++)total+=data[j];if(bars[i])bars[i].style.transform=`scaleY(${(.16+.84*Math.sqrt(total/(to-from)/255)).toFixed(3)})`;});spectrumFrame=requestAnimationFrame(frame);};spectrumFrame=requestAnimationFrame(frame);
+ stopSpectrum();if(!spectrum)return;const data=new Uint8Array(spectrum.frequencyBinCount),groups=[[1,4],[4,8],[8,16],[16,32],[32,64]],bars=[...document.querySelectorAll('.wave-bars i')];
+ const frame=()=>{if(audio.paused||$('music-panel').classList.contains('hidden')){spectrumFrame=0;return;}spectrum.getByteFrequencyData(data);groups.forEach(([from,to],i)=>{let total=0;for(let j=from;j<to;j++)total+=data[j];if(bars[i])bars[i].style.transform=`scaleY(${(.2+.8*Math.sqrt(total/(to-from)/255)).toFixed(3)})`;});spectrumFrame=requestAnimationFrame(frame);};spectrumFrame=requestAnimationFrame(frame);
 }
 const time=seconds=>Number.isFinite(seconds)&&seconds>=0?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'0:00';
 const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8 18.7 12 8 18.2z"/></svg>',pauseIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>';
@@ -2220,7 +2365,7 @@ function tracks(){
  const localKeys=new Set(locals.map(recordingKey));
  return online.length?[...online.filter(track=>!localKeys.has(recordingKey(track))),...locals]:locals.length?locals:remoteSeed.filter(valid);
 }
-function pick(direction=1,forceRandom=false){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:forceRandom||state.shuffle,direction});}
+function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:true,direction});}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
 function updateTrackOverflow(){const title=$('music-title'),wrap=title.closest('.music-title-viewport'),overflow=title.scrollWidth>wrap.clientWidth+6;title.classList.toggle('title-scroll',overflow);title.style.setProperty('--track-shift',overflow?Math.min(0,wrap.clientWidth-title.scrollWidth-14)+'px':'0px');}
 function syncPanelAnchor(){const header=document.querySelector('.masthead');document.documentElement.style.setProperty('--masthead-h',Math.round(header.getBoundingClientRect().height)+'px');}
@@ -2229,7 +2374,6 @@ function render(){
  $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
  const button=$('music-play'),icon=playing?'pause':'play';if(button.dataset.icon!==icon){button.dataset.icon=icon;button.innerHTML=playing?pauseIcon:playIcon;button.setAttribute('aria-label',playing?'暂停':'播放');button.title=playing?'暂停':'播放';}
  $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';$('music-artist').textContent=[state.track?.composer,state.track?.performer].filter(Boolean).join(' · ')||'本地精选与在线曲库';
- $('music-shuffle').setAttribute('aria-pressed',String(state.shuffle));$('music-shuffle').title=state.shuffle?'乱序：上一首也会选择新曲；点击切换顺序':'顺序：可以向前和向后切换';
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
  // Recording attribution remains on the compact artist line; no controls or
  // web prompts are inserted below the progress bar.
@@ -2248,7 +2392,7 @@ function bufferTrack(track){
   const reader=response.body.getReader(),chunks=[];let size=0;
   while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>8_000_000){entry.status='stream';await reader.cancel();return;}chunks.push(value);}
   if(state.buffers.get(track.id)!==entry)return;
-  entry.url=URL.createObjectURL(new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'}));entry.status='ready';
+  entry.blob=new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'});entry.url=URL.createObjectURL(entry.blob);entry.status='ready';
  })().catch(()=>{if(entry.status==='loading')entry.status='failed';}).finally(()=>{
   $('music-panel').dataset.buffered=String([...state.buffers.values()].filter(value=>value.status==='ready').length);
  });
@@ -2256,8 +2400,8 @@ function bufferTrack(track){
 function prefetch(){
  const pool=tracks(),plan=[],first=pick(1);if(first&&first.id!==state.track?.id)plan.push(first);
  const remaining=pool.filter(track=>track.id!==state.track?.id&&!plan.some(item=>item.id===track.id));
- if(state.shuffle)for(let i=remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}
- else if(state.track){const index=pool.findIndex(track=>track.id===state.track.id);remaining.sort((a,b)=>((pool.indexOf(a)-index+pool.length)%pool.length)-((pool.indexOf(b)-index+pool.length)%pool.length));}
+ for(let i=remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}
+
  plan.push(...remaining.slice(0,3-plan.length));state.plan=plan;
  const keep=new Set([state.track?.id,...plan.map(track=>track.id)]);for(const id of state.buffers.keys())if(!keep.has(id))disposeBuffer(id);
  for(const track of plan)bufferTrack(track);
@@ -2267,7 +2411,7 @@ function start(track){
  if(!track)return;
  ensureSpectrum();
  const serial=++state.serial;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
- state.history.push(track.id);if(state.history.length>32)state.history.shift();
+ updateCover(track);state.history.push(track.id);if(state.history.length>32)state.history.shift();
  audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
  // play() stays in the user's click stack, including on iPhone. Do not await a manifest/fetch first.
  const request=audio.play();render();prefetch();
@@ -2278,13 +2422,13 @@ function start(track){
  });
 }
 function advance(direction=1){
- const target=state.shuffle&&state.plan[0]&&!state.failed.has(state.plan[0].id)?state.plan[0]:pick(direction);
+ const target=state.plan[0]&&!state.failed.has(state.plan[0].id)?state.plan[0]:pick(direction);
  if(target)start(target);
 }
 function fail(serial=state.serial){
  if(serial!==state.serial||!state.track)return;
  state.failed.add(state.track.id);state.errors++;state.playing=false;
- if(state.track.online&&state.errors>=3){state.onlineBackoffUntil=Date.now()+60000;state.plan=[];start(pick(1,true));state.status='在线录音暂不可用，已切换本地精选。';render();return;}
+ if(state.track.online&&state.errors>=3){state.onlineBackoffUntil=Date.now()+60000;state.plan=[];start(pick(1));state.status='在线录音暂不可用，已切换本地精选。';render();return;}
  if(state.errors>=6||!tracks().length){state.status='暂时无法播放，请检查网络后重试。';render();return;}
  state.plan=[];advance();
 }
@@ -2297,10 +2441,10 @@ async function expandOnline(){
  }catch{state.onlineBackoffUntil=Date.now()+30000;}
  finally{state.discovering=false;render();if(state.era!==era)expandOnline();}
 }
-function closePanel(){$('music-panel').classList.add('hidden');$('music-toggle').setAttribute('aria-expanded','false');}
+function closePanel(){hideSurface($('music-panel'));$('music-toggle').setAttribute('aria-expanded','false');stopSpectrum();}
 function setupPeriodMusic(){
  let copyTimer;
- const copyTitle=async()=>{if(!state.track)return;const label=musicCopyTitle(state.track),toast=$('music-copy-toast');try{await navigator.clipboard.writeText(label);toast.textContent='已复制';}catch{toast.textContent='复制失败，请允许剪贴板权限';}clearTimeout(copyTimer);toast.hidden=false;copyTimer=setTimeout(()=>toast.hidden=true,1400);};
+ const copyTitle=async()=>{if(!state.track)return;const label=musicCopyTitle(state.track),toast=$('music-copy-toast');try{await navigator.clipboard.writeText(label);toast.textContent='已复制';}catch{toast.textContent='复制失败，请允许剪贴板权限';}clearTimeout(copyTimer);showSurface(toast);copyTimer=setTimeout(()=>hideSurface(toast),1400);};
  $('music-copy').addEventListener('click',copyTitle);$('music-copy').addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyTitle();}});
  audio.volume=.25;$('music-next-audio').preload='none';
  audio.addEventListener('playing',()=>{state.playing=true;state.errors=0;state.status='';render();startSpectrum();});
@@ -2309,26 +2453,26 @@ function setupPeriodMusic(){
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
  audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
- $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=$('music-panel').classList.contains('hidden');$('music-panel').classList.toggle('hidden',!open);$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open)showSurface($('music-panel'));else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
  $('music-close').addEventListener('click',closePanel);
  document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
- $('music-panel').addEventListener('keydown',event=>{if(event.key==='Escape')closePanel();});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&surfaceOpen($('music-panel'))){event.preventDefault();closePanel();$('music-toggle').focus({preventScroll:true});}});
  document.querySelectorAll('.era-btn').forEach(button=>button.addEventListener('click',()=>{
-  state.era=button.dataset.era;if(state.era==='all')state.shuffle=true;state.plan=[];state.errors=0;
-  start(pick(1,true));expandOnline();
+  state.era=button.dataset.era;state.failed.clear();state.plan=[];state.errors=0;
+  start(pick(1));expandOnline();
  }));
- $('music-play').addEventListener('click',()=>{ensureSpectrum();if(!audio.paused){audio.pause();return;}if(state.track&&!state.failed.has(state.track.id))audio.play().catch(()=>fail());else{state.failed.clear();state.errors=0;start(pick(1,true));}});
+ $('music-play').addEventListener('click',()=>{ensureSpectrum();if(!audio.paused){audio.pause();return;}if(state.track&&!state.failed.has(state.track.id))audio.play().catch(()=>fail());else{state.failed.clear();state.errors=0;start(pick(1));}});
  $('music-prev').addEventListener('click',()=>advance(-1));$('music-next').addEventListener('click',()=>advance(1));
- $('music-shuffle').addEventListener('click',()=>{state.shuffle=!state.shuffle;prefetch();render();});
  $('music-seek').addEventListener('input',event=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(event.target.value)/1000;});
  $('music-seek').addEventListener('pointerup',event=>event.target.blur());
  addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});new ResizeObserver(syncPanelAnchor).observe(document.querySelector('.masthead'));
- addEventListener('pagehide',()=>{audio.pause();stopSpectrum();spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
+ addEventListener('pagehide',()=>{audio.pause();stopSpectrum();coverController?.abort();for(const img of document.querySelectorAll('.now-art img'))URL.revokeObjectURL(img.src);spectrumContext?.suspend();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
  syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();if(!state.track)expandOnline();},2500);
 }
 
 return { setupPeriodMusic };
 })();
+
 
 
 
@@ -2806,9 +2950,9 @@ function askPromotion(from,to,color){
  state.promo={from,to};
  const side=color==='b'?'b':'w';
  box.innerHTML=['q','r','b','n'].map(p=>`<button type="button" data-promo="${p}" aria-label="${pieceName[p]}">${pieceSvg(p,side)}</button>`).join('');
- box.classList.remove('hidden');
+ showSurface(box);
 }
-function hidePromotion(){state.promo=null;$('#promo-choice')?.classList.add('hidden');}
+function hidePromotion(){state.promo=null;hideSurface($('#promo-choice'));}
 function lessonOrigin(l){
  if(l.stage==='开局')return '开局示范';
  if(l.stage==='残局')return '残局练习';
@@ -3295,7 +3439,7 @@ function animateOpening(update,{animate=true}={}){
  if(oldNodes.length){
   board.append(layer);
   // Scaling one grid keeps all old piece sizes and distances proportional.
-  run(layer,[{transform:'scale(1)',opacity:1},{transform:'scale(0)',opacity:0}],{duration:320,easing:'cubic-bezier(.55,.055,.675,.19)'});
+  run(layer,[{transform:'scale(1)',opacity:1},{offset:.35,opacity:.3},{transform:'scale(0)',opacity:0}],{duration:320,easing:'cubic-bezier(.55,.055,.675,.19)'});
  }
  for(const [index,cell] of [...board.querySelectorAll(':scope > .square')].entries()){
   const node=cell.querySelector(':scope > .piece');if(!node)continue;
@@ -3310,14 +3454,14 @@ function animateOpening(update,{animate=true}={}){
 let requestedTheme='walnut',requestedPieceStyle='cburnett',appearanceSequence=0,appearanceMotion=[];
 function clearAppearanceMotion(){
  for(const {animation,ghost} of appearanceMotion){animation.cancel();ghost?.remove();}
- appearanceMotion=[];
+ appearanceMotion=[];$('#board').classList.remove('is-changing-art');
 }
 function appearanceAnimation(node,frames,duration,ghost=null,startTime=null,easing='cubic-bezier(.4,0,.2,1)'){
  const animation=node.animate(frames,{duration,easing,fill:'both'});
  if(startTime!==null)animation.startTime=startTime;
  const entry={animation,ghost};appearanceMotion.push(entry);
  const done=animation.finished.catch(()=>{}).then(()=>{
-  animation.cancel();ghost?.remove();appearanceMotion=appearanceMotion.filter(item=>item!==entry);flushBoardWork();
+  animation.cancel();ghost?.remove();appearanceMotion=appearanceMotion.filter(item=>item!==entry);if(!appearanceMotion.length)$('#board').classList.remove('is-changing-art');flushBoardWork();
  });
  return done;
 }
@@ -3338,18 +3482,20 @@ async function changeAppearance(animate){
  }):[];
  root.dataset.theme=theme;setPieceStyle(style);resetPiecePool();preloadPieceArt(prepared);drawBoard();
  if(motion){
+  $('#board').classList.add('is-changing-art');
   // Style changes have two halves: retract the old set completely, then grow the new set.
   // Keep both on one timeline; ghosts are removed rather than restored on completion.
   const startTime=null,duration=styleChanged?480:240;
   for(const {square,node} of previous){
    node.classList.add('appearance-ghost');$('#board').querySelector(`[data-square="${square}"]`).append(node);
-   appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(0)',opacity:0}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
+   appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.12,opacity:.1},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(0)',opacity:0}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
   for(const node of $('#board').querySelectorAll('.square > .piece:not(.appearance-ghost)')){
    appearanceAnimation(node,styleChanged?[{transform:'scale(0)',opacity:0},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(1)',opacity:1}]:[{opacity:0},{offset:.7,opacity:1},{opacity:1}],duration,null,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
   // Anchor the whole set to the first paint after all effects have been installed.
   // A busy SVG/layout frame must not consume the shrink phase before it is visible.
+  setTimeout(()=>warmPieceStyles(theme),220);
   const effects=appearanceMotion.map(entry=>entry.animation);for(const animation of effects)animation.pause();
   requestAnimationFrame(time=>{if(sequence!==appearanceSequence)return;const active=new Set(appearanceMotion.map(entry=>entry.animation));for(const animation of effects){if(!active.has(animation))continue;animation.play();animation.startTime=time;}});
  }
@@ -3445,7 +3591,7 @@ function flipBrandKnight(){
 }
 window.addEventListener('pagehide',()=>{brandSpin?.cancel();brandSpin=null;});
 function setupEvents(){
- document.addEventListener('pointerdown',event=>{const guide=$('#collection-guide');if(guide?.open&&!guide.contains(event.target))guide.open=false;});
+ document.addEventListener('pointerdown',event=>{const guide=$('#collection-guide');if(guide?.open&&!guide.contains(event.target))hideSurface(guide.querySelector('.collection-guide-body'),()=>{guide.open=false;});});
  $('#board').addEventListener('error',e=>{if(e.target.matches('.piece-art-img'))e.target.closest('.assetpiece')?.classList.add('asset-fallback-mode');},true);
  $('#home').addEventListener('click',e=>{e.preventDefault();flipBrandKnight();});
  $('#autoplay').addEventListener('click',togglePlayback);
@@ -3466,7 +3612,7 @@ function setupEvents(){
   else{clearBoardGeometry();drawBoard();}
  });
  // 设置弹窗：右上角齿轮
- $('#settings-toggle').addEventListener('click',()=>{const d=$('#settings-dialog');d.open?d.close():d.showModal();$('#settings-toggle').setAttribute('aria-expanded',String(d.open));});
+ $('#settings-toggle').addEventListener('click',()=>{const d=$('#settings-dialog');surfaceOpen(d)?d.close():d.showModal();warmPieceStyles(requestedTheme);});
  $('#settings-close').addEventListener('click',()=>$('#settings-dialog').close());
  $('#settings-dialog').addEventListener('close',()=>$('#settings-toggle').setAttribute('aria-expanded','false'));
  $('#settings-dialog').addEventListener('click',e=>{if(e.target===$('#settings-dialog'))$('#settings-dialog').close();});
@@ -3535,6 +3681,8 @@ function setupEvents(){
  addEventListener('resize',()=>{clearBoardGeometry();},{passive:true});
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)||document.querySelector('dialog[open]'))return;if(e.key==='ArrowLeft'){e.preventDefault();stopPlayback();goto(state.view-1);}if(e.key==='ArrowRight'){e.preventDefault();stopPlayback();goto(state.view+1);}});
 }
+installDialogMotion(document.querySelectorAll('dialog'));
+const guide=$('#collection-guide');guide?.querySelector('summary')?.addEventListener('click',event=>{event.preventDefault();const body=guide.querySelector('.collection-guide-body');if(guide.open&&surfaceOpen(body))hideSurface(body,()=>{guide.open=false;});else{guide.open=true;showSurface(body);}});
 initializeArchives();setupEvents();setupLogoEasterEgg();setupPeriodMusic();try{applyTheme(localStorage.getItem('ChessAtelierTheme'),{animate:false});}catch{applyTheme('walnut',{animate:false});}
 try{const stored=localStorage.getItem('ChessAtelierPieceStyleV3');applyPieceStyle(['cburnett','maestro','mpchess','totoy'].includes(stored)?stored:'cburnett',{animate:false});}catch{applyPieceStyle('cburnett',{animate:false});}
 initializeThemeMotion();
@@ -3542,6 +3690,7 @@ initializeThemeMotion();
 // 不会再出现新 <img> 等 onload 的那一次淡入。
 preloadPieceArt();
 preparePieceArt(requestedTheme,requestedPieceStyle);
+setTimeout(()=>warmPieceStyles(requestedTheme),700);
 refreshEngineStatus();
 setPlayMode('free',{animate:false});drawAll();initLocal();
 

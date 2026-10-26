@@ -114,7 +114,6 @@ body,html{font-size:16px;line-height:1.6}
 .music-controls{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 9px}
 .music-controls button{width:43px;height:43px;min-width:43px;display:grid;place-items:center;font-size:15px;border-radius:11px}
 .music-controls .music-play-primary{width:49px;height:49px;min-width:49px;background:var(--accent);color:var(--paper);font-size:20px}
-.music-controls #music-shuffle[aria-pressed="true"]{background:var(--accent);color:var(--paper)}
 .music-controls input{width:95px;margin-left:auto;min-width:55px}
 .music-progress{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
 .music-progress input{min-width:0;width:100%;accent-color:var(--accent)}

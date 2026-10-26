@@ -1,8 +1,9 @@
+import { surfaceOpen, showSurface, hideSurface, installDialogMotion } from './surface-motion.js';
 import { setupLocalAnalysis } from './analysis-ui.js';
 import { setupPostReview } from './post-review.js';
 import { LESSONS } from './library.js';
 import { setupPeriodMusic } from './period-music.js';
-import { pieceSvg, setPieceStyle, acquirePiece, releasePiece, resetPiecePool, preloadPieceArt, preparePieceArt } from './piece-art.js';
+import { pieceSvg, setPieceStyle, acquirePiece, releasePiece, resetPiecePool, preloadPieceArt, preparePieceArt, warmPieceStyles } from './piece-art.js';
 import { SCORE_PACKS, PACK_GROUPS, ALL_PACKS, scorePackName, scoreCategory, scoreInCollection, personalPackName } from './master-collections.js';
 import { setupLogoEasterEgg } from './logo-easter-egg.js';
 import { readStarredScores, writeStarredScores } from './favorites.js';
@@ -476,9 +477,9 @@ function askPromotion(from,to,color){
  state.promo={from,to};
  const side=color==='b'?'b':'w';
  box.innerHTML=['q','r','b','n'].map(p=>`<button type="button" data-promo="${p}" aria-label="${pieceName[p]}">${pieceSvg(p,side)}</button>`).join('');
- box.classList.remove('hidden');
+ showSurface(box);
 }
-function hidePromotion(){state.promo=null;$('#promo-choice')?.classList.add('hidden');}
+function hidePromotion(){state.promo=null;hideSurface($('#promo-choice'));}
 function lessonOrigin(l){
  if(l.stage==='开局')return '开局示范';
  if(l.stage==='残局')return '残局练习';
@@ -965,7 +966,7 @@ function animateOpening(update,{animate=true}={}){
  if(oldNodes.length){
   board.append(layer);
   // Scaling one grid keeps all old piece sizes and distances proportional.
-  run(layer,[{transform:'scale(1)',opacity:1},{transform:'scale(0)',opacity:0}],{duration:320,easing:'cubic-bezier(.55,.055,.675,.19)'});
+  run(layer,[{transform:'scale(1)',opacity:1},{offset:.35,opacity:.3},{transform:'scale(0)',opacity:0}],{duration:320,easing:'cubic-bezier(.55,.055,.675,.19)'});
  }
  for(const [index,cell] of [...board.querySelectorAll(':scope > .square')].entries()){
   const node=cell.querySelector(':scope > .piece');if(!node)continue;
@@ -980,14 +981,14 @@ function animateOpening(update,{animate=true}={}){
 let requestedTheme='walnut',requestedPieceStyle='cburnett',appearanceSequence=0,appearanceMotion=[];
 function clearAppearanceMotion(){
  for(const {animation,ghost} of appearanceMotion){animation.cancel();ghost?.remove();}
- appearanceMotion=[];
+ appearanceMotion=[];$('#board').classList.remove('is-changing-art');
 }
 function appearanceAnimation(node,frames,duration,ghost=null,startTime=null,easing='cubic-bezier(.4,0,.2,1)'){
  const animation=node.animate(frames,{duration,easing,fill:'both'});
  if(startTime!==null)animation.startTime=startTime;
  const entry={animation,ghost};appearanceMotion.push(entry);
  const done=animation.finished.catch(()=>{}).then(()=>{
-  animation.cancel();ghost?.remove();appearanceMotion=appearanceMotion.filter(item=>item!==entry);flushBoardWork();
+  animation.cancel();ghost?.remove();appearanceMotion=appearanceMotion.filter(item=>item!==entry);if(!appearanceMotion.length)$('#board').classList.remove('is-changing-art');flushBoardWork();
  });
  return done;
 }
@@ -1008,18 +1009,20 @@ async function changeAppearance(animate){
  }):[];
  root.dataset.theme=theme;setPieceStyle(style);resetPiecePool();preloadPieceArt(prepared);drawBoard();
  if(motion){
+  $('#board').classList.add('is-changing-art');
   // Style changes have two halves: retract the old set completely, then grow the new set.
   // Keep both on one timeline; ghosts are removed rather than restored on completion.
   const startTime=null,duration=styleChanged?480:240;
   for(const {square,node} of previous){
    node.classList.add('appearance-ghost');$('#board').querySelector(`[data-square="${square}"]`).append(node);
-   appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(0)',opacity:0}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
+   appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.12,opacity:.1},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(0)',opacity:0}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
   for(const node of $('#board').querySelectorAll('.square > .piece:not(.appearance-ghost)')){
    appearanceAnimation(node,styleChanged?[{transform:'scale(0)',opacity:0},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(1)',opacity:1}]:[{opacity:0},{offset:.7,opacity:1},{opacity:1}],duration,null,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
   // Anchor the whole set to the first paint after all effects have been installed.
   // A busy SVG/layout frame must not consume the shrink phase before it is visible.
+  setTimeout(()=>warmPieceStyles(theme),220);
   const effects=appearanceMotion.map(entry=>entry.animation);for(const animation of effects)animation.pause();
   requestAnimationFrame(time=>{if(sequence!==appearanceSequence)return;const active=new Set(appearanceMotion.map(entry=>entry.animation));for(const animation of effects){if(!active.has(animation))continue;animation.play();animation.startTime=time;}});
  }
@@ -1115,7 +1118,7 @@ function flipBrandKnight(){
 }
 window.addEventListener('pagehide',()=>{brandSpin?.cancel();brandSpin=null;});
 function setupEvents(){
- document.addEventListener('pointerdown',event=>{const guide=$('#collection-guide');if(guide?.open&&!guide.contains(event.target))guide.open=false;});
+ document.addEventListener('pointerdown',event=>{const guide=$('#collection-guide');if(guide?.open&&!guide.contains(event.target))hideSurface(guide.querySelector('.collection-guide-body'),()=>{guide.open=false;});});
  $('#board').addEventListener('error',e=>{if(e.target.matches('.piece-art-img'))e.target.closest('.assetpiece')?.classList.add('asset-fallback-mode');},true);
  $('#home').addEventListener('click',e=>{e.preventDefault();flipBrandKnight();});
  $('#autoplay').addEventListener('click',togglePlayback);
@@ -1136,7 +1139,7 @@ function setupEvents(){
   else{clearBoardGeometry();drawBoard();}
  });
  // 设置弹窗：右上角齿轮
- $('#settings-toggle').addEventListener('click',()=>{const d=$('#settings-dialog');d.open?d.close():d.showModal();$('#settings-toggle').setAttribute('aria-expanded',String(d.open));});
+ $('#settings-toggle').addEventListener('click',()=>{const d=$('#settings-dialog');surfaceOpen(d)?d.close():d.showModal();warmPieceStyles(requestedTheme);});
  $('#settings-close').addEventListener('click',()=>$('#settings-dialog').close());
  $('#settings-dialog').addEventListener('close',()=>$('#settings-toggle').setAttribute('aria-expanded','false'));
  $('#settings-dialog').addEventListener('click',e=>{if(e.target===$('#settings-dialog'))$('#settings-dialog').close();});
@@ -1205,6 +1208,8 @@ function setupEvents(){
  addEventListener('resize',()=>{clearBoardGeometry();},{passive:true});
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)||document.querySelector('dialog[open]'))return;if(e.key==='ArrowLeft'){e.preventDefault();stopPlayback();goto(state.view-1);}if(e.key==='ArrowRight'){e.preventDefault();stopPlayback();goto(state.view+1);}});
 }
+installDialogMotion(document.querySelectorAll('dialog'));
+const guide=$('#collection-guide');guide?.querySelector('summary')?.addEventListener('click',event=>{event.preventDefault();const body=guide.querySelector('.collection-guide-body');if(guide.open&&surfaceOpen(body))hideSurface(body,()=>{guide.open=false;});else{guide.open=true;showSurface(body);}});
 initializeArchives();setupEvents();setupLogoEasterEgg();setupPeriodMusic();try{applyTheme(localStorage.getItem('ChessAtelierTheme'),{animate:false});}catch{applyTheme('walnut',{animate:false});}
 try{const stored=localStorage.getItem('ChessAtelierPieceStyleV3');applyPieceStyle(['cburnett','maestro','mpchess','totoy'].includes(stored)?stored:'cburnett',{animate:false});}catch{applyPieceStyle('cburnett',{animate:false});}
 initializeThemeMotion();
@@ -1212,5 +1217,6 @@ initializeThemeMotion();
 // 不会再出现新 <img> 等 onload 的那一次淡入。
 preloadPieceArt();
 preparePieceArt(requestedTheme,requestedPieceStyle);
+setTimeout(()=>warmPieceStyles(requestedTheme),700);
 refreshEngineStatus();
 setPlayMode('free',{animate:false});drawAll();initLocal();

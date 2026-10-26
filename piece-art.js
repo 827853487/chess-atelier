@@ -87,7 +87,18 @@ export function releasePiece(node){
 export function resetPiecePool(){POOL.clear();poolScope='';}
 // Decode the complete target set before replacing any visible pieces.
 const PREPARED=new Map();
+const PREPARED_NODES=new Map();
 export async function preparePieceArt(theme,style){
+ const scope=theme+'|'+style;
+ if(PREPARED_NODES.has(scope))return PREPARED_NODES.get(scope).promise;
+ const entry={nodes:null,promise:null};
+ entry.promise=prepareNodes(theme,style).then(nodes=>{entry.nodes=nodes;return nodes;}).catch(error=>{PREPARED_NODES.delete(scope);throw error;});
+ PREPARED_NODES.set(scope,entry);
+ // Keep a few decoded sets, without retaining every theme ever visited.
+ if(PREPARED_NODES.size>8)PREPARED_NODES.delete(PREPARED_NODES.keys().next().value);
+ return entry.promise;
+}
+async function prepareNodes(theme,style){
  const requests=[];
  for(const color of ['w','b'])for(const type of ['p','n','b','r','q','k']){
   const key=theme+'|'+style+'|'+color+type;
@@ -102,13 +113,22 @@ export async function preparePieceArt(theme,style){
  // Decode the actual nodes that will be inserted, not just separate Image objects.
  // In particular, async SVG decoding can otherwise start halfway through a scale animation.
  const nodes=[],want={p:9,n:3,b:3,r:3,q:2,k:2};
- for(const color of ['w','b'])for(const type of Object.keys(want))for(let i=0;i<want[type];i++)nodes.push(buildNode(type,color,theme,style));
+ for(const color of ['w','b'])for(const type of Object.keys(want)){
+  for(let i=0;i<want[type];i++)nodes.push(buildNode(type,color,theme,style));
+  // Yield between small batches so decoding never freezes a menu fade or a click.
+  await new Promise(resolve=>setTimeout(resolve,0));
+ }
  await Promise.all(nodes.map(async node=>{const image=node.querySelector('img');try{await image.decode();markWarm(node);}catch{}}));
  return nodes;
+}
+export function warmPieceStyles(theme){
+ for(const style of choices)preparePieceArt(theme,style).catch(()=>{});
 }
 /* 开局前把每种棋子各备好若干个已加载节点，之后任何一次落子都只是搬一个现成节点。 */
 export function preloadPieceArt(prepared=[]){
  ensureScope();
+ const scope=prepared[0]?.dataset.artScope;
+ if(scope&&PREPARED_NODES.get(scope)?.nodes===prepared)PREPARED_NODES.delete(scope);
  for(const node of prepared){const code=node.firstElementChild?.dataset.piece;if(!code||node.dataset.artScope!==artScope())continue;const key=artScope()+'|'+code;let list=POOL.get(key);if(!list)POOL.set(key,list=[]);list.push(node);}
  const want={p:9,n:3,b:3,r:3,q:2,k:2};
  for(const color of ['w','b'])for(const type of Object.keys(want)){
