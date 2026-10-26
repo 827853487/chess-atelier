@@ -41,7 +41,7 @@ vm.runInContext(fs.readFileSync(path.join(root,'vendor/chess.js'),'utf8').replac
   await page.locator('[data-play-mode=book]').click();
   const move=async(a,b,n)=>{await page.waitForFunction(()=>!document.querySelector('#board.is-opening,.floating-piece'));await page.locator(`[data-square=${a}]`).click();await page.locator(`[data-square=${b}]`).click();await page.waitForFunction(n=>document.querySelectorAll('#movelist [data-ply]').length===n,n);await page.waitForFunction(()=>!document.querySelector('.floating-piece'));};
   await move('f2','f3',2);await move('g2','g4',4);
-  assert.equal(await page.locator('#side-badge').innerText(),'对局结束');
+  assert.equal(await page.locator('#side-badge').innerText(),'黑方获胜');
   await page.locator('#review-toggle').click();await page.waitForFunction(()=>document.querySelector('#review-progress').textContent.startsWith('5 / 5'));
   await page.locator('#last').click();await page.waitForSelector('[data-square=h4] .review-mark');assert.match(await page.locator('#review-move-title').innerText(),/将死/);
   await page.locator('#reset').click();await page.waitForFunction(()=>!document.querySelector('#board.is-opening'));assert.equal(await page.locator('#review-toggle').getAttribute('aria-pressed'),'true');assert.equal(await page.locator('.review-mark').count(),0);

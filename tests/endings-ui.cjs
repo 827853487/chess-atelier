@@ -22,11 +22,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    const pgn=`[Event "${fixture.name}"]\n[White "${fixture.name}"]\n[Black "Black"]\n[Result "${fixture.result}"]\n\n${fixture.body}`;
    await page.locator('#fileinput').setInputFiles({name:fixture.name+'.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from(pgn)});
    await page.locator('#collection .library-open').filter({hasText:fixture.name}).first().click();await idle();await page.locator('#last').click();await idle();
-   await page.locator('#game-result').waitFor({state:'visible'});assert.equal(await page.locator('#game-result').innerText(),fixture.title);assert.equal(await page.locator('#side-badge').innerText(),'对局结束');
-   const banner=await page.locator('#game-result').evaluate(n=>{const s=getComputedStyle(n),r=n.getBoundingClientRect();return {blur:s.backdropFilter,font:parseFloat(s.fontSize),width:r.width,height:r.height,pointer:s.pointerEvents};});assert.equal(banner.blur,'none');assert.ok(banner.font<=14&&banner.width<210&&banner.height<60);assert.equal(banner.pointer,'none');
+   assert.equal(await page.locator('#game-result').count(),0);assert.equal(await page.locator('#side-badge').innerText(),fixture.title.replace(/^将死 · /,''));assert.equal(await page.locator('#status').innerText(),fixture.title);assert.ok(await page.locator('#side-badge').evaluate(n=>Number(getComputedStyle(n).fontWeight)>=700));
    if(fixture.name==='Mate')await page.locator('.board-block').screenshot({path:path.resolve(__dirname,`../test-results/quiet-result-${width}.png`)});
-   await page.locator('#flip').click();await idle();assert.equal(await page.locator('#game-result').innerText(),fixture.title);
-   await page.locator('#prev').click();await idle();assert.equal(await page.locator('#game-result').isVisible(),false);
+   await page.locator('#flip').click();await idle();assert.equal(await page.locator('#side-badge').innerText(),fixture.title.replace(/^将死 · /,''));
+   await page.locator('#prev').click();await idle();assert.equal(await page.locator('#game-result').count(),0);assert.equal(await page.locator('#side-badge').getAttribute('class'),'side-badge');
   }
   await page.locator('#settings-toggle').click();await page.waitForTimeout(260);const arrows=await page.locator('.source-external').evaluateAll(ns=>ns.map(n=>{const a=n.getBoundingClientRect(),p=n.parentElement.getBoundingClientRect();return {width:a.width,height:a.height,center:Math.abs((a.top+a.bottom-p.top-p.bottom)/2),tag:n.tagName};}));
   assert.equal(arrows.length,3);assert.ok(arrows.every(a=>Math.abs(a.width-10)<.1&&Math.abs(a.height-10)<.1&&a.center<1),JSON.stringify(arrows));await page.locator('#settings-dialog').screenshot({path:path.resolve(__dirname,`../test-results/endings-settings-${width}.png`)});await page.locator('#settings-close').click();

@@ -206,3 +206,5 @@ dialog[data-surface-state=closing]::backdrop{animation:surface-backdrop-out 160m
 @media(prefers-reduced-motion:reduce){dialog[data-surface-state=closing]::backdrop{animation:none!important}}
 
 #board.is-changing-art>.square>.piece{will-change:transform,opacity;backface-visibility:hidden}
+
+#side-badge.is-result,#status.is-result{font-weight:700!important;color:var(--ink)}

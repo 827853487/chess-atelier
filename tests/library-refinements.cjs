@@ -31,18 +31,15 @@ const output=path.resolve(__dirname,'../test-results');
   assert.equal(await page.locator('[data-score-id="save-old"] [data-star]').getAttribute('aria-pressed'),'true');
   await page.locator('#new-pack').click();assert.equal(await page.locator('#pack-list .pack-row[data-pack="我的棋谱"]').count(),1);await page.locator('#pack-close').click();
   await page.locator('[data-score-id="save-old"] [data-local]').click();await page.locator('#last').click();await page.waitForTimeout(600);
-  assert.equal(await page.locator('#side-badge').innerText(),'对局结束');assert.equal(await page.locator('#status').innerText(),'对局结束');
-  assert.equal(await page.locator('#game-result').innerText(),'白方获胜');
+  assert.equal(await page.locator('#side-badge').innerText(),'白方获胜');assert.equal(await page.locator('#status').innerText(),'白方获胜');
   // Header results must end the display even when the final board still has legal moves.
   for(const width of [1440,390]){
    await page.setViewportSize({width,height:1000});await page.waitForTimeout(120);
-   const board=await page.locator('#board').boundingBox(),banner=await page.locator('#game-result').boundingBox();
-   assert.ok(Math.abs(banner.y+banner.height/2-(board.y+board.height*7/8))<2);
-   assert.ok(Math.abs(banner.x+banner.width/2-(board.x+board.width/2))<2);
+   assert.equal(await page.locator('#game-result').count(),0);
    await page.locator('#flip').click();await page.waitForTimeout(80);
-   assert.equal(await page.locator('#side-badge').innerText(),'对局结束');
+   assert.equal(await page.locator('#side-badge').innerText(),'白方获胜');
   }
-  await page.locator('#prev').click();assert.match(await page.locator('#side-badge').innerText(),/方行棋$/);assert.equal(await page.locator('#game-result').isVisible(),false);
+  await page.locator('#prev').click();assert.match(await page.locator('#side-badge').innerText(),/方行棋$/);assert.equal(await page.locator('#game-result').count(),0);
   console.log('PASS: old personal collections merge without losing records, custom packs or stars; replay finish and result position work in both orientations');
   await page.setViewportSize({width:1440,height:1000});await page.locator('#category-masters').click();await select('world-2021');
   await page.locator('#atelier-archive-select .atelier-select-trigger').click();

@@ -5,7 +5,7 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=66" rel="stylesheet"/><link href="./engine-ui.css?v=66" rel="stylesheet"/><link href="./library-ui.css?v=66" rel="stylesheet"/>
+<link href="./app.css?v=67" rel="stylesheet"/><link href="./engine-ui.css?v=67" rel="stylesheet"/><link href="./library-ui.css?v=67" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
@@ -21,7 +21,7 @@
 <div class="mode-segment" id="mode-segment"><button aria-pressed="true" class="selected" data-play-mode="free" type="button">打谱</button><button aria-pressed="false" data-play-mode="book" type="button">对弈</button></div>
 <span class="side-badge" id="side-badge" aria-live="polite">白方行棋</span></div>
 <div class="board-frame">
-<div class="promo-choice hidden" id="promo-choice" role="dialog" aria-label="选择升变棋子"></div><div aria-hidden="true" class="board-coordinates"><div class="rank-labels"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div class="file-labels"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div><div aria-label="国际象棋棋盘" class="board" id="board" role="grid"></div><svg aria-hidden="true" class="arrows" id="arrows" viewbox="0 0 800 800"><path id="candidate-arrow" visibility="hidden"></path></svg><div aria-live="assertive" class="game-result hidden" id="game-result" role="alert"></div></div>
+<div class="promo-choice hidden" id="promo-choice" role="dialog" aria-label="选择升变棋子"></div><div aria-hidden="true" class="board-coordinates"><div class="rank-labels"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div class="file-labels"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div><div aria-label="国际象棋棋盘" class="board" id="board" role="grid"></div><svg aria-hidden="true" class="arrows" id="arrows" viewbox="0 0 800 800"><path id="candidate-arrow" visibility="hidden"></path></svg></div>
 <div aria-label="棋谱步数控制" class="transport"><button aria-label="第一步" id="first" title="第一步"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M5 5v14"></path><path d="m17 6-6 6 6 6"></path></svg></button><button aria-label="上一步" id="prev" title="上一步，键盘 ←"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></button><button aria-label="自动播放棋谱" aria-pressed="false" class="primary-transport" id="autoplay" title="播放与暂停"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"></path></svg></button><button aria-label="下一步" id="next" title="下一步，键盘 →"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg></button><button aria-label="最后一步" id="last" title="最后一步"><svg aria-hidden="true" fill="none" focusable="false" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M19 5v14"></path><path d="m7 6 6 6-6 6"></path></svg></button></div>
 <span aria-hidden="true" class="visually-hidden" id="ply">0 / 0</span><div class="board-actions"><button class="soft-button" id="reset">新棋局</button><button class="soft-button" id="undo">悔棋</button><button class="soft-button" id="flip">翻转棋盘</button><button class="soft-button mode-book-only hidden" id="save">保存棋谱</button></div>
 <div class="board-feedback"><div aria-live="polite" class="move-cue" id="move-cue" role="status">初始局面 · 点击棋子开始</div><button aria-pressed="true" class="sound-switch" id="sound-toggle" title="开关走棋提示音">音效开</button></div><div class="board-status" id="status" role="status">点击棋子查看参考着法</div>
@@ -89,6 +89,6 @@
 <div class="pack-create"><span></span><button class="inline-button" id="save-confirm" type="button">保存</button></div>
 </div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=66" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=66" defer></script>
+<script src="./app.bundle.js?v=67" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=67" defer></script>
 </body>
 </html>

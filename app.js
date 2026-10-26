@@ -73,10 +73,6 @@ function viewGame(){
 }
 function headerResult(){return String(state.game.header?.()?.Result||state.currentScoreSource?.result||'');}
 function atRecordEnd(moves){return state.review&&moves.length>0&&state.view>=moves.length;}
-function finishBanner(g,moves){
- const end=recordEnding(g,{recorded:state.review,atEnd:atRecordEnd(moves),result:headerResult()});
- return end?safeText(end.title)+(end.detail?`<small>${safeText(end.detail)}</small>`:''):'';
-}
 function locationFor(r,c){return (state.orientation==='w'?FILES[c]:FILES[7-c])+(state.orientation==='w'?8-r:r+1);}
 function centerFor(s){let c=FILE_INDEX[s[0]],r=+s[1];return state.orientation==='w'?{x:50+c*100,y:50+(8-r)*100}:{x:50+(7-c)*100,y:50+(r-1)*100};}
 let arrowKey='',arrowAnimation=null;const departingArrows=new Set();
@@ -127,7 +123,7 @@ function drawBoard(){
   }
  }
  const checked=g.isCheck();
- const resultBanner=finishBanner(g,moves),turnColor=g.turn(),over=!!resultBanner;
+ const ending=recordEnding(g,{recorded:state.review,atEnd:atRecordEnd(moves),result:headerResult()}),turnColor=g.turn(),over=!!ending;
  // 用 classList 做差量更新：只有状态真的变了才动 DOM，
  // 避免每步重设 className 触发全盘样式重算。
  const base=(r,c)=>((r+c)%2?'square dark':'square light');
@@ -167,11 +163,11 @@ function drawBoard(){
   if(fileLabels)for(let j=0;j<fileLabels.length;j++)fileLabels[j].textContent=state.orientation==='w'?FILES[j]:FILES[7-j];
  }
  drawArrow();
- $('#side-badge').textContent=over?'对局结束':(turnColor==='w'?'白方':'黑方')+'行棋';
- $('#status').textContent=over?'对局结束':state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱浏览 · 使用箭头切换着法':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
- const end=$('#game-result');
- if(resultBanner){end.classList.remove('hidden');end.innerHTML=resultBanner;}
- else end.classList.add('hidden');
+ const badge=$('#side-badge'),status=$('#status');
+ badge.textContent=over?ending.title.replace(/^将死 · /,''):(turnColor==='w'?'白方':'黑方')+'行棋';
+ badge.classList.toggle('is-result',over);badge.title=over?[ending.title,ending.detail].filter(Boolean).join(' · '):'';
+ status.textContent=over?[ending.title,ending.detail].filter(Boolean).join(' · '):state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱浏览 · 使用箭头切换着法':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
+ status.classList.toggle('is-result',over);
  $('#ply').textContent=state.view+' / '+moves.length;
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
  postReview?.sync();
@@ -184,7 +180,6 @@ function flushBoardWork(){if(boardFlush)return;boardFlush=true;requestAnimationF
 async function whenBoardIdle(){while(boardLocked()||pendingBoardAction){if(pendingBoardAction&&!boardLocked()){flushBoardWork();await new Promise(requestAnimationFrame);continue;}await Promise.all([whenFlightsIdle(),whenOpeningIdle(),...appearanceMotion.map(item=>item.animation.finished.catch(()=>{})),undoRunning?exclusiveDone:Promise.resolve()]);}}
 function flipBoard(){if(deferBoardAction(flipBoard))return;animateOpening(()=>{state.orientation=state.orientation==='w'?'b':'w';clearBoardGeometry();drawBoard();});}
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
-let animationSerial=0;
 // 格子几何：棋盘是固定网格，只在棋盘盒尺寸变化时重算一次，
 // 避免每步动画都做多次 getBoundingClientRect 触发强制回流。
 let geoCache=null;
@@ -214,7 +209,6 @@ function pulseSquare(square,isCapture){const sq=boardCell(square);if(!sq)return;
 const activeFlights=new Set();
 function settleFlights(){
  if(!activeFlights.size)return false;
- animationSerial++;
  for(const f of [...activeFlights])f.finish();
  activeFlights.clear();
  return true;
@@ -238,7 +232,7 @@ function transition(m,reverse=false,snapshot=null){
  showMoveCue(m,reverse);
  const releaseSnapshot=()=>{for(const node of Object.values(snapshot||{}))if(node)releasePiece(node);};
  if(!src||!end||!state.animEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches){releaseSnapshot();playMoveSound(m);return Promise.resolve();}
- const duration=Math.round(Math.max(220,Math.min(360,210+Math.hypot(end.x-src.x,end.y-src.y)*.18))),serial=++animationSerial;
+ const duration=Math.round(Math.max(220,Math.min(360,210+Math.hypot(end.x-src.x,end.y-src.y)*.18)));
  const ghosts=[],anims=[],landings=[],recycle=[];
  const float=(node,square)=>{if(!node)return null;const loc=squareOffset(square),container=document.createElement('div');container.className='floating-piece';node.style.opacity='';container.append(node);const board=$('#board').getBoundingClientRect();Object.assign(container.style,{left:(loc.x/board.width*100)+'%',top:(loc.y/board.height*100)+'%',width:(loc.w/board.width*100)+'%',height:(loc.h/board.height*100)+'%'});$('#board').append(container);ghosts.push(container);return container;};
  const moving=snapshot?.mover||acquirePiece(reverse&&m.promotion?m.promotion:m.piece,m.color),mover=float(moving,from);
@@ -251,7 +245,7 @@ function transition(m,reverse=false,snapshot=null){
  let resolve,safety;const flight={done:false,promise:new Promise(ready=>resolve=ready)};
  flight.finish=()=>{if(flight.done)return;flight.done=true;clearTimeout(safety);for(const a of anims)a.cancel();for(const item of landings){if(item.promoted){releasePiece(item.node);if(item.target)item.target.style.opacity='';}else{if(item.target)releasePiece(item.target);item.node.remove();boardCell(item.square)?.prepend(item.node);item.node.style.opacity='';}}for(const node of recycle)releasePiece(node);for(const ghost of ghosts)ghost.remove();activeFlights.delete(flight);postReview?.motionSettled();resolve();flushBoardWork();};
  activeFlights.add(flight);postReview?.motionStarted(duration);playMoveSound(m);
- const finish=()=>{const latest=serial===animationSerial&&!flight.done;flight.finish();if(latest&&viewGame().isGameOver())showFinalCelebration();};
+ const finish=()=>flight.finish();
  safety=setTimeout(finish,duration+150);main.finished.then(finish,()=>{});return flight.promise;
 }
 function highlightCheck(mate=false){const king=$('#board .square.check');if(!king)return;king.classList.remove('check-flash','check-mate-flash','check-nudge');void king.offsetWidth;king.classList.add(mate?'check-mate-flash':'check-flash');}
@@ -264,7 +258,6 @@ function nudgeCheckedKing(g){
  if(!pulse)king.classList.remove('check-nudge');
  king.onanimationend=event=>{if(event.animationName==='check-response'){king.classList.remove('check-nudge');king.onanimationend=null;}};
 }
-function showFinalCelebration(){const e=$('#game-result');if(e.classList.contains('hidden'))return;e.classList.remove('result-enter');void e.offsetWidth;e.classList.add('result-enter');}
 function showMoveCue(m,reverse=false){const action=reverse?'回退':m.san?.includes('#')?'将死':m.flags?.includes('k')||m.flags?.includes('q')?'王车易位':m.captured?'吃子':m.san?.includes('+')?'将军':'走子';const piece=pieceName[m.piece]||'棋子';const notation=m.san||m.from+'–'+m.to;$('#move-cue').textContent=`${action} · ${notation} · ${piece}${m.captured?' 吃 '+pieceName[m.captured]:''}${m.promotion?' 升变为'+pieceName[m.promotion]:''}`;}
 let soundContext;
 function playMoveSound(m){try{soundContext??=new (window.AudioContext||window.webkitAudioContext)();if(soundContext.state==='suspended')soundContext.resume();const now=soundContext.currentTime;const notes=m.captured?[660,420]:m.san?.includes('+')?[680,870]:[515];notes.forEach((frequency,i)=>{const osc=soundContext.createOscillator(),gain=soundContext.createGain();osc.type='sine';osc.frequency.setValueAtTime(frequency,now+i*.052);gain.gain.setValueAtTime(.001,now+i*.052);gain.gain.exponentialRampToValueAtTime(.043,now+i*.052+.01);gain.gain.exponentialRampToValueAtTime(.001,now+i*.052+.085);osc.connect(gain).connect(soundContext.destination);osc.start(now+i*.052);osc.stop(now+i*.052+.095);});}catch{}}
@@ -409,7 +402,6 @@ async function maybeBookReply(){
 }
 function loadPosition(fen,title='残局练习'){if(deferBoardAction(()=>loadPosition(fen,title)))return false;try{const game=new Chess(fen);animateOpening(()=>{stopPlayback();invalidateViewMemo();cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();});return true;}catch{toast('无法读取此残局局面');return false;}}
 function loadPgn(pgn,title='',targetPly=null){if(deferBoardAction(()=>loadPgn(pgn,title,targetPly)))return false;try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');animateOpening(()=>{stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();});
- if(finishBanner(game,moves)&&state.view>=moves.length)showFinalCelebration();
  return true;}catch(e){console.warn('PGN parse failed',e);toast('棋谱格式无法解析');return false;}}
 // 着法记录：只在棋谱长度变化时重建 DOM，回放时仅切换选中态，
 // 并用事件委托取代逐个按钮绑定，长棋谱下不再每次走棋都产生上百个监听器。
@@ -1199,12 +1191,6 @@ function setupEvents(){
  const applyHints=on=>{if(deferBoardAction(()=>applyHints(on)))return;state.hintsEnabled=on;const sel=$('#move-hints');if(sel)sel.value=on?'on':'off';try{localStorage.setItem('ChessAtelierMoveHints',on?'on':'off');}catch{}drawBoard();};
  applyHints((()=>{try{return localStorage.getItem('ChessAtelierMoveHints')!=='off';}catch{return true;}})());
  $('#move-hints')?.addEventListener('change',e=>applyHints(e.target.value!=='off'));
- // Keep the compact result above the board's two lowest visible ranks.
- new ResizeObserver(()=>{
-  const board=$('#board'),result=$('#game-result');
-  result.style.left=(board.offsetLeft+board.offsetWidth/2)+'px';
-  result.style.top=(board.offsetTop+board.offsetHeight*3/4)+'px';
- }).observe($('#board'));
  addEventListener('resize',()=>{clearBoardGeometry();},{passive:true});
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName)||document.querySelector('dialog[open]'))return;if(e.key==='ArrowLeft'){e.preventDefault();stopPlayback();goto(state.view-1);}if(e.key==='ArrowRight'){e.preventDefault();stopPlayback();goto(state.view+1);}});
 }

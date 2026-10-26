@@ -29,9 +29,9 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'data/library-sources.j
   await page.locator('#category-training').click();await select('capablanca-fundamentals');
   assert.equal(await page.locator('#collection-meta').innerText(),'81 章');
   await page.locator('#collection [data-local]').first().click();assert.equal(await page.locator('#board .square .piece').count(),3);
-  await page.locator('#last').click();assert.match(await page.locator('#game-result').innerText(),/将死/);
+  await page.locator('#last').click();assert.match(await page.locator('#status').innerText(),/将死/);
   await page.locator('.library-row').filter({hasText:'例 4 ·'}).locator('[data-local]').click();
-  assert.ok(await page.locator('#movelist [data-ply]').count()>0);await page.locator('#last').click();assert.match(await page.locator('#game-result').innerText(),/将死/);
+  assert.ok(await page.locator('#movelist [data-ply]').count()>0);await page.locator('#last').click();assert.match(await page.locator('#status').innerText(),/将死/);
   await page.locator('.library-row').filter({hasText:'例 30 ·'}).locator('[data-local]').click();
   assert.equal(await page.locator('#movelist [data-ply]').count(),0);assert.match(await page.locator('#movelist').innerText(),/局面练习/);
   assert.ok(await page.locator('#board .square .piece').count()>2);

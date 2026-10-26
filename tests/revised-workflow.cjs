@@ -39,7 +39,7 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results');fs
   await page.locator('#fileinput').setInputFiles({name:'mate.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from(pgn)});
   await page.waitForFunction(()=>document.querySelector('#archive-select').value==='mine:我的棋谱');
   await page.locator('#collection [data-local]').first().click();await page.locator('#last').click();
-  assert.match(await page.locator('#game-result').innerText(),/将死.*黑方获胜/);assert.ok(!/认输|超时/.test(await page.locator('#game-result').innerText()));
+  assert.match(await page.locator('#status').innerText(),/将死.*黑方获胜/);assert.ok(!/认输|超时/.test(await page.locator('#status').innerText()));
   const checked=page.locator('#board .square.check');assert.equal(await checked.count(),1);
   assert.ok(await checked.evaluate(el=>getComputedStyle(el,'::before').boxShadow.includes('0.72')));
   assert.equal(await checked.evaluate(el=>getComputedStyle(el).animationName),'none');
