@@ -43,16 +43,16 @@ const output=path.resolve(__dirname,'../test-results');
   const sampled=page.evaluate(()=>new Promise(resolve=>{
    const frames=[];let count=0;
    const tick=()=>{
-    const cells=[...document.querySelectorAll('#board .square')];let centerError=0,minScale=1,minVisibility=1,incomingScale=1,oldScale=0;
+    const cells=[...document.querySelectorAll('#board .square')];let centerError=0,minScale=1,minVisibility=1,incomingScale=1,oldScale=0,oldOpacity=1,incomingOpacity=1;
     for(const cell of cells){const pieces=[...cell.querySelectorAll(':scope > .piece')];if(pieces.length)minVisibility=Math.min(minVisibility,1-pieces.reduce((remaining,piece)=>remaining*(1-Number(getComputedStyle(piece).opacity)),1));}
     for(const cell of cells)for(const piece of cell.querySelectorAll(':scope > .piece')){
      const box=cell.getBoundingClientRect(),art=piece.getBoundingClientRect();
      centerError=Math.max(centerError,Math.abs(box.x+box.width/2-art.x-art.width/2),Math.abs(box.y+box.height/2-art.y-art.height/2));
      minScale=Math.min(minScale,art.width/box.width);
-     if(!piece.classList.contains('appearance-ghost'))incomingScale=Math.min(incomingScale,art.width/box.width);
-     else oldScale=Math.max(oldScale,art.width/box.width);
+     if(!piece.classList.contains('appearance-ghost')){incomingScale=Math.min(incomingScale,art.width/box.width);incomingOpacity=Math.min(incomingOpacity,Number(getComputedStyle(piece).opacity));}
+     else{oldScale=Math.max(oldScale,art.width/box.width);oldOpacity=Math.min(oldOpacity,Number(getComputedStyle(piece).opacity));}
     }
-    frames.push({pieces:document.querySelectorAll('#board .square > .piece:not(.appearance-ghost)').length,cold:document.querySelectorAll('#board .piece-visual:not(.asset-ready)').length,centerError,minScale,minVisibility,incomingScale,oldScale});
+    frames.push({pieces:document.querySelectorAll('#board .square > .piece:not(.appearance-ghost)').length,cold:document.querySelectorAll('#board .piece-visual:not(.asset-ready)').length,centerError,minScale,minVisibility,incomingScale,oldScale,oldOpacity,incomingOpacity});
     if(++count<105)requestAnimationFrame(tick);else resolve(frames);
    };requestAnimationFrame(tick);
   }));
@@ -63,6 +63,8 @@ const output=path.resolve(__dirname,'../test-results');
   assert.ok(frames.every(frame=>frame.centerError<.6),'scale only around each square center');
   assert.ok(frames.some(frame=>frame.oldScale>.1&&frame.oldScale<.8&&frame.incomingScale<.01),'old art visibly shrinks first');
   assert.ok(frames.some(frame=>frame.oldScale<.01&&frame.incomingScale>.1&&frame.incomingScale<.8),'new art then grows from the center');
+  assert.ok(frames.some(frame=>frame.oldScale>.1&&frame.oldScale<.8&&frame.oldOpacity>0&&frame.oldOpacity<.95),'old pieces fade while shrinking');
+  assert.ok(frames.some(frame=>frame.incomingScale>.1&&frame.incomingScale<.8&&frame.incomingOpacity>0&&frame.incomingOpacity<.95),'new pieces fade in while growing');
   assert.deepEqual(await position(),original);assert.equal(await page.locator('#movelist').innerText(),notation);
   assert.ok(await page.evaluate(()=>window.styleDurations.length>=64&&window.styleDurations.every(duration=>duration===480)),'all old/new actual decoded nodes use the shared 480ms timeline');
   console.log('PASS: decoded assets swap without fallback; themes interpolate; old pieces shrink to zero before new pieces grow, preserving position/history');

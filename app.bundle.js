@@ -3295,7 +3295,7 @@ function animateOpening(update,{animate=true}={}){
  if(oldNodes.length){
   board.append(layer);
   // Scaling one grid keeps all old piece sizes and distances proportional.
-  run(layer,[{transform:'scale(1)',opacity:1},{offset:.65,opacity:.8},{transform:'scale(0)',opacity:0}],{duration:320,easing:'cubic-bezier(.55,.055,.675,.19)'});
+  run(layer,[{transform:'scale(1)',opacity:1},{transform:'scale(0)',opacity:0}],{duration:320,easing:'cubic-bezier(.55,.055,.675,.19)'});
  }
  for(const [index,cell] of [...board.querySelectorAll(':scope > .square')].entries()){
   const node=cell.querySelector(':scope > .piece');if(!node)continue;
@@ -3343,10 +3343,10 @@ async function changeAppearance(animate){
   const startTime=null,duration=styleChanged?480:240;
   for(const {square,node} of previous){
    node.classList.add('appearance-ghost');$('#board').querySelector(`[data-square="${square}"]`).append(node);
-   appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.5,transform:'scale(0)',opacity:1},{transform:'scale(0)',opacity:1}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
+   appearanceAnimation(node,styleChanged?[{transform:'scale(1)',opacity:1},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(0)',opacity:0}]:[{opacity:1},{offset:.3,opacity:1},{opacity:0}],duration,node,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
   for(const node of $('#board').querySelectorAll('.square > .piece:not(.appearance-ghost)')){
-   appearanceAnimation(node,styleChanged?[{transform:'scale(0)',opacity:1},{offset:.5,transform:'scale(0)',opacity:1},{transform:'scale(1)',opacity:1}]:[{opacity:0},{offset:.7,opacity:1},{opacity:1}],duration,null,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
+   appearanceAnimation(node,styleChanged?[{transform:'scale(0)',opacity:0},{offset:.5,transform:'scale(0)',opacity:0},{transform:'scale(1)',opacity:1}]:[{opacity:0},{offset:.7,opacity:1},{opacity:1}],duration,null,startTime,styleChanged?'ease-in-out':'cubic-bezier(.4,0,.2,1)');
   }
   // Anchor the whole set to the first paint after all effects have been installed.
   // A busy SVG/layout frame must not consume the shrink phase before it is visible.
@@ -3428,10 +3428,10 @@ function beginDuel({animate=true}={}){
  }
  },{animate});
 }
-let brandSpin=null,brandQueued=false;
+let brandSpin=null;
 function flipBrandKnight(){
  const flip=document.querySelector('.brand-flip');if(!flip||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- if(brandSpin){brandQueued=true;return;}
+ if(brandSpin)return;
  const turn=()=>{
   const animation=flip.animate([{transform:'rotateY(0deg)'},{transform:'rotateY(360deg)'}],{duration:1120,easing:'linear',fill:'forwards'});
   brandSpin=animation;
@@ -3439,12 +3439,11 @@ function flipBrandKnight(){
    if(brandSpin!==animation)return;
    // 360° and 0° have the same pixels; never cancel a rotation in the middle.
    flip.style.transform='rotateY(0deg)';brandSpin=null;animation.cancel();
-   if(brandQueued){brandQueued=false;turn();}
   }).catch(()=>{});
  };
  turn();
 }
-window.addEventListener('pagehide',()=>{brandQueued=false;brandSpin?.cancel();brandSpin=null;});
+window.addEventListener('pagehide',()=>{brandSpin?.cancel();brandSpin=null;});
 function setupEvents(){
  document.addEventListener('pointerdown',event=>{const guide=$('#collection-guide');if(guide?.open&&!guide.contains(event.target))guide.open=false;});
  $('#board').addEventListener('error',e=>{if(e.target.matches('.piece-art-img'))e.target.closest('.assetpiece')?.classList.add('asset-fallback-mode');},true);

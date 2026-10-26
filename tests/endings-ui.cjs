@@ -8,6 +8,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
   const idle=async()=>{await page.waitForFunction(()=>!document.querySelector('#board.is-opening,.floating-piece,.appearance-ghost'));await page.waitForTimeout(70);};await idle();
   const layout=await page.evaluate(()=>{const box=s=>document.querySelector(s).getBoundingClientRect(),mode=box('#mode-segment'),bar=box('.play-mode-bar'),badge=box('#side-badge'),controls=box('.engine-controls'),toolbar=box('.engine-toolbar');return {center:Math.abs((mode.left+mode.right-bar.left-bar.right)/2),statusGap:badge.left-mode.right,right:Math.abs(toolbar.right-controls.right),overflow:document.documentElement.scrollWidth>innerWidth,font:parseFloat(getComputedStyle(document.querySelector('#side-badge')).fontSize)};});
   assert.ok(layout.center<1&&layout.right<2&&layout.statusGap>=3&&!layout.overflow,JSON.stringify({width,...layout}));assert.ok(layout.font>=13);
+  assert.equal(await page.locator('#music-toggle .music-status-icon').isVisible(),true);
+  const actions=await page.locator('.board-actions').evaluate(n=>{const row=n.getBoundingClientRect(),buttons=[...n.children].filter(x=>getComputedStyle(x).display!=='none').map(x=>x.getBoundingClientRect());return {count:buttons.length,gap:Math.abs((buttons[0].left+buttons.at(-1).right-row.left-row.right)/2),widths:buttons.map(x=>x.width)};});
+  if(width<701){assert.equal(actions.count,3);assert.ok(actions.gap<1);assert.ok(Math.max(...actions.widths)-Math.min(...actions.widths)<1);}
   assert.match(await page.locator('#bot-level option[value="1"]').textContent(),/1300/);assert.match(await page.locator('#bot-level option[value="6"]').textContent(),/3000/);
   await page.locator('#next').click();await idle();
   for(const cls of ['last-from','last-to'])assert.match(await page.locator('#board > .'+cls).evaluate(n=>getComputedStyle(n).boxShadow),/inset/);
@@ -20,6 +23,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    await page.locator('#fileinput').setInputFiles({name:fixture.name+'.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from(pgn)});
    await page.locator('#collection .library-open').filter({hasText:fixture.name}).first().click();await idle();await page.locator('#last').click();await idle();
    await page.locator('#game-result').waitFor({state:'visible'});assert.equal(await page.locator('#game-result').innerText(),fixture.title);assert.equal(await page.locator('#side-badge').innerText(),'对局结束');
+   const banner=await page.locator('#game-result').evaluate(n=>{const s=getComputedStyle(n),r=n.getBoundingClientRect();return {blur:s.backdropFilter,font:parseFloat(s.fontSize),width:r.width,height:r.height,pointer:s.pointerEvents};});assert.equal(banner.blur,'none');assert.ok(banner.font<=14&&banner.width<210&&banner.height<60);assert.equal(banner.pointer,'none');
+   if(fixture.name==='Mate')await page.locator('.board-block').screenshot({path:path.resolve(__dirname,`../test-results/quiet-result-${width}.png`)});
    await page.locator('#flip').click();await idle();assert.equal(await page.locator('#game-result').innerText(),fixture.title);
    await page.locator('#prev').click();await idle();assert.equal(await page.locator('#game-result').isVisible(),false);
   }

@@ -648,7 +648,7 @@ body[data-play-mode="book"] #status{min-height:0}
  justify-content:center!important;border-radius:11px;overflow:visible;isolation:isolate}
 #music-toggle.tool-icon--music .tool-icon-label{display:inline!important;flex:none;line-height:1;
  font-size:14px!important;font-weight:550!important;letter-spacing:.01em;white-space:nowrap}
-#music-toggle.tool-icon--music .music-status-icon{width:20px!important;height:20px!important;flex:none}
+#music-toggle.tool-icon--music .music-status-icon{display:inline-flex!important;align-items:center;justify-content:center;width:20px!important;height:20px!important;flex:none}
 #music-toggle.tool-icon--music svg{width:20px!important;height:20px!important}
 .music-status-icon{position:relative;display:inline-flex}
 .music-live-dot{position:absolute;right:-2px;top:-2px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:0}
@@ -902,13 +902,15 @@ body[data-play-mode="book"] .source-row.duel-config{display:flex!important;justi
 .move-cue{flex:1 1 auto;min-width:0;font-size:12.5px;color:var(--muted)}
 .board-status{font-size:12.5px;color:var(--muted)}
 
-/* 结算提示：去掉 backdrop-filter，避免每帧重新合成模糊层 */
-.game-result{top:87.5%;bottom:auto;transform:translate(-50%,-50%);background:color-mix(in srgb,var(--paper) 46%,transparent)!important;
- backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
- border:1px solid color-mix(in srgb,var(--line) 45%,transparent)!important;
- box-shadow:0 6px 18px rgba(24,24,16,.08)!important;color:var(--ink)!important;
+/* Small translucent theme tint; leave the final position visible without blur. */
+.game-result{top:87.5%;bottom:auto;transform:translate(-50%,-50%);background:color-mix(in srgb,color-mix(in srgb,var(--accent) 14%,var(--paper)) 76%,transparent)!important;
+ backdrop-filter:none;-webkit-backdrop-filter:none;
+ min-width:0;max-width:80%;padding:6px 12px;border-radius:9px;font-size:14px;font-weight:550;line-height:1.5;
+ border:1px solid color-mix(in srgb,var(--accent) 18%,transparent)!important;
+ box-shadow:none!important;color:var(--ink)!important;
  pointer-events:none}
-.game-result small{opacity:.72;font-weight:500}
+.game-result small{font-size:11px;line-height:1.4;margin-top:1px;opacity:.72;font-weight:400}
+@media(max-width:700px){body[data-play-mode=free] .board-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}.game-result{font-size:13px;padding:5px 10px}}
 
 /* ---------- 设置弹窗 ---------- */
 .settings-dialog{border:1px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);
