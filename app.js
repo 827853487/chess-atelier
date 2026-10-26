@@ -89,14 +89,26 @@ function finishBanner(g,moves){
 }
 function locationFor(r,c){return (state.orientation==='w'?FILES[c]:FILES[7-c])+(state.orientation==='w'?8-r:r+1);}
 function centerFor(s){let c=FILE_INDEX[s[0]],r=+s[1];return state.orientation==='w'?{x:50+c*100,y:50+(8-r)*100}:{x:50+(7-c)*100,y:50+(r-1)*100};}
+let arrowKey='',arrowAnimation=null;const departingArrows=new Set();
 function drawArrow(){
- const path=$('#candidate-arrow');if(!state.arrow){path.setAttribute('visibility','hidden');return;}
+ const path=$('#candidate-arrow'),nextKey=state.arrow?JSON.stringify([state.arrow.from,state.arrow.to,state.orientation]):'';
+ if(nextKey===arrowKey)return;
+ const motion=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(path.getAttribute('visibility')==='visible'&&motion){
+  const previous=path.cloneNode(true);previous.removeAttribute('id');previous.setAttribute('class','candidate-arrow-exit');
+  path.parentElement.append(previous);departingArrows.add(previous);
+  const fade=previous.animate([{opacity:getComputedStyle(path).opacity},{opacity:0}],{duration:130,easing:'ease-out',fill:'both'});
+  fade.finished.catch(()=>{}).then(()=>{previous.remove();departingArrows.delete(previous);});
+ }
+ arrowAnimation?.cancel();arrowAnimation=null;arrowKey=nextKey;
+ if(!state.arrow){path.setAttribute('visibility','hidden');return;}
  const a=centerFor(state.arrow.from),b=centerFor(state.arrow.to),length=Math.hypot(b.x-a.x,b.y-a.y)||1;
  const dx=(b.x-a.x)/length,dy=(b.y-a.y)/length,nx=-dy,ny=dx;
  const tail={x:a.x+dx*12,y:a.y+dy*12},tip={x:b.x-dx*14,y:b.y-dy*14},base={x:tip.x-dx*26,y:tip.y-dy*26};
  const point=(p,width)=>`${p.x+nx*width},${p.y+ny*width}`;
  path.setAttribute('d',`M${point(tail,6)} L${point(base,6)} L${point(base,16)} L${tip.x},${tip.y} L${point(base,-16)} L${point(base,-6)} L${point(tail,-6)} A6,6 0 0 0 ${point(tail,6)} Z`);
  path.setAttribute('visibility','visible');
+ if(motion)arrowAnimation=path.animate([{opacity:0},{opacity:.24}],{duration:180,easing:'ease-out'});
 }
 // 坐标标签只在翻转棋盘时重写
 let lastOrientation=null;
@@ -169,14 +181,13 @@ function drawBoard(){
  }
  drawArrow();
  $('#side-badge').textContent=over?'对局结束':(turnColor==='w'?'白方':'黑方')+'行棋';
- $('#status').textContent=over?'对局结束':state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱研究 · 可走双方棋子':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
+ $('#status').textContent=over?'对局结束':state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱浏览 · 使用箭头切换着法':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
  const end=$('#game-result');
  const resultBanner=finishBanner(g,moves);
  if(resultBanner){end.classList.remove('hidden');end.innerHTML=resultBanner;}
  else end.classList.add('hidden');
  $('#ply').textContent=state.view+' / '+moves.length;
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
- analysisUi?.boardUpdated();
  postReview?.sync();
 }
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
@@ -221,6 +232,7 @@ function pulseSquare(square,isCapture){const sq=boardCell(square);if(!sq)return;
 const activeFlights=new Set();
 function settleFlights(){
  if(!activeFlights.size)return false;
+ animationSerial++;
  for(const f of [...activeFlights])f.finish();
  activeFlights.clear();
  return true;
@@ -265,12 +277,13 @@ function transition(m,reverse=false){
  const flightFrames=(x,y)=>[{transform:'translate3d(0,0,0)'},{transform:`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0)`}];
  const main=mover.animate(flightFrames(dx,dy),{duration,easing:'cubic-bezier(.32,.02,.20,1)',fill:'forwards'});
  anims.push(main);
+ postReview?.motionStarted(duration);
  if(m.flags?.includes('k')||m.flags?.includes('q')){const kingSide=m.flags.includes('k'),rank=m.color==='w'?'1':'8';const rf=kingSide?'h'+rank:'a'+rank,rt=kingSide?'f'+rank:'d'+rank;const a=reverse?rt:rf,b=reverse?rf:rt;const rstart=squareOffset(a),rend=squareOffset(b);if(rstart&&rend){const rook=ghostPiece('r',m.color,a);const rookTarget=boardCell(b)?.querySelector('.piece');if(rook){ghosts.push(rook);anims.push(rook.animate(flightFrames(rend.x-rstart.x,rend.y-rstart.y),{duration,easing:'cubic-bezier(.32,.02,.20,1)',fill:'forwards'}));}if(rookTarget){rookTarget.style.opacity='0';hidden.push(rookTarget);}}}
  playMoveSound(m);
  let wrapped=false,safety=0;
  const wrapUp=()=>{
   if(wrapped)return;wrapped=true;clearTimeout(safety);
-  const latest=serial===animationSerial;
+  const latest=serial===animationSerial&&!flight.done;
   flight.finish();
   if(latest){pulseSquare(to,isCapture);const current=viewGame();if(current.isCheck())highlightCheck(current.isCheckmate());if(current.isGameOver())showFinalCelebration();}
  };
@@ -303,7 +316,7 @@ function playChosen(moves){
  if(moves.some(m=>m.flags?.includes('p'))){askPromotion(from,to,moves[0].color||'w');return;}
  makeMove({from,to,promotion:moves[0].promotion});
 }
-function clickSquare(square){clearOpeningMotion();if(state.postReview){toast('关闭复盘后可自行推演');return;}if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
+function clickSquare(square){if(state.mode==='free'){toast('打谱模式仅供浏览，请使用箭头切换着法');return;}if(state.postReview){toast('请先关闭复盘，再继续对弈');return;}clearOpeningMotion();if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
  stopPlayback();
  if(state.mode==='book'&&!state.duelStarted){toast('请先点击「开始对弈」');return;}
  if(state.mode==='book'&&!state.review&&g.turn()!==state.side){toast('电脑行棋中；可切换为「打谱研究」操作双方');return;}
@@ -367,10 +380,12 @@ function reset(){
  if(state.mode==='book'){beginDuel();return;}
  animateOpening(()=>{
   stopPlayback();cancelBusy();hidePromotion();state.currentScoreId=null;state.currentScoreSource=null;state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;state.review=false;state.reviewTitle='';invalidateViewMemo();clearHints();
-  $('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();
+  $('#move-cue').textContent='初始局面 · 使用箭头浏览棋谱';drawAll();
  });
 }
-function goto(p,{resumeComputer=true}={}){cancelBusy();const old=state.view,next=Math.min(history().length,Math.max(0,p)),m=Math.abs(old-next)===1?history()[Math.min(old,next)]:null;state.view=next;state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;drawAll();if(m)transition(m,next<old);else $('#move-cue').textContent=next?'已跳转到第 '+next+' 半回合':'初始局面 · 点击棋子开始';
+function goto(p,{resumeComputer=true}={}){cancelBusy();settleFlights();const old=state.view,next=Math.min(history().length,Math.max(0,p)),m=Math.abs(old-next)===1?history()[Math.min(old,next)]:null;
+ if(m&&state.animEnabled&&!matchMedia('(prefers-reduced-motion: reduce)').matches)postReview?.prepareMotion(next);
+ state.view=next;state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;drawAll();if(m)transition(m,next<old);else $('#move-cue').textContent=next?'已跳转到第 '+next+' 半回合':'初始局面 · 使用箭头浏览棋谱';
  const g=viewGame(),moves=cachedHistory();
  if(finishBanner(g,moves))showFinalCelebration();
  if(resumeComputer&&state.mode==='book'&&!state.review&&state.view===moves.length&&g.turn()!==state.side&&!g.isGameOver())maybeBookReply();
@@ -417,8 +432,8 @@ async function maybeBookReply(){
   $('#retry-engine').classList.remove('hidden');toast(state.engineError);
  }finally{clearTimeout(timeout);if(playController===controller)playController=null;}
 }
-function loadPosition(fen,title='残局练习'){stopPlayback();invalidateViewMemo();try{const game=new Chess(fen);cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();return true;}catch{toast('无法读取此残局局面');return false;}}
-function loadPgn(pgn,title='',targetPly=null){stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();
+function loadPosition(fen,title='残局练习'){try{const game=new Chess(fen);animateOpening(()=>{stopPlayback();invalidateViewMemo();cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();});return true;}catch{toast('无法读取此残局局面');return false;}}
+function loadPgn(pgn,title='',targetPly=null){try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');animateOpening(()=>{stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();});
  if(finishBanner(game,moves)&&state.view>=moves.length)showFinalCelebration();
  return true;}catch(e){console.warn('PGN parse failed',e);toast('棋谱格式无法解析');return false;}}
 // 着法记录：只在棋谱长度变化时重建 DOM，回放时仅切换选中态，
@@ -426,7 +441,7 @@ function loadPgn(pgn,title='',targetPly=null){stopPlayback();invalidateViewMemo(
 let movesRenderedLen=-1,movesRenderedId=null;
 function renderMoves(){
  const arr=cachedHistory(),div=$('#movelist');
- if(!arr.length){const text=state.mode==='book'?'从第一步开始，记录会自动出现。':state.review?'局面练习，可自行走子。':'选择棋谱，展示全部着法。';if(div.textContent!==text)div.textContent=text;movesRenderedLen=0;movesRenderedId='';return;}
+ if(!arr.length){const text=state.mode==='book'?'从第一步开始，记录会自动出现。':state.review?'局面练习，请查看引擎分析。':'选择棋谱，展示全部着法。';if(div.textContent!==text)div.textContent=text;movesRenderedLen=0;movesRenderedId='';return;}
  const id=state.game;
  if(movesRenderedLen!==arr.length||movesRenderedId!==id){
   div.innerHTML=recordRows(state.game).map(row=>`<span class="move-pair"><span class="move-num">${row.number}${row.white?'.':'...'}</span>${row.white?`<button class="move-token" data-ply="${row.white.ply}">${safeText(row.white.san)}</button>`:'<span class="move-token-placeholder"></span>'}${row.black?`<button class="move-token" data-ply="${row.black.ply}">${safeText(row.black.san)}</button>`:''}</span>`).join('');
@@ -917,7 +932,7 @@ function confirmSaveGame(){
 function saveGame(){openSaveDialog();}
 analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
 const {scheduleEngine,refreshEngineStatus}=analysisUi;
-postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi,whenFlightsIdle});
+postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi,whenFlightsIdle:()=>Promise.all([whenFlightsIdle(),whenOpeningIdle()])});
 const playIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"/></svg>';
 const pauseIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14M16 5v14"/></svg>';
 function stopPlayback({resumeComputer=false}={}){
@@ -955,6 +970,7 @@ function clearOpeningMotion(){
 function whenOpeningIdle(){return openingMotion?.done||Promise.resolve();}
 function animateOpening(update,{animate=true}={}){
  clearOpeningMotion();clearAppearanceMotion();settleFlights();
+ postReview?.boardResetStarted();state.arrow=null;drawArrow();analysisUi?.boardReset();
  const board=$('#board'),motion=animate&&state.animEnabled&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
  const layer=document.createElement('div'),oldNodes=[];
  layer.className='opening-layer';layer.setAttribute('aria-hidden','true');
@@ -1071,7 +1087,7 @@ function setPlayMode(mode,{animate=true}={}){
  document.body.dataset.playMode=next;$('#right-heading').textContent=next==='book'?'对局':'棋谱';
  $('#record-heading').textContent=next==='book'?'着法记录':'棋谱着法';
  if(next==='book')beginDuel({animate});
- else animateOpening(()=>{$('#duel-start').textContent='开始对弈';$('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();},{animate});
+ else animateOpening(()=>{$('#duel-start').textContent='开始对弈';$('#move-cue').textContent='初始局面 · 使用箭头浏览棋谱';drawAll();},{animate});
 }
 function syncSideSelect(side){
  const sel=$('#side');if(!sel)return;
@@ -1154,8 +1170,8 @@ function setupEvents(){
  $('#first').addEventListener('click',()=>{stopPlayback();goto(0);});$('#prev').addEventListener('click',()=>{stopPlayback();goto(state.view-1);});$('#next').addEventListener('click',()=>{stopPlayback();goto(state.view+1);});$('#last').addEventListener('click',()=>{stopPlayback();goto(history().length);});
  $('#flip').addEventListener('click',()=>{
   const next=state.orientation==='w'?'b':'w';
-  if(state.mode==='book')takeDuelSeat(next,{keepPosition:true});
-  else{state.orientation=next;clearBoardGeometry();drawBoard();}
+  stopPlayback();
+  animateOpening(()=>{if(state.mode==='book')takeDuelSeat(next,{keepPosition:true});else{state.orientation=next;clearBoardGeometry();drawBoard();}});
  });
  $('#save').addEventListener('click',saveGame);$('#export').addEventListener('click',exportPgn);
  $('#mode').addEventListener('change',e=>setPlayMode(e.target.value));

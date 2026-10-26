@@ -20,9 +20,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    await page.locator('#settings-close').click();assert.equal(await page.locator('#settings-dialog .is-open').count(),0);
   }
   await page.setViewportSize({width:1440,height:1000});await page.locator('#analysis-toggle').click();
-  const first=await page.locator('#chess-note').innerText();await page.locator('[data-square=e2]').click();await page.locator('[data-square=e4]').click();await page.waitForFunction(()=>document.querySelectorAll('#movelist [data-ply]').length===1);await page.waitForFunction(()=>!document.querySelector('.floating-piece'));
-  const second=await page.locator('#chess-note').innerText();assert.notEqual(first,second);await page.locator('#first').click();assert.notEqual(await page.locator('#chess-note').innerText(),second);
-  assert.deepEqual(errors,[]);fs.writeFileSync(path.resolve(__dirname,'../test-results/settings-layout-result.json'),JSON.stringify({passed:true,viewports:4,stableMenu:true,openingAnimation:true,noHorizontalScroll:true,notesFollowBoard:true,pageErrors:errors},null,2));
-  console.log('PASS: animated settings, stable/drop-up hint menu at four sizes, no overflow and notes refresh with board position');
+  const first=await page.locator('#chess-note').innerText();await page.locator('[data-square=e2]').click();await page.locator('[data-square=e4]').click();assert.equal(await page.locator('#movelist [data-ply]').count(),0);assert.equal(await page.locator('#chess-note').innerText(),first);
+  await page.locator('#reset').click();await page.waitForFunction(()=>!document.querySelector('#board.is-opening'));assert.notEqual(await page.locator('#chess-note').innerText(),first);
+  assert.deepEqual(errors,[]);fs.writeFileSync(path.resolve(__dirname,'../test-results/settings-layout-result.json'),JSON.stringify({passed:true,viewports:4,stableMenu:true,openingAnimation:true,noHorizontalScroll:true,notesOnlyOnReset:true,pageErrors:errors},null,2));
+  console.log('PASS: animated settings, stable/drop-up hint menu at four sizes, no overflow and notes refresh only on board reset');
  }catch(error){await page.screenshot({path:path.resolve(__dirname,'../test-results/settings-layout-failure.png'),fullPage:true});throw error;}finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

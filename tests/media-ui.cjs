@@ -12,10 +12,11 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results'),ca
   await page.waitForTimeout(250);const same=await page.evaluate(()=>{const first=window.logoTurns[0],time=first.currentTime;for(let i=0;i<20;i++)document.querySelector('#home').click();return window.logoTurns.length===1&&first.currentTime>=time;});assert.equal(same,true,'rapid clicks never rewind the running rotation');
   await page.waitForTimeout(2300);assert.equal(await page.evaluate(()=>window.logoTurns.length),2,'a burst coalesces to exactly one additional turn');
   await page.locator('#home').click();await page.waitForTimeout(1200);assert.equal(await page.evaluate(()=>window.logoTurns.length),3);
-  await page.locator('#settings-toggle').click();assert.deepEqual(await page.locator('#settings-dialog .settings-links a').allTextContents(),['Lichess','Stockfish','Wikimedia Commons']);
+  await page.locator('#settings-toggle').click();assert.deepEqual((await page.locator('#settings-dialog .settings-links a').allTextContents()).map(text=>text.replace('↗','')),['Lichess','Stockfish','Wikimedia Commons']);assert.equal(await page.locator('.settings-links .source-external').count(),3);
   assert.ok((await page.locator('#settings-dialog').boundingBox()).width<=400);assert.ok((await page.locator('#settings-dialog .atelier-select').first().boundingBox()).width<=133);await page.locator('#settings-close').click();
   const card=await page.locator('#study-workspace').boundingBox(),list=await page.locator('#collection').boundingBox();assert.ok(list.x>card.x+8&&list.x+list.width<card.x+card.width-8&&list.y+list.height<card.y+card.height-6,'scroll surface stays inside rounded card border');
   await page.locator('#music-toggle').click();
+  assert.equal(await page.locator('#music-online,#music-list,#music-status,#music-source').count(),0);
   for(const era of ['baroque','classical','romantic','modern','all']){
    await page.locator(`[data-era=${era}]`).click();await page.waitForFunction(()=>{const audio=document.querySelector('#music-audio');return !audio.paused&&audio.currentTime>.1;},null,{timeout:25000});
    const label=await page.locator('#music-title').innerText();assert.ok(catalog.some(track=>track.title.replace(new RegExp('^'+track.composer+'[ ·:：–—-]+'),'')===label&&(era==='all'||track.era===era)));

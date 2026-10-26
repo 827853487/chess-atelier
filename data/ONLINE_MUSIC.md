@@ -31,7 +31,7 @@ iiprop=url|size|mime|mediatype|metadata|extmetadata
 
 许可只接受明确 CC0、Public domain、CC BY、CC BY-SA 或带明确许可地址的 BSD；拒绝 NC、ND、fair use 和不明条款。保留演奏者、署名、许可与来源页，不以作品古老来推断现代录音自由。分类可能混入集锦、改编或无关录音，因此还要求文件名/作品名/说明/作者字段出现对应作曲家或特定作品族证据。即便经过过滤，也不将开放分类库等同于已逐一人工审听的精选唱片库。
 
-元数据缓存仅存本地 localStorage，每时期最多60条，四时期合计最多240条，约14天失效；不在此模块缓存音频大文件。缓存受损、空间不足或存储被禁用时正常降级。网络失败可返回该时期已缓存元信息，调用方按稳定 ID 去重；返回非空数组不代表本次联网成功，应同时显示 message。
+元数据缓存仅存本地 localStorage，每时期最多60条，四时期合计最多240条，约14天失效；不在此模块缓存音频大文件。缓存受损、空间不足或存储被禁用时正常降级。网络失败可返回该时期已缓存元信息，调用方按稳定 ID 去重；返回非空数组不代表本次联网成功，可将 message 用于内部状态，不将失败当作已有在线资源全部失效。
 
 ### 一手参考与实测
 
@@ -52,4 +52,4 @@ iiprop=url|size|mime|mediatype|metadata|extmetadata
 | [IMSLP API](https://imslp.org/wiki/IMSLP:API) | 官方公开列表 API 主要列作曲家/人员和作品，可用 start 分页 | IMSLP 有录音页面，但上述 API 不是无条件可热链的完整音频服务。适合查作品和人工选录音，需核对作品与录音双重版权及访问流程，见[官方版权说明](https://imslp.org/wiki/IMSLP:Copyright_Made_Simple)。 |
 | [Open Opus](https://openopus.org/) | 免费无注册、开放的作曲家和作品元数据 | 官网 FAQ 明确当前不提供录音数据；不能把它当作可播放音频源。可以帮助整理时期、作品名与目录，不会自动获得 Spotify 等服务的流播权限。 |
 
-Internet Archive 参考：[Item Metadata API](https://archive.org/developers/md-read.html)。长期扩充优先维护“人工核对的本地精选 + 用户主动开启的分页在线目录”，把质量、网络、许可和缓存边界清楚区分。
+Internet Archive 参考：[Item Metadata API](https://archive.org/developers/md-read.html)。长期扩充优先维护“人工核对的本地精选 + 后台自动连接的分页在线目录”，把质量、网络、许可和缓存边界清楚区分。

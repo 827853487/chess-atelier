@@ -16,7 +16,8 @@ const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18765',output=path.reso
  };
  try{
   await page.goto(base);await page.waitForFunction(()=>document.querySelector('#collection').getAttribute('aria-busy')==='false');await page.locator('#analysis-toggle').click();
-  await move('e2','e4');await move('e7','e5');await move('g1','f3');
+  await page.locator('#fileinput').setInputFiles({name:'opening.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from('[Event "Opening"]\n[Result "*"]\n\n1. e4 e5 2. Nf3 *')});
+  await page.locator('#collection [data-local]').first().click();await page.locator('#last').click();await idle();
   const sampled=page.evaluate(()=>new Promise(resolve=>{
    const frames=[],started=performance.now();
    const tick=()=>{
@@ -35,12 +36,12 @@ const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18765',output=path.reso
   // A three-piece study position, including a flipped orientation, starts identically.
   const pgn='[Event "Opening transition position"]\n[SetUp "1"]\n[FEN "7k/8/8/8/8/8/8/KR6 w - - 0 1"]\n[Result "*"]\n\n1. Ka2 *';
   await page.locator('#fileinput').setInputFiles({name:'position.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from(pgn)});
-  await page.locator('#collection [data-local]').first().click();await page.locator('#last').click();await idle();
+  await page.locator('#collection .library-open').filter({hasText:'Opening transition position'}).click();await page.locator('#last').click();await idle();
   assert.equal(await page.locator('#board > .square > .piece').count(),3);await page.locator('#flip').click();
   await page.locator('#reset').click();await idle();await initial();assert.equal(await page.locator('#board > .square').first().getAttribute('data-square'),'h1');
   await page.locator('#reset').click();await page.locator('#reset').click();await idle();await initial();
-  // An intentional board interaction finishes the intro and remains usable immediately.
-  await page.locator('#reset').click();await move('e2','e4');assert.equal(await page.locator('#movelist [data-ply]').count(),1);
+  // A read-only study click must neither alter the score nor cancel the intro.
+  await page.locator('#reset').click();await page.locator('[data-square=e2]').click();await idle();assert.equal(await page.locator('#movelist [data-ply]').count(),0);
   await page.locator('#settings-toggle').click();await select('piece-style','mpchess');
   await page.waitForFunction(()=>document.documentElement.dataset.pieceStyle==='mpchess'&&document.querySelector('.appearance-ghost'));
   assert.equal(await page.locator('#board > .square > .piece:not(.appearance-ghost)').first().evaluate(n=>n.getAnimations()[0].effect.getTiming().duration),480);

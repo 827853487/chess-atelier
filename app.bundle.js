@@ -670,8 +670,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
  const $=q=>document.querySelector(q);
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const cache=new Map();let timer=null,controller=null,sequence=0,enabled=true;
- const nextNote=setupRestNotes();let lastBoardKey='';
- function boardUpdated(){const boardKey=JSON.stringify([state.generation,state.origin,state.game.fen(),state.view,state.orientation,document.documentElement.dataset.theme,document.documentElement.dataset.pieceStyle]);if(boardKey!==lastBoardKey){lastBoardKey=boardKey;nextNote();}}
+ const nextNote=setupRestNotes();
  const key=p=>JSON.stringify([p.origin,p.moves]);
  const remember=(k,data)=>{cache.delete(k);cache.set(k,data);while(cache.size>128)cache.delete(cache.keys().next().value);};
  function status(text,busy=false){
@@ -755,7 +754,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   $('.coach-card').dataset.paused=String(!enabled);
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
-  if(!enabled){state.arrow=null;drawArrow();nextNote();}
+  if(!enabled){state.arrow=null;drawArrow();}
   scheduleEngine();
  });
  $('#engine-insight').addEventListener('click',event=>{
@@ -778,7 +777,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
   scheduleEngine();
  }
- return {scheduleEngine,refreshEngineStatus,setReviewMode,boardUpdated,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,boardReset:nextNote,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
 }
 
 return { setupLocalAnalysis };
@@ -787,10 +786,33 @@ const { setupPostReview }=(()=>{
 
 
 function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis,whenFlightsIdle}){
- const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='',annotationKey='',annotationJob=0;
+ const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='',annotationKey='',annotationJob=0,textMotion=null,textAnimation=null,textSignature='';
+ const departingMarks=new Set();
  function stop(){clearTimeout(timer);timer=null;controller?.abort();controller=null;epoch++;}
- function clearMarks(){annotationKey='';annotationJob++;document.querySelectorAll('.review-mark').forEach(node=>node.remove());}
- function close(){stop();state.postReview=false;error='';$('post-review').hidden=true;clearMarks();state.arrow=null;drawArrow();analysis.setReviewMode(false);sync();}
+ function clearMarks(){
+  annotationKey='';annotationJob++;
+  for(const node of document.querySelectorAll('#board .review-mark:not(.is-leaving)')){
+   if(matchMedia('(prefers-reduced-motion: reduce)').matches){node.remove();continue;}
+   const style=getComputedStyle(node),cell=node.parentElement,ghost=node.cloneNode(true),opacity=style.opacity,transform=style.transform;
+   Object.assign(ghost.style,{left:(cell.offsetLeft+node.offsetLeft)+'px',top:(cell.offsetTop+node.offsetTop)+'px',right:'auto',width:style.width,height:style.height});
+   ghost.classList.add('is-leaving');$('board').append(ghost);departingMarks.add(ghost);node.remove();
+   const animation=ghost.animate([{opacity,transform},{opacity:0,transform:'translateY(-2px) scale(.72)'}],{duration:150,easing:'ease-out',fill:'both'});
+   animation.finished.catch(()=>{}).then(()=>{ghost.remove();departingMarks.delete(ghost);});
+  }
+ }
+ function fadeEvaluation(){
+  textAnimation?.cancel();const node=$('review-evaluation');
+  if(!state.postReview){node.style.opacity='';return;}
+  if(textMotion?.view===state.view&&textMotion.started===null){node.style.opacity='0';return;}
+  const remaining=textMotion?.view===state.view?Math.max(1,textMotion.duration-(performance.now()-textMotion.started)):180;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){node.style.opacity='';return;}
+  node.style.opacity='';const animation=textAnimation=node.animate([{opacity:0},{opacity:1}],{duration:remaining,easing:'linear',fill:'both'});
+  animation.finished.catch(()=>{}).then(()=>{if(textAnimation===animation){animation.cancel();textAnimation=null;node.style.opacity='';}});
+ }
+ function prepareMotion(index){if(!state.postReview)return;textMotion={view:index,started:null,duration:0};textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='0';}
+ function motionStarted(duration){if(textMotion?.view!==state.view)return;textMotion.started=performance.now();textMotion.duration=duration;fadeEvaluation();}
+ function boardResetStarted(){clearMarks();textMotion=null;textSignature='';textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='';}
+ function close(){stop();state.postReview=false;error='';$('post-review').hidden=true;boardResetStarted();state.arrow=null;drawArrow();analysis.setReviewMode(false);sync();}
  state.closeReview=close;state.retryReview=()=>{error='';stop();schedule();render();};
  function createRecord(){
   const moves=cachedHistory().map(move=>({...move})),game=new Chess(state.origin),uci=[];
@@ -821,7 +843,7 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
  function moveComment(index,current,quality){
   if(error)return error;
   if(!current)return '正在加载此步分析…';
-  if(!index)return positionSummary(current)+'按着法逐步查看；关闭复盘可自行推演。';
+  if(!index)return positionSummary(current)+'使用箭头或着法记录逐步查看。';
   if(!quality)return '正在补全走前局面，完成后显示本步评价。';
   if(quality.label==='将死')return positionSummary(current);
   const text=quality.cls==='best'?'与引擎首选一致。':quality.cls==='good'?'与引擎首选的评分接近。':quality.loss>=10000?'这一步改变了将杀形势。':`相较走前的引擎参考，约损失 ${(quality.loss/100).toFixed(1)} 兵。`;
@@ -861,6 +883,8 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
   const line=currentLine(current,index),suggestion=$('review-suggestion');suggestion.hidden=!line;
   suggestion.textContent=line?'后续参考：'+line.map(move=>move.san).join(' → '):'';
   $('review-line-description').textContent=lineDescription(line);$('review-line-description').hidden=!line;
+  const signature=JSON.stringify([index,$('review-move-title').textContent,$('review-comment').textContent,suggestion.textContent]);
+  if(signature!==textSignature){textSignature=signature;fadeEvaluation();}
   suggestion.onclick=line?()=>{annotationKey='';annotate(index,move,quality,line);}:null;
   if(current)analysis.renderReview(current,record.positions[index]);else analysis.reviewLoading();
   annotate(index,move,quality,line);
@@ -884,7 +908,7 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
    const wasActive=state.postReview;stop();record=null;state.postReview=false;clearMarks();$('post-review').hidden=true;if(wasActive)analysis.setReviewMode(false);
   }
   const button=$('side-badge');button.disabled=!available;button.classList.toggle('is-review-active',!!state.postReview);button.setAttribute('aria-pressed',String(!!state.postReview));
-  if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止模型分析，恢复自行推演':'加载 Stockfish 逐步复盘';}
+  if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止复盘，返回棋谱浏览':'加载 Stockfish 逐步复盘';}
   else button.title='对弈结束后可复盘';
   if(state.postReview){if(lastView!==state.view){stop();clearMarks();lastView=state.view;error='';}render();schedule();}
  }
@@ -892,8 +916,8 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
   if(state.postReview){close();return;}
   if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);goto(0);sync();
  });
- window.addEventListener('pagehide',stop);
- return {sync,close,motionSettled:()=>{if(state.postReview)render();}};
+ window.addEventListener('pagehide',()=>{stop();textAnimation?.cancel();for(const node of departingMarks)node.remove();departingMarks.clear();});
+ return {sync,close,prepareMotion,motionStarted,boardResetStarted,motionSettled:()=>{textMotion=null;textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='';if(state.postReview)render();}};
 }
 
 return { setupPostReview };
@@ -2150,16 +2174,16 @@ const ERAS={baroque:'巴洛克',classical:'古典',romantic:'浪漫',modern:'近
 const $=id=>document.getElementById(id),audio=$('music-audio');
 const local=LOCAL_MUSIC.map(track=>({...track,id:'local:'+track.file,localUrl:'./assets/music/'+encodeURIComponent(track.file)}));
 const remoteSeed=MUSIC_SEED.map(([file,title,composer])=>({id:'seed:'+file,file,title,composer,era:/巴赫|亨德尔|维瓦尔第|斯卡拉蒂/.test(composer)?'baroque':/莫扎特|贝多芬|海顿/.test(composer)?'classical':/德彪西|拉威尔|萨蒂/.test(composer)?'modern':'romantic',sourceUrl:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file)}));
-const state={era:'all',shuffle:true,online:false,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
+const state={era:'all',shuffle:true,onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
 const source=track=>track.localUrl||track.remoteUrl||'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(track.file).replace(/%20/g,'_');
 const time=seconds=>Number.isFinite(seconds)&&seconds>=0?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'0:00';
 const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8 18.7 12 8 18.2z"/></svg>',pauseIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>';
 function tracks(){
  const valid=track=>(state.era==='all'||track.era===state.era)&&!state.failed.has(track.id)&&(!track.mime||!!audio.canPlayType(track.mime));
- const locals=local.filter(valid),online=state.onlineTracks.filter(valid);
+ const locals=local.filter(valid),online=Date.now()>=state.onlineBackoffUntil?state.onlineTracks.filter(valid):[];
  const recordingKey=track=>String(track.originalFile||track.file).replace(/[_ ]+/g,' ').normalize('NFC').toLowerCase();
  const localKeys=new Set(locals.map(recordingKey));
- return state.online&&online.length?[...online.filter(track=>!localKeys.has(recordingKey(track))),...locals]:locals.length?locals:remoteSeed.filter(valid);
+ return online.length?[...online.filter(track=>!localKeys.has(recordingKey(track))),...locals]:locals.length?locals:remoteSeed.filter(valid);
 }
 function pick(direction=1,forceRandom=false){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:forceRandom||state.shuffle,direction});}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
@@ -2172,11 +2196,10 @@ function render(){
  $('music-title').textContent=state.track?musicDisplayTitle(state.track):'选择时期即播放';$('music-artist').textContent=[state.track?.composer,state.track?.performer].filter(Boolean).join(' · ')||'本地精选与在线曲库';
  $('music-shuffle').setAttribute('aria-pressed',String(state.shuffle));$('music-shuffle').title=state.shuffle?'乱序：上一首也会选择新曲；点击切换顺序':'顺序：可以向前和向后切换';
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
- $('music-online')?.setAttribute('aria-pressed',String(state.online));
- $('music-status').textContent=state.status;
- const link=$('music-source');link.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';link.textContent=state.track?`${state.track.localUrl?'本地录音':'在线录音'} · ${state.track.license||'Wikimedia Commons'} ↗`:'Wikimedia Commons 录音来源 ↗';
- const pool=tracks();$('music-count').textContent=String(pool.length);
- const list=$('music-list');list.replaceChildren();for(const track of pool){const row=document.createElement('button');row.type='button';row.dataset.musicId=track.id;row.textContent=musicDisplayTitle(track);row.title=[track.composer,track.performer].filter(Boolean).join(' · ');row.setAttribute('aria-current',String(track.id===state.track?.id));list.append(row);}
+ // Recording attribution remains on the compact artist line; no controls or
+ // web prompts are inserted below the progress bar.
+ const artist=$('music-artist');artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ');
+ button.title=state.status||(playing?'暂停':'播放');$('music-panel').dataset.onlineCount=String(state.onlineTracks.length);$('music-panel').dataset.discovering=String(state.discovering);
  requestAnimationFrame(updateTrackOverflow);
 }
 function disposeBuffer(id){const entry=state.buffers.get(id);if(!entry)return;entry.controller.abort();if(entry.url)URL.revokeObjectURL(entry.url);state.buffers.delete(id);}
@@ -2196,7 +2219,6 @@ function bufferTrack(track){
  });
 }
 function prefetch(){
- if(!local.length&&!state.online&&!state.track)return;
  const pool=tracks(),plan=[],first=pick(1);if(first&&first.id!==state.track?.id)plan.push(first);
  const remaining=pool.filter(track=>track.id!==state.track?.id&&!plan.some(item=>item.id===track.id));
  if(state.shuffle)for(let i=remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}
@@ -2226,18 +2248,18 @@ function advance(direction=1){
 function fail(serial=state.serial){
  if(serial!==state.serial||!state.track)return;
  state.failed.add(state.track.id);state.errors++;state.playing=false;
- if(state.online&&state.errors>=3){state.online=false;state.plan=[];start(pick(1,true));state.status='在线录音暂不可用，已切换本地精选。';render();return;}
+ if(state.track.online&&state.errors>=3){state.onlineBackoffUntil=Date.now()+60000;state.plan=[];start(pick(1,true));state.status='在线录音暂不可用，已切换本地精选。';render();return;}
  if(state.errors>=6||!tracks().length){state.status='暂时无法播放，请检查网络后重试。';render();return;}
  state.plan=[];advance();
 }
 async function expandOnline(){
- if(!state.online||state.discovering)return;state.discovering=true;
+ if(state.discovering||Date.now()<state.onlineBackoffUntil)return;state.discovering=true;
  const era=state.era;state.status='正在扩充在线曲库…';render();
  try{
   const result=await discoverMusic(era);const seen=new Set(state.onlineTracks.map(track=>track.id));for(const track of result.tracks)if(!seen.has(track.id)){state.onlineTracks.push(track);seen.add(track.id);}
-  if(state.online&&state.era===era){state.status=result.tracks.length?'已加入可播放的在线录音。':result.message||'当前网络无法扩充曲库，仍可播放本地精选。';prefetch();render();}
- }catch{if(state.era===era){state.status='在线曲库暂不可用，本地精选可继续播放。';render();}}
- finally{state.discovering=false;}
+  if(state.era===era){state.status='';prefetch();render();}
+ }catch{state.onlineBackoffUntil=Date.now()+30000;}
+ finally{state.discovering=false;render();if(state.era!==era)expandOnline();}
 }
 function closePanel(){$('music-panel').classList.add('hidden');$('music-toggle').setAttribute('aria-expanded','false');}
 function setupPeriodMusic(){
@@ -2249,27 +2271,24 @@ function setupPeriodMusic(){
  audio.addEventListener('pause',()=>{state.playing=false;render();});
  audio.addEventListener('durationchange',()=>{if(Number.isFinite(audio.duration))$('music-duration').textContent=time(audio.duration);});
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
- audio.addEventListener('ended',()=>{resetProgress();advance();if(state.online)expandOnline();});
+ audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
- $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=$('music-panel').classList.contains('hidden');$('music-panel').classList.toggle('hidden',!open);$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();if(state.online)expandOnline();}});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=$('music-panel').classList.contains('hidden');$('music-panel').classList.toggle('hidden',!open);$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();}});
  $('music-close').addEventListener('click',closePanel);
  document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
  $('music-panel').addEventListener('keydown',event=>{if(event.key==='Escape')closePanel();});
  document.querySelectorAll('.era-btn').forEach(button=>button.addEventListener('click',()=>{
   state.era=button.dataset.era;if(state.era==='all')state.shuffle=true;state.plan=[];state.errors=0;
-  start(pick(1,true));if(state.online)expandOnline();
+  start(pick(1,true));expandOnline();
  }));
  $('music-play').addEventListener('click',()=>{if(!audio.paused){audio.pause();return;}if(state.track&&!state.failed.has(state.track.id))audio.play().catch(()=>fail());else{state.failed.clear();state.errors=0;start(pick(1,true));}});
  $('music-prev').addEventListener('click',()=>advance(-1));$('music-next').addEventListener('click',()=>advance(1));
  $('music-shuffle').addEventListener('click',()=>{state.shuffle=!state.shuffle;prefetch();render();});
- $('music-online').addEventListener('click',()=>{state.online=!state.online;state.plan=[];prefetch();render();if(state.online){if(audio.paused)start(pick(1,true));expandOnline();}});
- $('music-list').addEventListener('click',event=>{const button=event.target.closest('[data-music-id]');if(button)start(tracks().find(track=>track.id===button.dataset.musicId));});
- $('music-more').addEventListener('click',()=>{state.online=true;render();expandOnline();});
  $('music-seek').addEventListener('input',event=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(event.target.value)/1000;});
  $('music-seek').addEventListener('pointerup',event=>event.target.blur());
  addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});new ResizeObserver(syncPanelAnchor).observe(document.querySelector('.masthead'));
  addEventListener('pagehide',()=>{audio.pause();for(const id of [...state.buffers.keys()])disposeBuffer(id);});
- syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();},2500);
+ syncPanelAnchor();render();setTimeout(()=>{if(!state.buffers.size&&!state.track)prefetch();if(!state.track)expandOnline();},2500);
 }
 
 return { setupPeriodMusic };
@@ -2364,14 +2383,26 @@ function finishBanner(g,moves){
 }
 function locationFor(r,c){return (state.orientation==='w'?FILES[c]:FILES[7-c])+(state.orientation==='w'?8-r:r+1);}
 function centerFor(s){let c=FILE_INDEX[s[0]],r=+s[1];return state.orientation==='w'?{x:50+c*100,y:50+(8-r)*100}:{x:50+(7-c)*100,y:50+(r-1)*100};}
+let arrowKey='',arrowAnimation=null;const departingArrows=new Set();
 function drawArrow(){
- const path=$('#candidate-arrow');if(!state.arrow){path.setAttribute('visibility','hidden');return;}
+ const path=$('#candidate-arrow'),nextKey=state.arrow?JSON.stringify([state.arrow.from,state.arrow.to,state.orientation]):'';
+ if(nextKey===arrowKey)return;
+ const motion=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(path.getAttribute('visibility')==='visible'&&motion){
+  const previous=path.cloneNode(true);previous.removeAttribute('id');previous.setAttribute('class','candidate-arrow-exit');
+  path.parentElement.append(previous);departingArrows.add(previous);
+  const fade=previous.animate([{opacity:getComputedStyle(path).opacity},{opacity:0}],{duration:130,easing:'ease-out',fill:'both'});
+  fade.finished.catch(()=>{}).then(()=>{previous.remove();departingArrows.delete(previous);});
+ }
+ arrowAnimation?.cancel();arrowAnimation=null;arrowKey=nextKey;
+ if(!state.arrow){path.setAttribute('visibility','hidden');return;}
  const a=centerFor(state.arrow.from),b=centerFor(state.arrow.to),length=Math.hypot(b.x-a.x,b.y-a.y)||1;
  const dx=(b.x-a.x)/length,dy=(b.y-a.y)/length,nx=-dy,ny=dx;
  const tail={x:a.x+dx*12,y:a.y+dy*12},tip={x:b.x-dx*14,y:b.y-dy*14},base={x:tip.x-dx*26,y:tip.y-dy*26};
  const point=(p,width)=>`${p.x+nx*width},${p.y+ny*width}`;
  path.setAttribute('d',`M${point(tail,6)} L${point(base,6)} L${point(base,16)} L${tip.x},${tip.y} L${point(base,-16)} L${point(base,-6)} L${point(tail,-6)} A6,6 0 0 0 ${point(tail,6)} Z`);
  path.setAttribute('visibility','visible');
+ if(motion)arrowAnimation=path.animate([{opacity:0},{opacity:.24}],{duration:180,easing:'ease-out'});
 }
 // 坐标标签只在翻转棋盘时重写
 let lastOrientation=null;
@@ -2444,14 +2475,13 @@ function drawBoard(){
  }
  drawArrow();
  $('#side-badge').textContent=over?'对局结束':(turnColor==='w'?'白方':'黑方')+'行棋';
- $('#status').textContent=over?'对局结束':state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱研究 · 可走双方棋子':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
+ $('#status').textContent=over?'对局结束':state.busy?'Stockfish 正在思考…':checked?'将军 · 请先应对':state.review?'当前棋谱可继续回放':state.mode==='free'?'打谱浏览 · 使用箭头切换着法':turnColor!==state.side?'轮到 Stockfish':'轮到'+(turnColor==='w'?'白方':'黑方');
  const end=$('#game-result');
  const resultBanner=finishBanner(g,moves);
  if(resultBanner){end.classList.remove('hidden');end.innerHTML=resultBanner;}
  else end.classList.add('hidden');
  $('#ply').textContent=state.view+' / '+moves.length;
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
- analysisUi?.boardUpdated();
  postReview?.sync();
 }
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
@@ -2496,6 +2526,7 @@ function pulseSquare(square,isCapture){const sq=boardCell(square);if(!sq)return;
 const activeFlights=new Set();
 function settleFlights(){
  if(!activeFlights.size)return false;
+ animationSerial++;
  for(const f of [...activeFlights])f.finish();
  activeFlights.clear();
  return true;
@@ -2540,12 +2571,13 @@ function transition(m,reverse=false){
  const flightFrames=(x,y)=>[{transform:'translate3d(0,0,0)'},{transform:`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0)`}];
  const main=mover.animate(flightFrames(dx,dy),{duration,easing:'cubic-bezier(.32,.02,.20,1)',fill:'forwards'});
  anims.push(main);
+ postReview?.motionStarted(duration);
  if(m.flags?.includes('k')||m.flags?.includes('q')){const kingSide=m.flags.includes('k'),rank=m.color==='w'?'1':'8';const rf=kingSide?'h'+rank:'a'+rank,rt=kingSide?'f'+rank:'d'+rank;const a=reverse?rt:rf,b=reverse?rf:rt;const rstart=squareOffset(a),rend=squareOffset(b);if(rstart&&rend){const rook=ghostPiece('r',m.color,a);const rookTarget=boardCell(b)?.querySelector('.piece');if(rook){ghosts.push(rook);anims.push(rook.animate(flightFrames(rend.x-rstart.x,rend.y-rstart.y),{duration,easing:'cubic-bezier(.32,.02,.20,1)',fill:'forwards'}));}if(rookTarget){rookTarget.style.opacity='0';hidden.push(rookTarget);}}}
  playMoveSound(m);
  let wrapped=false,safety=0;
  const wrapUp=()=>{
   if(wrapped)return;wrapped=true;clearTimeout(safety);
-  const latest=serial===animationSerial;
+  const latest=serial===animationSerial&&!flight.done;
   flight.finish();
   if(latest){pulseSquare(to,isCapture);const current=viewGame();if(current.isCheck())highlightCheck(current.isCheckmate());if(current.isGameOver())showFinalCelebration();}
  };
@@ -2578,7 +2610,7 @@ function playChosen(moves){
  if(moves.some(m=>m.flags?.includes('p'))){askPromotion(from,to,moves[0].color||'w');return;}
  makeMove({from,to,promotion:moves[0].promotion});
 }
-function clickSquare(square){clearOpeningMotion();if(state.postReview){toast('关闭复盘后可自行推演');return;}if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
+function clickSquare(square){if(state.mode==='free'){toast('打谱模式仅供浏览，请使用箭头切换着法');return;}if(state.postReview){toast('请先关闭复盘，再继续对弈');return;}clearOpeningMotion();if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
  stopPlayback();
  if(state.mode==='book'&&!state.duelStarted){toast('请先点击「开始对弈」');return;}
  if(state.mode==='book'&&!state.review&&g.turn()!==state.side){toast('电脑行棋中；可切换为「打谱研究」操作双方');return;}
@@ -2642,10 +2674,12 @@ function reset(){
  if(state.mode==='book'){beginDuel();return;}
  animateOpening(()=>{
   stopPlayback();cancelBusy();hidePromotion();state.currentScoreId=null;state.currentScoreSource=null;state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;state.review=false;state.reviewTitle='';invalidateViewMemo();clearHints();
-  $('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();
+  $('#move-cue').textContent='初始局面 · 使用箭头浏览棋谱';drawAll();
  });
 }
-function goto(p,{resumeComputer=true}={}){cancelBusy();const old=state.view,next=Math.min(history().length,Math.max(0,p)),m=Math.abs(old-next)===1?history()[Math.min(old,next)]:null;state.view=next;state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;drawAll();if(m)transition(m,next<old);else $('#move-cue').textContent=next?'已跳转到第 '+next+' 半回合':'初始局面 · 点击棋子开始';
+function goto(p,{resumeComputer=true}={}){cancelBusy();settleFlights();const old=state.view,next=Math.min(history().length,Math.max(0,p)),m=Math.abs(old-next)===1?history()[Math.min(old,next)]:null;
+ if(m&&state.animEnabled&&!matchMedia('(prefers-reduced-motion: reduce)').matches)postReview?.prepareMotion(next);
+ state.view=next;state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;drawAll();if(m)transition(m,next<old);else $('#move-cue').textContent=next?'已跳转到第 '+next+' 半回合':'初始局面 · 使用箭头浏览棋谱';
  const g=viewGame(),moves=cachedHistory();
  if(finishBanner(g,moves))showFinalCelebration();
  if(resumeComputer&&state.mode==='book'&&!state.review&&state.view===moves.length&&g.turn()!==state.side&&!g.isGameOver())maybeBookReply();
@@ -2692,8 +2726,8 @@ async function maybeBookReply(){
   $('#retry-engine').classList.remove('hidden');toast(state.engineError);
  }finally{clearTimeout(timeout);if(playController===controller)playController=null;}
 }
-function loadPosition(fen,title='残局练习'){stopPlayback();invalidateViewMemo();try{const game=new Chess(fen);cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();return true;}catch{toast('无法读取此残局局面');return false;}}
-function loadPgn(pgn,title='',targetPly=null){stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();
+function loadPosition(fen,title='残局练习'){try{const game=new Chess(fen);animateOpening(()=>{stopPlayback();invalidateViewMemo();cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();});return true;}catch{toast('无法读取此残局局面');return false;}}
+function loadPgn(pgn,title='',targetPly=null){try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');animateOpening(()=>{stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();});
  if(finishBanner(game,moves)&&state.view>=moves.length)showFinalCelebration();
  return true;}catch(e){console.warn('PGN parse failed',e);toast('棋谱格式无法解析');return false;}}
 // 着法记录：只在棋谱长度变化时重建 DOM，回放时仅切换选中态，
@@ -2701,7 +2735,7 @@ function loadPgn(pgn,title='',targetPly=null){stopPlayback();invalidateViewMemo(
 let movesRenderedLen=-1,movesRenderedId=null;
 function renderMoves(){
  const arr=cachedHistory(),div=$('#movelist');
- if(!arr.length){const text=state.mode==='book'?'从第一步开始，记录会自动出现。':state.review?'局面练习，可自行走子。':'选择棋谱，展示全部着法。';if(div.textContent!==text)div.textContent=text;movesRenderedLen=0;movesRenderedId='';return;}
+ if(!arr.length){const text=state.mode==='book'?'从第一步开始，记录会自动出现。':state.review?'局面练习，请查看引擎分析。':'选择棋谱，展示全部着法。';if(div.textContent!==text)div.textContent=text;movesRenderedLen=0;movesRenderedId='';return;}
  const id=state.game;
  if(movesRenderedLen!==arr.length||movesRenderedId!==id){
   div.innerHTML=recordRows(state.game).map(row=>`<span class="move-pair"><span class="move-num">${row.number}${row.white?'.':'...'}</span>${row.white?`<button class="move-token" data-ply="${row.white.ply}">${safeText(row.white.san)}</button>`:'<span class="move-token-placeholder"></span>'}${row.black?`<button class="move-token" data-ply="${row.black.ply}">${safeText(row.black.san)}</button>`:''}</span>`).join('');
@@ -3192,7 +3226,7 @@ function confirmSaveGame(){
 function saveGame(){openSaveDialog();}
 analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
 const {scheduleEngine,refreshEngineStatus}=analysisUi;
-postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi,whenFlightsIdle});
+postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi,whenFlightsIdle:()=>Promise.all([whenFlightsIdle(),whenOpeningIdle()])});
 const playIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l9 7-9 7z" fill="currentColor" stroke="none"/></svg>';
 const pauseIcon='<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14M16 5v14"/></svg>';
 function stopPlayback({resumeComputer=false}={}){
@@ -3230,6 +3264,7 @@ function clearOpeningMotion(){
 function whenOpeningIdle(){return openingMotion?.done||Promise.resolve();}
 function animateOpening(update,{animate=true}={}){
  clearOpeningMotion();clearAppearanceMotion();settleFlights();
+ postReview?.boardResetStarted();state.arrow=null;drawArrow();analysisUi?.boardReset();
  const board=$('#board'),motion=animate&&state.animEnabled&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
  const layer=document.createElement('div'),oldNodes=[];
  layer.className='opening-layer';layer.setAttribute('aria-hidden','true');
@@ -3346,7 +3381,7 @@ function setPlayMode(mode,{animate=true}={}){
  document.body.dataset.playMode=next;$('#right-heading').textContent=next==='book'?'对局':'棋谱';
  $('#record-heading').textContent=next==='book'?'着法记录':'棋谱着法';
  if(next==='book')beginDuel({animate});
- else animateOpening(()=>{$('#duel-start').textContent='开始对弈';$('#move-cue').textContent='初始局面 · 点击棋子开始';drawAll();},{animate});
+ else animateOpening(()=>{$('#duel-start').textContent='开始对弈';$('#move-cue').textContent='初始局面 · 使用箭头浏览棋谱';drawAll();},{animate});
 }
 function syncSideSelect(side){
  const sel=$('#side');if(!sel)return;
@@ -3429,8 +3464,8 @@ function setupEvents(){
  $('#first').addEventListener('click',()=>{stopPlayback();goto(0);});$('#prev').addEventListener('click',()=>{stopPlayback();goto(state.view-1);});$('#next').addEventListener('click',()=>{stopPlayback();goto(state.view+1);});$('#last').addEventListener('click',()=>{stopPlayback();goto(history().length);});
  $('#flip').addEventListener('click',()=>{
   const next=state.orientation==='w'?'b':'w';
-  if(state.mode==='book')takeDuelSeat(next,{keepPosition:true});
-  else{state.orientation=next;clearBoardGeometry();drawBoard();}
+  stopPlayback();
+  animateOpening(()=>{if(state.mode==='book')takeDuelSeat(next,{keepPosition:true});else{state.orientation=next;clearBoardGeometry();drawBoard();}});
  });
  $('#save').addEventListener('click',saveGame);$('#export').addEventListener('click',exportPgn);
  $('#mode').addEventListener('change',e=>setPlayMode(e.target.value));

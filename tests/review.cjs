@@ -19,8 +19,9 @@ vm.runInContext(fs.readFileSync(path.join(root,'vendor/chess.js'),'utf8').replac
   await page.locator('#side-badge').click();await page.waitForFunction(()=>document.querySelector('#review-progress').textContent.startsWith('5 / 5'));
   assert.equal(await page.locator('#analysis-toggle').innerText(),'实时分析');assert.equal(await page.locator('#analysis-toggle').getAttribute('aria-pressed'),'true');
   assert.equal(await page.locator('.analysis-live > #post-review').count(),1);assert.equal(await page.locator('#engine-insight').isVisible(),false);
-  const frames=await page.evaluate(()=>new Promise(resolve=>{const frames=[];document.querySelector('#movelist [data-ply="1"]').click();let n=0;function sample(){frames.push({flying:!!document.querySelector('.floating-piece'),badge:!!document.querySelector('.review-mark')});if(++n<35)requestAnimationFrame(sample);else resolve(frames);}requestAnimationFrame(sample);}));
+  const frames=await page.evaluate(()=>new Promise(resolve=>{const frames=[];document.querySelector('#movelist [data-ply="1"]').click();let n=0;function sample(){frames.push({flying:!!document.querySelector('.floating-piece'),badge:!!document.querySelector('.review-mark:not(.is-leaving)'),textOpacity:Number(getComputedStyle(document.querySelector('#review-evaluation')).opacity)});if(++n<35)requestAnimationFrame(sample);else resolve(frames);}requestAnimationFrame(sample);}));
   assert.ok(frames.some(f=>f.flying));assert.ok(frames.some(f=>f.badge));assert.ok(frames.every(f=>!f.flying||!f.badge),'badges appear only after the moving piece lands');
+  assert.ok(frames.some(f=>f.flying&&f.textOpacity>0&&f.textOpacity<1),'evaluation fades in during the move');assert.equal(frames.at(-1).textOpacity,1);
   await page.waitForSelector('[data-square=f3] .review-mark');assert.ok((await page.locator('.review-mark').boundingBox()).width>=20);
   assert.match(await page.locator('#review-move-title').innerText(),/最佳|良好|可改进|失误/);assert.ok((await page.locator('#review-comment').innerText()).length>8);
   await page.locator('#review-suggestion').click();assert.equal(await page.locator('#candidate-arrow').evaluate(node=>node.tagName.toLowerCase()),'path');
@@ -28,6 +29,10 @@ vm.runInContext(fs.readFileSync(path.join(root,'vendor/chess.js'),'utf8').replac
   await page.waitForFunction(()=>document.querySelector('#candidate-arrow').getAttribute('visibility')==='visible');
   assert.match(await page.locator('#review-line-description').innerText(),/箭头/);
   await page.locator('.right').screenshot({path:path.join(output,'post-review-study.png')});
+  await page.waitForTimeout(250);
+  const exits=await page.evaluate(()=>new Promise(resolve=>{document.querySelector('#next').click();const samples=[];let n=0;function sample(){const badge=document.querySelector('.review-mark.is-leaving'),arrow=document.querySelector('.candidate-arrow-exit');samples.push({badge:badge?Number(getComputedStyle(badge).opacity):null,arrow:arrow?Number(getComputedStyle(arrow).opacity):null});if(++n<32)requestAnimationFrame(sample);else resolve(samples);}requestAnimationFrame(sample);}));
+  assert.ok(exits.some(f=>f.badge>0&&f.badge<1),'old corner badge fades out');assert.ok(exits.some(f=>f.arrow>0&&f.arrow<.24),'old arrow fades out');
+  await page.waitForSelector('.review-mark:not(.is-leaving)');assert.equal(await page.locator('.review-mark:not(.is-leaving)').evaluate(n=>getComputedStyle(n).animationDuration),'0.22s');
   const completed=reviewRequests;await page.locator('#side-badge').click();await page.waitForTimeout(250);assert.equal(reviewRequests,completed);
   assert.equal(await page.locator('#post-review').isVisible(),false);
   await page.locator('#side-badge').click();await page.waitForTimeout(300);assert.equal(reviewRequests,completed,'reopening the same record reuses completed results');await page.locator('#side-badge').click();

@@ -14,8 +14,9 @@ const output=path.resolve(__dirname,'../test-results');
   await page.waitForFunction(()=>document.querySelectorAll('.engine-pv').length===3&&document.querySelector('#engine-probability').dataset.pending==='false',null,{timeout:45000});
   const initialOdds=await page.locator('#engine-probability').innerText();assert.match(initialOdds,/%/);
   // Stop and replace analysis several times; an old search must not overwrite the current view.
-  await move('e2','e4');await page.locator('#analysis-toggle').click();
-  await move('e7','e5');await page.locator('#analysis-toggle').click();
+  await page.locator('#fileinput').setInputFiles({name:'public-playback.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from('[Event "Public playback"]\n[Result "*"]\n\n1. e4 e5 2. Nf3 Nc6 *')});await page.locator('#collection [data-local]').first().click();await page.waitForFunction(()=>!document.querySelector('#board.is-opening'));
+  await page.locator('#next').click();await page.locator('#analysis-toggle').click();
+  await page.locator('#next').click();await page.locator('#analysis-toggle').click();
   await page.waitForFunction(()=>document.querySelector('#engine-probability').dataset.pending==='false',null,{timeout:30000});
   await page.locator('[data-play-mode="book"]').click();await move('e2','e4');
   await page.waitForFunction(()=>document.querySelectorAll('#movelist [data-ply]').length===2,null,{timeout:30000});

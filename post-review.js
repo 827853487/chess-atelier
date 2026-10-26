@@ -1,10 +1,33 @@
 import { Chess } from './vendor/chess.js';
 import { engineRequest, moveQuality, scoreLabel } from './engine-client.js';
 export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis,whenFlightsIdle}){
- const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='',annotationKey='',annotationJob=0;
+ const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='',annotationKey='',annotationJob=0,textMotion=null,textAnimation=null,textSignature='';
+ const departingMarks=new Set();
  function stop(){clearTimeout(timer);timer=null;controller?.abort();controller=null;epoch++;}
- function clearMarks(){annotationKey='';annotationJob++;document.querySelectorAll('.review-mark').forEach(node=>node.remove());}
- function close(){stop();state.postReview=false;error='';$('post-review').hidden=true;clearMarks();state.arrow=null;drawArrow();analysis.setReviewMode(false);sync();}
+ function clearMarks(){
+  annotationKey='';annotationJob++;
+  for(const node of document.querySelectorAll('#board .review-mark:not(.is-leaving)')){
+   if(matchMedia('(prefers-reduced-motion: reduce)').matches){node.remove();continue;}
+   const style=getComputedStyle(node),cell=node.parentElement,ghost=node.cloneNode(true),opacity=style.opacity,transform=style.transform;
+   Object.assign(ghost.style,{left:(cell.offsetLeft+node.offsetLeft)+'px',top:(cell.offsetTop+node.offsetTop)+'px',right:'auto',width:style.width,height:style.height});
+   ghost.classList.add('is-leaving');$('board').append(ghost);departingMarks.add(ghost);node.remove();
+   const animation=ghost.animate([{opacity,transform},{opacity:0,transform:'translateY(-2px) scale(.72)'}],{duration:150,easing:'ease-out',fill:'both'});
+   animation.finished.catch(()=>{}).then(()=>{ghost.remove();departingMarks.delete(ghost);});
+  }
+ }
+ function fadeEvaluation(){
+  textAnimation?.cancel();const node=$('review-evaluation');
+  if(!state.postReview){node.style.opacity='';return;}
+  if(textMotion?.view===state.view&&textMotion.started===null){node.style.opacity='0';return;}
+  const remaining=textMotion?.view===state.view?Math.max(1,textMotion.duration-(performance.now()-textMotion.started)):180;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){node.style.opacity='';return;}
+  node.style.opacity='';const animation=textAnimation=node.animate([{opacity:0},{opacity:1}],{duration:remaining,easing:'linear',fill:'both'});
+  animation.finished.catch(()=>{}).then(()=>{if(textAnimation===animation){animation.cancel();textAnimation=null;node.style.opacity='';}});
+ }
+ function prepareMotion(index){if(!state.postReview)return;textMotion={view:index,started:null,duration:0};textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='0';}
+ function motionStarted(duration){if(textMotion?.view!==state.view)return;textMotion.started=performance.now();textMotion.duration=duration;fadeEvaluation();}
+ function boardResetStarted(){clearMarks();textMotion=null;textSignature='';textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='';}
+ function close(){stop();state.postReview=false;error='';$('post-review').hidden=true;boardResetStarted();state.arrow=null;drawArrow();analysis.setReviewMode(false);sync();}
  state.closeReview=close;state.retryReview=()=>{error='';stop();schedule();render();};
  function createRecord(){
   const moves=cachedHistory().map(move=>({...move})),game=new Chess(state.origin),uci=[];
@@ -35,7 +58,7 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
  function moveComment(index,current,quality){
   if(error)return error;
   if(!current)return '正在加载此步分析…';
-  if(!index)return positionSummary(current)+'按着法逐步查看；关闭复盘可自行推演。';
+  if(!index)return positionSummary(current)+'使用箭头或着法记录逐步查看。';
   if(!quality)return '正在补全走前局面，完成后显示本步评价。';
   if(quality.label==='将死')return positionSummary(current);
   const text=quality.cls==='best'?'与引擎首选一致。':quality.cls==='good'?'与引擎首选的评分接近。':quality.loss>=10000?'这一步改变了将杀形势。':`相较走前的引擎参考，约损失 ${(quality.loss/100).toFixed(1)} 兵。`;
@@ -75,6 +98,8 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
   const line=currentLine(current,index),suggestion=$('review-suggestion');suggestion.hidden=!line;
   suggestion.textContent=line?'后续参考：'+line.map(move=>move.san).join(' → '):'';
   $('review-line-description').textContent=lineDescription(line);$('review-line-description').hidden=!line;
+  const signature=JSON.stringify([index,$('review-move-title').textContent,$('review-comment').textContent,suggestion.textContent]);
+  if(signature!==textSignature){textSignature=signature;fadeEvaluation();}
   suggestion.onclick=line?()=>{annotationKey='';annotate(index,move,quality,line);}:null;
   if(current)analysis.renderReview(current,record.positions[index]);else analysis.reviewLoading();
   annotate(index,move,quality,line);
@@ -98,7 +123,7 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
    const wasActive=state.postReview;stop();record=null;state.postReview=false;clearMarks();$('post-review').hidden=true;if(wasActive)analysis.setReviewMode(false);
   }
   const button=$('side-badge');button.disabled=!available;button.classList.toggle('is-review-active',!!state.postReview);button.setAttribute('aria-pressed',String(!!state.postReview));
-  if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止模型分析，恢复自行推演':'加载 Stockfish 逐步复盘';}
+  if(available){button.textContent=state.postReview?'关闭复盘':'复盘分析';button.title=state.postReview?'停止复盘，返回棋谱浏览':'加载 Stockfish 逐步复盘';}
   else button.title='对弈结束后可复盘';
   if(state.postReview){if(lastView!==state.view){stop();clearMarks();lastView=state.view;error='';}render();schedule();}
  }
@@ -106,6 +131,6 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
   if(state.postReview){close();return;}
   if(!record)record=createRecord();state.postReview=true;error='';lastView=-1;analysis.setReviewMode(true);goto(0);sync();
  });
- window.addEventListener('pagehide',stop);
- return {sync,close,motionSettled:()=>{if(state.postReview)render();}};
+ window.addEventListener('pagehide',()=>{stop();textAnimation?.cancel();for(const node of departingMarks)node.remove();departingMarks.clear();});
+ return {sync,close,prepareMotion,motionStarted,boardResetStarted,motionSettled:()=>{textMotion=null;textAnimation?.cancel();textAnimation=null;$('review-evaluation').style.opacity='';if(state.postReview)render();}};
 }

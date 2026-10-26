@@ -6,8 +6,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
  const $=q=>document.querySelector(q);
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const cache=new Map();let timer=null,controller=null,sequence=0,enabled=true;
- const nextNote=setupRestNotes();let lastBoardKey='';
- function boardUpdated(){const boardKey=JSON.stringify([state.generation,state.origin,state.game.fen(),state.view,state.orientation,document.documentElement.dataset.theme,document.documentElement.dataset.pieceStyle]);if(boardKey!==lastBoardKey){lastBoardKey=boardKey;nextNote();}}
+ const nextNote=setupRestNotes();
  const key=p=>JSON.stringify([p.origin,p.moves]);
  const remember=(k,data)=>{cache.delete(k);cache.set(k,data);while(cache.size>128)cache.delete(cache.keys().next().value);};
  function status(text,busy=false){
@@ -91,7 +90,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   $('.coach-card').dataset.paused=String(!enabled);
   $('.analysis-live').inert=!enabled;$('.analysis-live').setAttribute('aria-hidden',String(!enabled));
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
-  if(!enabled){state.arrow=null;drawArrow();nextNote();}
+  if(!enabled){state.arrow=null;drawArrow();}
   scheduleEngine();
  });
  $('#engine-insight').addEventListener('click',event=>{
@@ -114,5 +113,5 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   $('#analysis-rest').setAttribute('aria-hidden',String(enabled));$('#analysis-rest').tabIndex=enabled?-1:0;
   scheduleEngine();
  }
- return {scheduleEngine,refreshEngineStatus,setReviewMode,boardUpdated,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
+ return {scheduleEngine,refreshEngineStatus,setReviewMode,boardReset:nextNote,renderReview:render,reviewLoading:()=>{status('正在分析当前局面',true);$('#engine-probability').dataset.pending='true';}};
 }
