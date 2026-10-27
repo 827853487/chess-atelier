@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
 :root{--bg:#f5f0ea;--paper:#fffcf8;--sub:#efe7df;--ink:#45382d;--muted:#8b7c70;--line:#e6dbd0;--accent:#80634c;--accent-soft:#eaddcd;--gold:#ad7540;--light:#f1e9db;--dark:#b79c80;--w:#eae9df;--d:#a9b4a8;--b:#4f3c30;--shadow:0 16px 42px #2c3f3011}
 :root[data-theme="walnut"]{--bg:#f5f0ea;--paper:#fffcf8;--sub:#efe7df;--ink:#45382d;--muted:#8b7c70;--line:#e6dbd0;--accent:#80634c;--accent-soft:#eaddcd;--light:#f1e9db;--dark:#b79c80;--gold:#ad7540;--b:#4f3c30}
 :root[data-theme="slate"]{--bg:#f1f5f6;--paper:#fdfefe;--sub:#e9eff2;--ink:#2e4350;--muted:#7b8e99;--line:#dce5e9;--accent:#507080;--accent-soft:#dfebef;--light:#e8eff0;--dark:#95aeb6;--gold:#b08d5b;--b:#354955}

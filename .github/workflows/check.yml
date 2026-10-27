@@ -31,6 +31,7 @@ jobs:
           python build_bundle.py
           node --check app.bundle.js
           python scripts/build_public_site.py --site-url https://827853487.github.io/chess-atelier/
+          python tests/public_payload.py
       - uses: actions/upload-artifact@v7.0.2
         with:
           name: chess-atelier-website

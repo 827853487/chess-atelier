@@ -1,4 +1,5 @@
 import { musicDisplayTitle, musicPerformer } from './music-order.js';
+import { musicArtwork } from './music-artwork.js';
 
 // Media Session controls the existing HTML audio element; it is not a second
 // player and cannot keep a closed tab or a terminated browser process alive.
@@ -17,7 +18,7 @@ export function setupMusicSession({audio,getTrack,play,pause,previous,next}){
   if(!session)return;
   const track=getTrack();
   try{
-   const metadata=track?{title:musicDisplayTitle(track),artist:[track.composer,musicPerformer(track)].filter(Boolean).join(' · '),album:'棋境 · 古典乐'}:null;
+   const metadata=track?{title:musicDisplayTitle(track),artist:[track.composer,musicPerformer(track)].filter(Boolean).join(' · '),album:'棋境 · 古典乐',artwork:musicArtwork(track)}:null;
    const key=JSON.stringify(metadata);
    if(key!==metadataKey){if(typeof MediaMetadata==='function')session.metadata=metadata?new MediaMetadata(metadata):null;metadataKey=key;}
    session.playbackState=!track?'none':audio.paused?'paused':'playing';
@@ -38,7 +39,14 @@ export function setupMusicSession({audio,getTrack,play,pause,previous,next}){
   stop:()=>{pause();seek(0);}
  };
  for(const [action,handler] of Object.entries(actions)){try{session?.setActionHandler(action,safely(handler));}catch{}}
- for(const event of ['playing','pause','ended','loadedmetadata','durationchange','seeked','ratechange'])audio.addEventListener(event,sync);
+ // Re-publish after native audio focus is acquired, including first playback
+ // and lock-screen resume. Some Android media UIs sample artwork at this point.
+ audio.addEventListener('playing',()=>{metadataKey='';sync();});
+ for(const event of ['pause','ended','loadedmetadata','durationchange','seeked','ratechange'])audio.addEventListener(event,sync);
  audio.addEventListener('timeupdate',position);
+ // Wait for the page's theme transition to settle before repainting system art.
+ if(typeof MutationObserver==='function'&&typeof document!=='undefined'){
+  let themeTimer;new MutationObserver(()=>{clearTimeout(themeTimer);themeTimer=setTimeout(sync,380);}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+ }
  sync();return {activate,sync};
 }

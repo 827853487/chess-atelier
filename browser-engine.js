@@ -2,7 +2,7 @@ import { Chess } from './vendor/chess.js';
 import { prepareBrowserEngineAssets } from './engine-assets.js';
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
-export function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
+export function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser'||document.documentElement?.dataset.engine==='browser';}
 const LEVELS={1:{name:'入门',elo:1300,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3000,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
 class UciWorker{
@@ -28,7 +28,7 @@ class UciWorker{
    if(typeof WebAssembly!=='object'||typeof Worker!=='function')throw Error('当前浏览器不支持本地 Stockfish，请使用新版浏览器。');
    const {workerUrl}=await prepareBrowserEngineAssets();
    if(generation!==this.generation)throw abortError();
-   this.worker=new Worker(workerUrl);
+   try{this.worker=new Worker(workerUrl);}catch{throw Error('引擎已载入，但浏览器限制了工作线程。请在新版 Chrome 或 Safari 中重试。');}
    this.worker.onmessage=event=>{
     if(typeof event.data!=='string')return;
     for(const line of event.data.split(/\r?\n/)){
@@ -37,7 +37,11 @@ class UciWorker{
      for(const listener of [...this.listeners])listener.line(line);
     }
    };
-   this.worker.onerror=event=>{event.preventDefault();if(generation===this.generation)this.fail(Error('浏览器 Stockfish 加载失败，请刷新或重试。'));};
+   this.worker.onerror=event=>{
+    event.preventDefault();if(generation!==this.generation)return;
+    const reason=String(event.message||'');
+    this.fail(Error(/memory|allocation/i.test(reason)?'引擎启动时内存不足，请关闭其他标签页后重试。':/compile|wasm|WebAssembly|SIMD/i.test(reason)?'引擎已载入，但此浏览器无法编译，请更新浏览器后重试。':'引擎已载入，但浏览器启动失败，请刷新后重试。'));
+   };
    const uci=this.waitFor(line=>line==='uciok',30000);this.send('uci');await uci;
    // Single-thread WASM needs no SharedArrayBuffer / cross-origin isolation.
    this.send('setoption name Hash value 16');this.send('setoption name UCI_ShowWDL value true');

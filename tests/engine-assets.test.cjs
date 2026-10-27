@@ -8,11 +8,11 @@ function makeStore(){
  const entries=new Map();
  return {entries,open:async()=>({match:async key=>entries.get(key)?.clone(),put:async(key,value)=>entries.set(key,value.clone()),delete:async key=>entries.delete(key)})};
 }
-function create({store=makeStore(),fetchFile,base='https://example.test/chess-atelier/'}={}){
+function create({store=makeStore(),fetchFile,base='https://example.test/chess-atelier/',embedded}={}){
  const calls=[],blobs=[];
  class TestURL extends URL{static createObjectURL(blob){blobs.push(blob);return 'blob:https://example.test/'+blobs.length;}}
- const context=vm.createContext({URL:TestURL,Blob,Response,AbortController,crypto:require('node:crypto').webcrypto,
-  document:{baseURI:base},location:{origin:'https://example.test'},caches:store,
+ const context=vm.createContext({URL:TestURL,Blob,Response,AbortController,TextEncoder,atob,crypto:require('node:crypto').webcrypto,
+  document:{baseURI:base,getElementById:()=>embedded?{textContent:JSON.stringify(embedded)}:null},location:{origin:'https://example.test'},caches:store,
   setTimeout:(fn,ms)=>setTimeout(fn,Math.min(ms,5)),clearTimeout,
   fetch:async(url,options)=>{
    calls.push({url,options});const name=new URL(url).pathname.split('/').pop();
@@ -53,4 +53,13 @@ test('storage denial does not prevent play; failed preparation can be retried',a
 });
 test('cross-origin engine configuration is rejected before sending any request',async()=>{
  const a=create({base:'https://other.test/'});await assert.rejects(a.load(),/当前网站/);assert.equal(a.calls.length,0);
+});
+test('page-embedded engine starts without a single resource request or writable cache',async()=>{
+ const embedded={version:'19.0.1-lite-single',script:binaries.get('stockfish-19-lite-single.js').toString(),wasm:binaries.get('stockfish-19-lite-single.wasm').toString('base64')};
+ const a=create({embedded,store:{open:async()=>{throw Error('storage denied');}},fetchFile:()=>{throw Error('blocked');}});
+ await a.load();assert.equal(a.calls.length,0);assert.equal(a.blobs.length,2);
+});
+test('embedded bytes must match the fixed release before a worker can use them',async()=>{
+ const a=create({embedded:{version:'19.0.1-lite-single',script:'wrong file',wasm:'eA=='}});
+ await assert.rejects(a.load(),/不完整/);assert.equal(a.calls.length,0);assert.equal(a.blobs.length,0);
 });

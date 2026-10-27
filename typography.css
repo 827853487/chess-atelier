@@ -69,8 +69,8 @@ button,input,select,textarea{font-family:inherit}
 }
 
 /* Local composer monograms and calm, readable music metadata. */
-#music-panel .now-art{position:relative;border:1px solid color-mix(in srgb,var(--accent) 16%,var(--line))}
-.composer-monogram{position:absolute;inset:0;display:grid;place-items:center;font:400 36px/1 Georgia,'Times New Roman',serif;color:color-mix(in srgb,var(--accent) 80%,var(--ink));transform-origin:center;pointer-events:none}
+#music-panel .now-art{position:relative;background:linear-gradient(135deg,var(--accent),var(--ink))!important;border:1px solid var(--accent)}
+.composer-monogram{position:absolute;inset:0;display:grid;place-items:center;font:400 36px/1 Georgia,'Times New Roman',serif;color:var(--paper);transform-origin:center;pointer-events:none}
 #music-panel #music-artist{font-weight:400!important}
 .music-credit-text{display:inline-block;vertical-align:top;width:max-content;max-width:none;white-space:nowrap;transform:translateX(0)}
 #music-panel .music-composer,#music-panel .music-performer{font-weight:400;color:inherit}

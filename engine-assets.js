@@ -8,6 +8,16 @@ const ENGINE_FILES=[
 const engineRoot=new URL('./vendor/stockfish/',document.baseURI);
 const cacheName='chess-atelier-engine-19.0.1-'+encodeURIComponent(engineRoot.pathname);
 let preparedAssets=null;
+let embeddedPackage;
+
+function embeddedBytes(file){
+ const element=document.getElementById?.('stockfish-payload');
+ if(!element)return null;
+ embeddedPackage??=JSON.parse(element.textContent);
+ if(embeddedPackage.version!=='19.0.1-lite-single')throw Error('网页内引擎版本不匹配，请刷新网页。');
+ if(file.name.endsWith('.js'))return new TextEncoder().encode(embeddedPackage.script);
+ const raw=atob(embeddedPackage.wasm);return Uint8Array.from(raw,c=>c.charCodeAt(0));
+}
 
 async function verifiedBytes(response,file){
  if(!response?.ok)throw Error('引擎文件下载失败'+(response?'（'+response.status+'）':''));
@@ -33,6 +43,14 @@ async function loadEngineFile(file){
   const stored=await cache?.match(url.href);
   if(stored)return await verifiedBytes(stored,file);
  }catch{try{await cache?.delete(url.href);}catch{}}
+ // Public builds carry both engine files inside the HTML document. If the
+ // page arrived, starting Stockfish no longer needs a separate WASM request.
+ const embedded=embeddedBytes(file);
+ if(embedded){
+  const bytes=await verifiedBytes(new Response(embedded),file);
+  try{await cache?.put(url.href,new Response(bytes,{headers:{'Content-Type':file.type}}));}catch{}
+  return bytes;
+ }
  let failure;
  for(let attempt=0;attempt<3;attempt++){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),25000);
@@ -51,8 +69,12 @@ async function loadEngineFile(file){
 export function prepareBrowserEngineAssets(){
  if(preparedAssets)return preparedAssets;
  preparedAssets=Promise.all(ENGINE_FILES.map(loadEngineFile)).then(([script,wasm])=>{
+  embeddedPackage=null;
   const wasmUrl=URL.createObjectURL(new Blob([wasm],{type:'application/wasm'}));
   const scriptUrl=URL.createObjectURL(new Blob([script],{type:'application/javascript'}));
+  // The verified blobs now own the bytes. Release the large Base64 DOM string
+  // on memory-constrained tablets; subsequent calls reuse this prepared result.
+  const payload=document.getElementById?.('stockfish-payload');if(payload)payload.textContent='';
   // Stockfish.js accepts an explicit WASM location in its worker URL fragment.
   // Both blobs came from verified same-origin bytes, so workers need no network,
   // correct server WASM MIME, SharedArrayBuffer, CDN or analysis API.

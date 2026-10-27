@@ -308,6 +308,16 @@ const ENGINE_FILES=[
 const engineRoot=new URL('./vendor/stockfish/',document.baseURI);
 const cacheName='chess-atelier-engine-19.0.1-'+encodeURIComponent(engineRoot.pathname);
 let preparedAssets=null;
+let embeddedPackage;
+
+function embeddedBytes(file){
+ const element=document.getElementById?.('stockfish-payload');
+ if(!element)return null;
+ embeddedPackage??=JSON.parse(element.textContent);
+ if(embeddedPackage.version!=='19.0.1-lite-single')throw Error('网页内引擎版本不匹配，请刷新网页。');
+ if(file.name.endsWith('.js'))return new TextEncoder().encode(embeddedPackage.script);
+ const raw=atob(embeddedPackage.wasm);return Uint8Array.from(raw,c=>c.charCodeAt(0));
+}
 
 async function verifiedBytes(response,file){
  if(!response?.ok)throw Error('引擎文件下载失败'+(response?'（'+response.status+'）':''));
@@ -333,6 +343,14 @@ async function loadEngineFile(file){
   const stored=await cache?.match(url.href);
   if(stored)return await verifiedBytes(stored,file);
  }catch{try{await cache?.delete(url.href);}catch{}}
+ // Public builds carry both engine files inside the HTML document. If the
+ // page arrived, starting Stockfish no longer needs a separate WASM request.
+ const embedded=embeddedBytes(file);
+ if(embedded){
+  const bytes=await verifiedBytes(new Response(embedded),file);
+  try{await cache?.put(url.href,new Response(bytes,{headers:{'Content-Type':file.type}}));}catch{}
+  return bytes;
+ }
  let failure;
  for(let attempt=0;attempt<3;attempt++){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),25000);
@@ -351,8 +369,12 @@ async function loadEngineFile(file){
 function prepareBrowserEngineAssets(){
  if(preparedAssets)return preparedAssets;
  preparedAssets=Promise.all(ENGINE_FILES.map(loadEngineFile)).then(([script,wasm])=>{
+  embeddedPackage=null;
   const wasmUrl=URL.createObjectURL(new Blob([wasm],{type:'application/wasm'}));
   const scriptUrl=URL.createObjectURL(new Blob([script],{type:'application/javascript'}));
+  // The verified blobs now own the bytes. Release the large Base64 DOM string
+  // on memory-constrained tablets; subsequent calls reuse this prepared result.
+  const payload=document.getElementById?.('stockfish-payload');if(payload)payload.textContent='';
   // Stockfish.js accepts an explicit WASM location in its worker URL fragment.
   // Both blobs came from verified same-origin bytes, so workers need no network,
   // correct server WASM MIME, SharedArrayBuffer, CDN or analysis API.
@@ -367,7 +389,7 @@ const { browserEngineEnabled, browserEngineRequest, browserEngineStatus }=(()=>{
 
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
-function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
+function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser'||document.documentElement?.dataset.engine==='browser';}
 const LEVELS={1:{name:'入门',elo:1300,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3000,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
 class UciWorker{
@@ -393,7 +415,7 @@ class UciWorker{
    if(typeof WebAssembly!=='object'||typeof Worker!=='function')throw Error('当前浏览器不支持本地 Stockfish，请使用新版浏览器。');
    const {workerUrl}=await prepareBrowserEngineAssets();
    if(generation!==this.generation)throw abortError();
-   this.worker=new Worker(workerUrl);
+   try{this.worker=new Worker(workerUrl);}catch{throw Error('引擎已载入，但浏览器限制了工作线程。请在新版 Chrome 或 Safari 中重试。');}
    this.worker.onmessage=event=>{
     if(typeof event.data!=='string')return;
     for(const line of event.data.split(/\r?\n/)){
@@ -402,7 +424,11 @@ class UciWorker{
      for(const listener of [...this.listeners])listener.line(line);
     }
    };
-   this.worker.onerror=event=>{event.preventDefault();if(generation===this.generation)this.fail(Error('浏览器 Stockfish 加载失败，请刷新或重试。'));};
+   this.worker.onerror=event=>{
+    event.preventDefault();if(generation!==this.generation)return;
+    const reason=String(event.message||'');
+    this.fail(Error(/memory|allocation/i.test(reason)?'引擎启动时内存不足，请关闭其他标签页后重试。':/compile|wasm|WebAssembly|SIMD/i.test(reason)?'引擎已载入，但此浏览器无法编译，请更新浏览器后重试。':'引擎已载入，但浏览器启动失败，请刷新后重试。'));
+   };
    const uci=this.waitFor(line=>line==='uciok',30000);this.send('uci');await uci;
    // Single-thread WASM needs no SharedArrayBuffer / cross-origin isolation.
    this.send('setoption name Hash value 16');this.send('setoption name UCI_ShowWDL value true');
@@ -2403,7 +2429,38 @@ function discoverMusic(era='all'){
 
 return { discoverMusic };
 })();
+const { musicArtwork }=(()=>{
+
+// Render the same local monogram as the web player to PNG. System media UIs
+// cannot read DOM/CSS, and Chrome for Android expects bitmap artwork (512px).
+const artworkCache=new Map();
+function musicArtwork(track){
+ if(!track||typeof document==='undefined'||typeof getComputedStyle!=='function')return [];
+ try{
+  const root=getComputedStyle(document.documentElement),tile=document.querySelector('.now-art'),letter=tile?.querySelector('[data-current=true]');
+  const tileStyle=tile?getComputedStyle(tile):null,textStyle=letter?getComputedStyle(letter):null;
+  const initial=musicComposerInitial(track),start=root.getPropertyValue('--accent').trim()||'#80634c',end=root.getPropertyValue('--ink').trim()||'#45382d',color=textStyle?.color||root.getPropertyValue('--paper').trim()||'#fffcf8';
+  const ratio=Math.max(.35,Math.min(.8,(parseFloat(textStyle?.fontSize)||36)/(parseFloat(tileStyle?.width)||56))),family=textStyle?.fontFamily||'Georgia,serif';
+  const key=JSON.stringify([initial,start,end,color,ratio,family]);
+  if(artworkCache.has(key))return artworkCache.get(key);
+  const artwork=[512,256].map(size=>{
+   const canvas=document.createElement('canvas');canvas.width=canvas.height=size;const context=canvas.getContext('2d');
+   if(!context)throw Error('Canvas unavailable');
+   const gradient=context.createLinearGradient(0,0,size,size);gradient.addColorStop(0,start);gradient.addColorStop(1,end);
+   context.fillStyle=gradient;context.fillRect(0,0,size,size);context.fillStyle=color;context.font=`400 ${size*ratio}px ${family}`;context.textAlign='center';context.textBaseline='alphabetic';
+   const metrics=context.measureText(initial),ascent=metrics.actualBoundingBoxAscent||size*ratio*.7,descent=metrics.actualBoundingBoxDescent||0;
+   context.fillText(initial,size/2,(size+ascent-descent)/2);
+   return {src:canvas.toDataURL('image/png'),sizes:`${size}x${size}`,type:'image/png'};
+  });
+  artworkCache.set(key,artwork);while(artworkCache.size>8)artworkCache.delete(artworkCache.keys().next().value);
+  return artwork;
+ }catch{return [];}
+}
+
+return { musicArtwork };
+})();
 const { setupMusicSession }=(()=>{
+
 
 // Media Session controls the existing HTML audio element; it is not a second
 // player and cannot keep a closed tab or a terminated browser process alive.
@@ -2422,7 +2479,7 @@ function setupMusicSession({audio,getTrack,play,pause,previous,next}){
   if(!session)return;
   const track=getTrack();
   try{
-   const metadata=track?{title:musicDisplayTitle(track),artist:[track.composer,musicPerformer(track)].filter(Boolean).join(' · '),album:'棋境 · 古典乐'}:null;
+   const metadata=track?{title:musicDisplayTitle(track),artist:[track.composer,musicPerformer(track)].filter(Boolean).join(' · '),album:'棋境 · 古典乐',artwork:musicArtwork(track)}:null;
    const key=JSON.stringify(metadata);
    if(key!==metadataKey){if(typeof MediaMetadata==='function')session.metadata=metadata?new MediaMetadata(metadata):null;metadataKey=key;}
    session.playbackState=!track?'none':audio.paused?'paused':'playing';
@@ -2443,8 +2500,15 @@ function setupMusicSession({audio,getTrack,play,pause,previous,next}){
   stop:()=>{pause();seek(0);}
  };
  for(const [action,handler] of Object.entries(actions)){try{session?.setActionHandler(action,safely(handler));}catch{}}
- for(const event of ['playing','pause','ended','loadedmetadata','durationchange','seeked','ratechange'])audio.addEventListener(event,sync);
+ // Re-publish after native audio focus is acquired, including first playback
+ // and lock-screen resume. Some Android media UIs sample artwork at this point.
+ audio.addEventListener('playing',()=>{metadataKey='';sync();});
+ for(const event of ['pause','ended','loadedmetadata','durationchange','seeked','ratechange'])audio.addEventListener(event,sync);
  audio.addEventListener('timeupdate',position);
+ // Wait for the page's theme transition to settle before repainting system art.
+ if(typeof MutationObserver==='function'&&typeof document!=='undefined'){
+  let themeTimer;new MutationObserver(()=>{clearTimeout(themeTimer);themeTimer=setTimeout(sync,380);}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+ }
  sync();return {activate,sync};
 }
 

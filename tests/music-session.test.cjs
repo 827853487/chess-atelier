@@ -5,7 +5,7 @@ function fixture({supported=true,partial=false}={}){
  const session={setActionHandler:(name,fn)=>{if(partial&&name==='seekto')throw Error('unsupported');actions[name]=fn;},setPositionState:value=>positions.push(value)};
  const navigator={audioSession:{type:'auto'},...(supported?{mediaSession:session}:{})};
  const context=vm.createContext({navigator,MediaMetadata:class{constructor(data){Object.assign(this,data);}}});
- for(const name of ['music-order.js','music-session.js'])vm.runInContext(fs.readFileSync(path.resolve(__dirname,'..',name),'utf8').replace(/^import .*;\s*$/gm,'').replace(/^export /gm,''),context);
+ for(const name of ['music-order.js','music-artwork.js','music-session.js'])vm.runInContext(fs.readFileSync(path.resolve(__dirname,'..',name),'utf8').replace(/^import .*;\s*$/gm,'').replace(/^export /gm,''),context);
  const track={composer:'巴赫',title:'Bach - Prelude',performer:'played by Musician'};
  const api=context.setupMusicSession({audio,getTrack:()=>track,play:()=>{calls.push('play');audio.paused=false;},pause:()=>{calls.push('pause');audio.paused=true;},previous:()=>calls.push('previous'),next:()=>calls.push('next')});
  return {api,audio,session,navigator,actions,positions,events,calls,track};

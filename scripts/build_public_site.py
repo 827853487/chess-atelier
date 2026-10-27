@@ -4,6 +4,7 @@ Usage: python scripts/build_public_site.py --output <directory> [--site-url <ori
 No credentials, native executables, browser records or runtime caches are copied.
 """
 import argparse
+import base64
 import hashlib
 import json
 from pathlib import Path
@@ -61,7 +62,14 @@ def main():
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(file, target)
     html = (output / 'index.html').read_text(encoding='utf-8')
-    html = html.replace('<script src="./app.bundle.js', '<script src="./browser-config.js"></script><script src="./app.bundle.js')
+    # Deliver the engine with the page itself. Some networks permit cached HTML
+    # and JS while blocking or timing out the subsequent binary WASM download.
+    engine = ROOT / 'vendor/stockfish'
+    payload = json.dumps({'version':'19.0.1-lite-single',
+        'script':(engine/'stockfish-19-lite-single.js').read_bytes().decode('utf-8'),
+        'wasm':base64.b64encode((engine/'stockfish-19-lite-single.wasm').read_bytes()).decode('ascii')},separators=(',',':')).replace('<','\\u003c')
+    html = html.replace('<html ', '<html data-engine="browser" ', 1)
+    html = html.replace('<script src="./app.bundle.js', '<script type="application/json" id="stockfish-payload">'+payload+'</script><script src="./app.bundle.js',1)
     if args.site_url:
         url = args.site_url.rstrip('/') + '/'
         if not url.startswith('https://') or any(c in url for c in '<>"\''):
