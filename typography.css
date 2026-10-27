@@ -174,3 +174,11 @@ button:not(.square):focus-visible{outline:2px solid color-mix(in srgb,var(--acce
 @media(max-width:700px){.engine-controls{gap:6px}}
 .atelier-select-list:not(.is-keyboard) .atelier-option:focus-visible{outline:none!important;box-shadow:none!important}
 .atelier-select-list:not(.is-keyboard) .atelier-option:not([aria-selected=true]):not(:hover){background:transparent!important;color:var(--ink)!important}
+
+/* Keep transport centered; the restored shuffle switch occupies the right slot. */
+#music-panel .music-controls{display:grid!important;grid-template-columns:minmax(42px,1fr) auto minmax(42px,1fr)!important;align-items:center!important;gap:0!important}
+#music-panel .music-main-controls{grid-column:2;grid-row:1}
+#music-panel #music-shuffle{grid-column:3;grid-row:1;justify-self:end;align-self:center;display:grid!important;width:42px!important;height:42px!important;border-radius:12px!important;border:1px solid transparent!important;color:var(--muted)!important;background:transparent!important}
+#music-panel #music-shuffle[aria-pressed=true]{color:var(--accent)!important;background:var(--accent-soft)!important}
+#music-panel #music-shuffle:hover{background:var(--sub)!important}
+#music-panel #music-shuffle[aria-pressed=true]:hover{background:var(--accent-soft)!important}

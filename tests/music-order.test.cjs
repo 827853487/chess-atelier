@@ -42,5 +42,25 @@ test('credit prefixes and player placeholders are removed without damaging names
 
 test('composer monograms use known surname initials with safe local fallback',()=>{
  const initial=vm.runInContext('musicComposerInitial',context);
- assert.equal(initial({composer:'巴赫'}),'B');assert.equal(initial({composer:'莫扎特'}),'M');assert.equal(initial({composer:'肖邦'}),'C');assert.equal(initial({composer:'Ludwig van Beethoven'}),'B');assert.equal(initial({composer:'Chopin, Frédéric'}),'C');assert.equal(initial({composer:'未知作曲家'}),'未');assert.equal(initial({}),'♪');
+ assert.equal(initial({composer:'巴赫'}),'B');assert.equal(initial({composer:'莫扎特'}),'M');assert.equal(initial({composer:'肖邦'}),'C');assert.equal(initial({composer:'Ludwig van Beethoven'}),'B');assert.equal(initial({composer:'Chopin, Frédéric'}),'C');assert.equal(initial({composer:'未知作曲家'}),'M');assert.equal(initial({}),'M');
+ assert.equal(initial({composer:'格里格'}),'G');assert.equal(initial({composer:'巴拉基列夫'}),'B');assert.equal(initial({composer:'格鲁克'}),'G');assert.equal(initial({composer:'Antonín Dvořák'}),'D');assert.equal(initial({composer:'未知',composerEnglish:'Jean Sibelius'}),'S');
+});
+test('sequential history retraces the actual random order without losing the forward path',()=>{
+ const remember=vm.runInContext('recordMusicVisit',context),step=vm.runInContext('musicHistoryStep',context);let timeline={entries:[],cursor:-1};
+ for(const id of ['c','a','d'])timeline=remember(timeline,{id,title:id});
+ let target=step(timeline,-1);assert.equal(target.track.id,'a');timeline=remember(timeline,target.track,target.index);
+ target=step(timeline,-1);assert.equal(target.track.id,'c');timeline=remember(timeline,target.track,target.index);
+ assert.equal(step(timeline,-1),null);assert.equal(step(timeline,1).track.id,'a');assert.equal(timeline.entries.length,3);
+ timeline=remember(timeline,{id:'new-random'});assert.deepEqual(Array.from(timeline.entries,t=>t.id),['c','a','d','new-random']);assert.equal(step(timeline,-1).track.id,'d');
+});
+test('history skips failed recordings and bounds storage while retaining recording metadata',()=>{
+ const remember=vm.runInContext('recordMusicVisit',context),step=vm.runInContext('musicHistoryStep',context);let timeline={entries:[],cursor:-1};
+ for(const id of ['a','b','c','d'])timeline=remember(timeline,{id,remoteUrl:'https://audio.test/'+id},null,3);
+ assert.deepEqual(Array.from(timeline.entries,t=>t.id),['b','c','d']);assert.equal(timeline.cursor,2);
+ const found=step(timeline,-1,new Set(['c']));assert.equal(found.track.id,'b');assert.equal(found.track.remoteUrl,'https://audio.test/b');assert.equal(timeline.entries.length,3);
+});
+test('every bundled composer produces a Latin monogram',()=>{
+ const initial=vm.runInContext('musicComposerInitial',context),c=vm.createContext({});vm.runInContext(fs.readFileSync(path.resolve(__dirname,'../music-library.js'),'utf8').replace(/^export /gm,'')+';globalThis.seed=MUSIC_SEED',c);
+ const locals=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../assets/music/playlist.json'),'utf8'));
+ for(const track of [...locals,...c.seed.map(row=>({composer:row[2]}))])assert.match(initial(track),/^[A-Z]$/);
 });

@@ -1,7 +1,7 @@
 import { showSurface, hideSurface, surfaceOpen } from './surface-motion.js';
 import { MUSIC_SEED } from './music-library.js';
 import { LOCAL_MUSIC } from './local-music.js';
-import { selectMusicTrack, musicDisplayTitle, musicCopyTitle, musicPerformer, musicComposerInitial } from './music-order.js';
+import { selectMusicTrack, recordMusicVisit, musicHistoryStep, musicDisplayTitle, musicCopyTitle, musicPerformer, musicComposerInitial } from './music-order.js';
 import { discoverMusic } from './online-music.js';
 import { setupMusicSession } from './music-session.js';
 import { createPcmSpectrum } from './pcm-spectrum.js';
@@ -9,7 +9,7 @@ const ERAS={baroque:'巴洛克',classical:'古典',romantic:'浪漫',modern:'近
 const $=id=>document.getElementById(id),audio=$('music-audio');
 const local=LOCAL_MUSIC.map(track=>({...track,id:'local:'+track.file,localUrl:'./assets/music/'+encodeURIComponent(track.file)}));
 const remoteSeed=MUSIC_SEED.map(([file,title,composer])=>({id:'seed:'+file,file,title,composer,era:/巴赫|亨德尔|维瓦尔第|斯卡拉蒂/.test(composer)?'baroque':/莫扎特|贝多芬|海顿/.test(composer)?'classical':/德彪西|拉威尔|萨蒂/.test(composer)?'modern':'romantic',sourceUrl:'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(file)}));
-const state={era:'all',onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
+const state={era:'all',shuffle:true,timeline:{entries:[],cursor:-1},visitSerial:-1,pendingHistoryIndex:null,onlineBackoffUntil:0,onlineTracks:[],track:null,history:[],failed:new Set(),buffers:new Map(),plan:[],serial:0,errors:0,playing:false,status:'',discovering:false};
 const source=track=>track.localUrl||track.remoteUrl||'https://commons.wikimedia.org/wiki/Special:Redirect/file/'+encodeURIComponent(track.file).replace(/%20/g,'_');
 function updateMonogram(track){
  const box=document.querySelector('.now-art'),initial=musicComposerInitial(track),current=box.querySelector('[data-current=true]');
@@ -130,7 +130,16 @@ function tracks(){
  const localKeys=new Set(locals.map(recordingKey));
  return online.length?[...online.filter(track=>!localKeys.has(recordingKey(track))),...locals]:locals.length?locals:remoteSeed.filter(valid);
 }
-function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:true,direction});}
+function pick(direction=1){return selectMusicTrack(tracks(),{currentId:state.track?.id,recent:state.history,shuffle:state.shuffle,direction});}
+function historyStep(direction){
+ const failed=new Set(state.failed);
+ if(Date.now()<state.onlineBackoffUntil)for(const track of state.timeline.entries)if(track.online)failed.add(track.id);
+ if(state.visitSerial!==state.serial&&state.track&&!Number.isInteger(state.pendingHistoryIndex)){
+  return direction<0?musicHistoryStep({...state.timeline,cursor:state.timeline.cursor+1},-1,failed):null;
+ }
+ const timeline=state.visitSerial!==state.serial&&Number.isInteger(state.pendingHistoryIndex)?{...state.timeline,cursor:state.pendingHistoryIndex}:state.timeline;
+ return musicHistoryStep(timeline,direction,failed);
+}
 function resetProgress(){$('music-elapsed').textContent='0:00';$('music-duration').textContent='0:00';$('music-seek').value=0;$('music-seek').style.setProperty('--seek-progress','0%');}
 function updateTrackOverflow(){
  if(!surfaceOpen($('music-panel')))return;
@@ -164,6 +173,7 @@ function render(){
   if(!composer&&!performer)text.textContent='点击暂停键播放';
  }
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
+ $('music-shuffle').setAttribute('aria-pressed',String(state.shuffle));$('music-shuffle').title=state.shuffle?'随机播放':'顺序播放 · 沿已播放记录切换';
  // Recording attribution remains on the compact artist line; no controls or
  // web prompts are inserted below the progress bar.
  artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[[composer,performer].filter(Boolean).join(' '),[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
@@ -188,7 +198,7 @@ function bufferTrack(track){
  });
 }
 function prefetch(){
- const pool=tracks(),plan=[],first=pick(1);if(first&&first.id!==state.track?.id)plan.push(first);
+ const pool=tracks(),plan=[],first=(!state.shuffle&&historyStep(1)?.track)||pick(1);if(first&&first.id!==state.track?.id)plan.push(first);
  const remaining=pool.filter(track=>track.id!==state.track?.id&&!plan.some(item=>item.id===track.id));
  for(let i=remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}
 
@@ -197,11 +207,13 @@ function prefetch(){
  for(const track of plan)bufferTrack(track);
  $('music-panel').dataset.preloadCount=String(plan.length);
 }
-function start(track){
+function start(track,{historyIndex=null}={}){
  if(!track)return;
  mediaSession?.activate();primeSpectrum();
  const serial=++state.serial;pcmSpectrum=null;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
- updateMonogram(track);state.history.push(track.id);if(state.history.length>32)state.history.shift();
+ state.pendingHistoryIndex=historyIndex;
+ if(Number.isInteger(historyIndex)&&state.era!=='all'&&track.era&&track.era!==state.era)state.era=track.era;
+ updateMonogram(track);
  audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
  // play() stays in the user's click stack, including on iPhone. Do not await a manifest/fetch first.
  const request=audio.play();render();prefetch();
@@ -222,7 +234,12 @@ function resumePlayback(){
  });
 }
 function advance(direction=1){
- const target=state.plan[0]&&!state.failed.has(state.plan[0].id)?state.plan[0]:pick(direction);
+ if(!state.shuffle){
+  const previous=historyStep(direction);
+  if(previous){start(previous.track,{historyIndex:previous.index});return;}
+  if(direction<0&&state.track){if(Number.isFinite(audio.duration))audio.currentTime=0;if(audio.paused)resumePlayback();return;}
+ }
+ const target=state.shuffle?(state.plan[0]&&!state.failed.has(state.plan[0].id)?state.plan[0]:pick(direction)):pick(1);
  if(target)start(target);
 }
 function fail(serial=state.serial){
@@ -253,7 +270,13 @@ export function setupPeriodMusic(){
  $('music-copy').addEventListener('click',copyTitle);$('music-copy').addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyTitle();}});
  audio.volume=.25;$('music-next-audio').preload='none';
  mediaSession=setupMusicSession({audio,getTrack:()=>state.track,play:resumePlayback,pause:()=>audio.pause(),previous:()=>advance(-1),next:()=>advance(1)});
- audio.addEventListener('playing',()=>{state.playing=true;state.errors=0;state.status='';ensureSpectrum();render();startSpectrum();});
+ audio.addEventListener('playing',()=>{
+  if(state.visitSerial!==state.serial){
+   state.timeline=recordMusicVisit(state.timeline,state.track,state.pendingHistoryIndex);state.visitSerial=state.serial;
+   state.history.push(state.track.id);if(state.history.length>32)state.history.shift();
+  }
+  state.playing=true;state.errors=0;state.status='';ensureSpectrum();render();startSpectrum();
+ });
  audio.addEventListener('pause',()=>{state.playing=false;stopSpectrum();render();});
  audio.addEventListener('durationchange',()=>{if(Number.isFinite(audio.duration))$('music-duration').textContent=time(audio.duration);});
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
@@ -269,6 +292,7 @@ export function setupPeriodMusic(){
  }));
  $('music-play').addEventListener('click',()=>{if(!audio.paused)audio.pause();else resumePlayback();});
  $('music-prev').addEventListener('click',()=>advance(-1));$('music-next').addEventListener('click',()=>advance(1));
+ $('music-shuffle').addEventListener('click',()=>{state.shuffle=!state.shuffle;state.plan=[];prefetch();render();});
  $('music-seek').addEventListener('input',event=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(event.target.value)/1000;});
  $('music-seek').addEventListener('pointerup',event=>event.target.blur());
  addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});const anchorObserver=new ResizeObserver(schedulePanelAnchor);anchorObserver.observe(document.querySelector('.masthead'));anchorObserver.observe($('music-toggle'));

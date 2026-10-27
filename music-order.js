@@ -6,11 +6,25 @@ export function selectMusicTrack(pool,{currentId=null,recent=[],shuffle=true,dir
  const other=pool.filter(track=>track.id!==currentId),choices=fresh.length?fresh:other.length?other:pool;
  return choices[Math.min(choices.length-1,Math.floor(rng()*choices.length))];
 }
+// This timeline retains the actual order heard, independently of catalogue
+// ordering and random selection. Navigating it must not append duplicates.
+export function recordMusicVisit(timeline,track,index=null,limit=500){
+ if(Number.isInteger(index)&&timeline.entries[index]?.id===track.id)return {...timeline,cursor:index};
+ const entries=[...timeline.entries,{...track}].slice(-limit);return {entries,cursor:entries.length-1};
+}
+export function musicHistoryStep(timeline,direction=1,failed=new Set()){
+ const step=direction<0?-1:1;
+ for(let index=timeline.cursor+step;index>=0&&index<timeline.entries.length;index+=step){
+  const track=timeline.entries[index];if(!failed.has(track.id))return {track,index};
+ }
+ return null;
+}
 const COMPOSER_ALIASES={
  巴赫:['Johann Sebastian Bach','J. S. Bach','JS Bach','Bach'],亨德尔:['George Frideric Handel','Handel','Händel'],维瓦尔第:['Antonio Vivaldi','Vivaldi'],斯卡拉蒂:['Domenico Scarlatti','Scarlatti'],
  莫扎特:['Wolfgang Amadeus Mozart','W. A. Mozart','Mozart'],海顿:['Joseph Haydn','Haydn'],贝多芬:['Ludwig van Beethoven','Beethoven'],格鲁克:['Christoph Willibald Gluck','Gluck'],
  肖邦:['Frédéric Chopin','Frederic Chopin','Chopin, Frédéric','Chopin'],舒伯特:['Franz Schubert','Schubert'],舒曼:['Robert Schumann','Schumann'],勃拉姆斯:['Johannes Brahms','Brahms'],
- 德彪西:['Claude Debussy','Debussy'],萨蒂:['Erik Satie','Satie'],拉威尔:['Maurice Ravel','Ravel'],拉赫玛尼诺夫:['Sergei Rachmaninoff','Rachmaninoff']
+ 德彪西:['Claude Debussy','Debussy'],萨蒂:['Erik Satie','Satie'],拉威尔:['Maurice Ravel','Ravel'],拉赫玛尼诺夫:['Sergei Rachmaninoff','Rachmaninoff'],
+ 格里格:['Edvard Grieg','Grieg'],巴拉基列夫:['Mily Balakirev','Balakirev'],格鲁克:['Christoph Willibald Gluck','Gluck']
 };
 export function musicDisplayTitle(track){
  if(!track)return '';
@@ -42,7 +56,7 @@ export function musicPerformer(track){
  return /^(?:player|performer|artist|by)$/i.test(value)?'':value;
 }
 export function musicComposerInitial(track){
- const composer=cleanMusicCredit(track?.composer),name=COMPOSER_ALIASES[composer]?.[0]||composer;
- const family=name.split(',')[0].trim(),words=family.match(/\p{L}[\p{L}\p{M}'’–-]*/gu);
- return words?.at(-1)?.[0]?.toLocaleUpperCase()||'♪';
+ const composer=cleanMusicCredit(track?.composer),name=COMPOSER_ALIASES[composer]?.[0]||track?.composerEnglish||composer;
+ const family=name.split(',')[0].normalize('NFKD').replace(/\p{M}/gu,'').trim(),words=family.match(/[A-Za-z][A-Za-z'’–-]*/g);
+ return words?.at(-1)?.[0]?.toUpperCase()||'M';
 }
