@@ -15,10 +15,7 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'data/library-sources.j
   await page.locator('#analysis-toggle').click();await page.locator('#category-masters').click();
   assert.equal(await page.locator('#archive-select').inputValue(),'kasparov-career');
   assert.equal(await page.locator('#collection-meta').innerText(),'2,126 局');
-  const listBefore=await page.locator('#collection').boundingBox();await page.locator('#collection-guide summary').click();
-  assert.match(await page.locator('.collection-guide-body').innerText(),/PGN Mentor/);
-  assert.deepEqual(await page.locator('#collection').boundingBox(),listBefore,'source help must not shift the score list');
-  await page.locator('#collection-guide summary').click();
+  assert.equal(await page.locator('#collection-guide').count(),0);
   await page.locator('#filter-collection').fill('Topalov');
   const famous=page.locator('.library-row').filter({hasText:'1999'}).first();await famous.waitFor({state:'visible'});
   const id=await famous.getAttribute('data-score-id');await famous.locator('[data-star]').click();await famous.locator('[data-local]').click();
@@ -46,10 +43,10 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'data/library-sources.j
   assert.equal(await page.locator('#board [data-square="g2"] .piece').count(),1,'the opponent setup move has already been applied');
   await page.locator('#next').click();assert.match(await page.locator('#movelist').innerText(),/g1=N/);
   await page.locator('#study-workspace').screenshot({path:path.join(output,'graded-training.png')});
-  await page.setViewportSize({width:390,height:844});await page.locator('#collection-guide summary').click();
+  await page.setViewportSize({width:390,height:844});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   assert.deepEqual(errors,[]);
-  fs.writeFileSync(path.join(output,'master-training-result.json'),JSON.stringify({passed:true,kasparov:2126,masterAdditions:3526,courseChapters:81,gradedPuzzles:776,themes:26,offline:true,stableFavorites:true,sourceGuideDoesNotShiftLayout:true,pageErrors:errors},null,2));
+  fs.writeFileSync(path.join(output,'master-training-result.json'),JSON.stringify({passed:true,kasparov:2126,masterAdditions:3526,courseChapters:81,gradedPuzzles:776,themes:26,offline:true,stableFavorites:true,sourceGuideRemoved:true,pageErrors:errors},null,2));
   console.log('PASS: Kasparov corpus and persistent stars, course lines and position-only chapters, all 26 exercise themes, correct black-to-move setup and offline/mobile layout');
  }catch(error){await page.screenshot({path:path.join(output,'master-training-failure.png'),fullPage:true});throw error;}
  finally{await browser.close();}

@@ -9,14 +9,15 @@ function surfaceTransition(element,opening,commit){
  if(prior?.opening===opening)return prior.done;
  const visible=element.tagName==='DIALOG'?element.open:!element.hidden&&!element.classList.contains('hidden');
  const computed=getComputedStyle(element),continuing=visible&&(!opening||!!prior||element.dataset.surfaceState==='open');
- const opacity=continuing?Number(computed.opacity):0,transform=continuing?computed.transform:'translateY(-5px) scale(.985)';
+ const hiddenTransform=element.dataset.surfaceTransform||'translateY(-5px) scale(.985)';
+ const opacity=continuing?Number(computed.opacity):0,transform=continuing?computed.transform:hiddenTransform;
  prior?.animation.cancel();
  if(!opening&&!visible){commit();return Promise.resolve();}
  element.hidden=false;element.classList.remove('hidden');element.inert=!opening;
  element.dataset.surfaceState=opening?'open':'closing';
  if(reducedSurfaceMotion()){surfaceEffects.delete(element);commit();return Promise.resolve();}
  const visibility=element.style.visibility;element.style.visibility='visible';
- const animation=element.animate([{opacity,transform},{opacity:opening?1:0,transform:opening?'none':'translateY(-5px) scale(.985)'}],{duration:opening?180:160,easing:'cubic-bezier(.2,0,.2,1)',fill:'both'});
+ const animation=element.animate([{opacity,transform},{opacity:opening?1:0,transform:opening?'none':hiddenTransform}],{duration:opening?180:160,easing:'cubic-bezier(.2,0,.2,1)',fill:'both'});
  const entry={opening,animation,done:null};surfaceEffects.set(element,entry);
  entry.done=animation.finished.catch(()=>{}).then(()=>{
   if(surfaceEffects.get(element)!==entry)return;

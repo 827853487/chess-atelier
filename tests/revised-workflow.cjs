@@ -14,7 +14,7 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results');fs
  try{
   await page.goto(url);await done();await page.waitForFunction(()=>document.querySelector('#collection').getAttribute('aria-busy')==='false');
   assert.equal(await page.locator('#analysis-heading').innerText(),'局势分析');assert.equal(await page.locator('#analysis-toggle').innerText(),'实时分析');
-  assert.equal(await page.locator('#panel-notes').isVisible(),true);assert.equal(await page.locator('#export').isVisible(),false);assert.equal(await page.locator('#save').isVisible(),false);
+  assert.equal(await page.locator('#panel-notes').isVisible(),true);assert.equal(await page.locator('#export').count(),0);assert.equal(await page.locator('#save').isVisible(),false);
   assert.equal(await page.locator('#archive-select').inputValue(),'openings');
   assert.equal(await page.locator('#archive-select option[value="*"]').count(),0);
   await category('masters').click();await select('archive-select','world-1972');
@@ -43,7 +43,7 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results');fs
   const checked=page.locator('#board .square.check');assert.equal(await checked.count(),1);
   assert.ok(await checked.evaluate(el=>getComputedStyle(el,'::before').boxShadow.includes('0.72')));
   assert.equal(await checked.evaluate(el=>getComputedStyle(el).animationName),'none');
-  assert.equal(await page.locator('#panel-notes').isVisible(),true);assert.equal(await page.locator('#export').isVisible(),false);
+  assert.equal(await page.locator('#panel-notes').isVisible(),true);assert.equal(await page.locator('#export').count(),0);
   await page.locator('#movelist [data-ply="2"]').click();assert.equal(await page.locator('#ply').textContent(),'2 / 4');
   assert.equal(await page.locator('#record-heading').innerText(),'棋谱着法');
   assert.equal(await page.locator('#movelist [data-ply="2"]').evaluate(el=>getComputedStyle(el).cursor),'pointer');
@@ -55,7 +55,7 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results');fs
   await page.locator('[data-play-mode="book"]').click();await select('bot-level','1');
   assert.equal(await page.locator('#save').isVisible(),true);assert.equal(await page.locator('#panel-notes').isVisible(),true);
   await move('e2','e4');await page.waitForFunction(()=>document.querySelectorAll('#movelist [data-ply]').length===2,null,{timeout:15000});
-  const pendingDownload=page.waitForEvent('download');await page.locator('#export').click();const download=await pendingDownload;await download.saveAs(path.join(output,'revised-duel.pgn'));
+  await page.locator('#recent-games').click();const pendingDownload=page.waitForEvent('download');await page.locator('#recent-list [data-export-recent]').first().click();const download=await pendingDownload;await download.saveAs(path.join(output,'revised-duel.pgn'));await page.locator('#recent-close').click();await page.waitForTimeout(190);
   assert.match(fs.readFileSync(path.join(output,'revised-duel.pgn'),'utf8'),/1\. e4 /);
   await page.locator('#save').click();await page.locator('#save-title').fill('Revised workflow saved');await page.locator('#save-confirm').click();
   await page.waitForFunction(()=>document.querySelector('#toast').textContent.includes('已保存'));

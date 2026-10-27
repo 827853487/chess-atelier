@@ -38,7 +38,7 @@ const output=path.resolve(__dirname,'../test-results');fs.mkdirSync(output,{recu
   for(const [cat,pack] of [['training','pawn-endgames'],['training','rook-endgames'],['training','minor-endgames'],['training','grigoriev-studies'],['openings','london-master-games']]){
    await category(cat).click();await select(pack);assert.ok(await page.locator('#collection [data-local]').count()>0);
    await page.locator('#collection [data-local]').first().click();await page.locator('#last').click();
-   assert.equal(await page.locator('#panel-notes').isVisible(),true);assert.equal(await page.locator('#export').isVisible(),false);
+   assert.equal(await page.locator('#panel-notes').isVisible(),true);assert.equal(await page.locator('#export').count(),0);
    assert.ok(!(await page.locator('#ply').textContent()).startsWith('0 /'));
   }
   await category('training').click();await select('rook-endgames');

@@ -22,7 +22,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    const pgn=`[Event "${fixture.name}"]\n[White "${fixture.name}"]\n[Black "Black"]\n[Result "${fixture.result}"]\n\n${fixture.body}`;
    await page.locator('#fileinput').setInputFiles({name:fixture.name+'.pgn',mimeType:'application/x-chess-pgn',buffer:Buffer.from(pgn)});
    await page.locator('#collection .library-open').filter({hasText:fixture.name}).first().click();await idle();await page.locator('#last').click();await idle();
-   assert.equal(await page.locator('#game-result').count(),0);assert.equal(await page.locator('#side-badge').innerText(),fixture.title.replace(/^将死 · /,''));assert.equal(await page.locator('#status').innerText(),fixture.title);assert.ok(await page.locator('#side-badge').evaluate(n=>Number(getComputedStyle(n).fontWeight)>=700));
+   assert.equal(await page.locator('#game-result').count(),0);assert.equal(await page.locator('#side-badge').innerText(),fixture.title.replace(/^将死 · /,''));assert.equal(await page.locator('#status').innerText(),fixture.title);assert.ok(await page.locator('#side-badge').evaluate(n=>Number(getComputedStyle(n).fontWeight)===400));
    if(fixture.name==='Mate')await page.locator('.board-block').screenshot({path:path.resolve(__dirname,`../test-results/quiet-result-${width}.png`)});
    await page.locator('#flip').click();await idle();assert.equal(await page.locator('#side-badge').innerText(),fixture.title.replace(/^将死 · /,''));
    await page.locator('#prev').click();await idle();assert.equal(await page.locator('#game-result').count(),0);assert.equal(await page.locator('#side-badge').getAttribute('class'),'side-badge');

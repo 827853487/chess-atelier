@@ -5,7 +5,7 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=69" rel="stylesheet"/><link href="./engine-ui.css?v=69" rel="stylesheet"/><link href="./library-ui.css?v=69" rel="stylesheet"/><link href="./typography.css?v=74" rel="stylesheet"/>
+<link href="./app.css?v=69" rel="stylesheet"/><link href="./engine-ui.css?v=69" rel="stylesheet"/><link href="./library-ui.css?v=69" rel="stylesheet"/><link href="./typography.css?v=75" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
@@ -40,13 +40,13 @@
 </div></div>
 <div class="search-card mode-free-only" id="study-workspace">
 <div aria-label="棋谱分类" class="library-categories" id="library-categories" role="tablist"><button aria-controls="collection" aria-selected="true" data-category="openings" id="category-openings" role="tab" type="button">开局学习<span class="category-count">0</span></button><button aria-controls="collection" aria-selected="false" data-category="masters" id="category-masters" role="tab" tabindex="-1" type="button">大师对局<span class="category-count">0</span></button><button aria-controls="collection" aria-selected="false" data-category="training" id="category-training" role="tab" tabindex="-1" type="button">专题训练<span class="category-count">0</span></button><button aria-controls="collection" aria-selected="false" data-category="mine" id="category-mine" role="tab" tabindex="-1" type="button">我的棋谱<span class="category-count">0</span></button></div>
-<div class="library-toolbar"><label class="visually-hidden" for="archive-select">当前分类的合集</label><select aria-label="当前分类的合集" id="archive-select"></select><input aria-label="在当前分类中搜索棋谱" id="filter-collection" placeholder="搜索开局名称"/></div><div class="library-summary"><div class="library-meta" id="collection-meta"></div><details class="collection-guide" id="collection-guide" hidden><summary>学习与来源</summary><div class="collection-guide-body"><p></p><a href="#" target="_blank" rel="noopener noreferrer"></a></div></details><div class="library-actions" hidden><button class="inline-button" id="import" title="导入到我的棋谱" type="button">导入 PGN</button><button class="inline-button" id="new-pack" title="管理我的合集" type="button">管理合集</button><input accept=".pgn,.txt" hidden="" id="fileinput" multiple="" type="file"/></div></div>
-<p class="library-status" id="library-status"></p><p class="library-storage-note" id="library-storage-note" hidden></p><div aria-labelledby="category-openings" class="library-list" id="collection" role="tabpanel"></div></div>
+<div class="library-toolbar"><label class="visually-hidden" for="archive-select">当前分类的合集</label><select aria-label="当前分类的合集" id="archive-select"></select><input aria-label="在当前分类中搜索棋谱" id="filter-collection" placeholder="搜索开局名称"/></div><div class="library-summary"><div class="library-meta" id="collection-meta"></div><div class="library-actions" hidden><button class="inline-button" id="import" title="导入到我的棋谱" type="button">导入 PGN</button><button class="inline-button" id="new-pack" title="管理我的合集" type="button">管理合集</button><input accept=".pgn,.txt" hidden="" id="fileinput" multiple="" type="file"/></div></div>
+<p class="library-status" id="library-status"></p><div aria-labelledby="category-openings" class="library-list" id="collection" role="tabpanel"></div><p class="library-storage-note" id="library-storage-note" hidden></p></div>
 <div class="source-row duel-config mode-book-only hidden"><select aria-hidden="true" class="hidden" id="mode"><option value="free">打谱研究</option><option value="book">人机对弈</option></select>
 <div class="field-small"><label for="side">我执</label><div class="atelier-select-slot" data-for="side"><select aria-label="我执" class="native" id="side"><option value="w">白方</option><option value="b">黑方</option></select></div></div>
 <div class="field-small"><label for="bot-level">难度</label><div class="atelier-select-slot" data-for="bot-level"><select aria-label="电脑难度" class="native" id="bot-level"><option value="1">入门 · 1300</option><option selected="" value="2">一般 · 1600</option><option value="3">进阶 · 1900</option><option value="4">高手 · 2200</option><option value="5">大师 · 2600</option><option value="6">顶级 · 3000</option></select></div></div><button class="duel-start" id="duel-start" type="button">开始对弈</button></div>
 
-<div class="detail-panel" id="panel-notes"><div class="panel-heading"><h3 id="record-heading">棋谱着法</h3><div class="record-tools"><button class="inline-button mode-book-only hidden" id="recent-games" type="button">最近对局</button><button class="inline-button mode-book-only hidden" id="export">导出 PGN ↗</button></div></div><div class="move-tape" id="movelist">选择棋谱，展示全部着法。</div></div>
+<div class="detail-panel" id="panel-notes"><div class="panel-heading"><h3 id="record-heading">棋谱着法</h3><div class="record-tools"><button class="inline-button mode-book-only hidden" id="recent-games" type="button">最近对局</button></div></div><div class="move-tape" id="movelist">选择棋谱，展示全部着法。</div></div>
 </section>
 </main>
 </div>
@@ -78,19 +78,19 @@
 <div class="pack-create"><input id="pack-name" maxlength="32" placeholder="输入名称后创建"/><button class="inline-button" id="pack-create" type="button">创建</button></div>
 <p class="settings-section-title">我的合集</p>
 <div class="pack-list" id="pack-list"></div>
-<p class="pack-note">内置合集不可删除或改序。同一合集可多次导入棋谱。</p>
+
 <p class="settings-section-title">合集棋谱 <span id="pack-games-label"></span></p>
 <div class="pack-games-bar"><button class="inline-button" id="pack-add-games" type="button">加入棋谱</button></div>
 <div class="pack-games" id="pack-games"></div>
-<input accept=".pgn,.txt" hidden="" id="pack-fileinput" multiple="" type="file"/>
+<input accept=".pgn,.txt" hidden="" id="pack-fileinput" multiple="" type="file"/><p class="pack-note">内置合集只读，可多次导入个人棋谱。</p>
 </div></dialog>
 <dialog class="settings-dialog" id="save-dialog"><div class="settings-head"><strong>保存棋谱</strong><button aria-label="关闭" id="save-close" type="button">×</button></div><div class="settings-body">
 <div class="settings-row"><label for="save-title">名称</label><input id="save-title" maxlength="80"/></div>
 <div class="settings-row"><label for="save-pack">合集</label><select id="save-pack"></select></div>
 <div class="pack-create"><span></span><button class="inline-button" id="save-confirm" type="button">保存</button></div>
 </div></dialog>
-<dialog class="settings-dialog recent-dialog" id="recent-dialog" aria-labelledby="recent-title"><div class="settings-head"><strong id="recent-title">最近对局</strong><button aria-label="关闭" id="recent-close" type="button">×</button></div><div class="settings-body"><p class="recent-note">自动保留 20 局 · 刷新保留<br/>加入我的棋谱后，副本会单独保留。</p><div id="recent-list"></div></div></dialog>
+<dialog class="settings-dialog recent-dialog" id="recent-dialog" aria-labelledby="recent-title"><div class="settings-head"><strong id="recent-title">最近对局</strong><button aria-label="关闭" id="recent-close" type="button">×</button></div><div class="settings-body"><div id="recent-list"></div><p class="recent-note">最近 20 局 · 保存在此浏览器</p></div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=74" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=69" defer></script>
+<script src="./app.bundle.js?v=75" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=69" defer></script>
 </body>
 </html>
