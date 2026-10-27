@@ -18,7 +18,7 @@ button,input,select,textarea{font-family:inherit}
 .right>:not(.section-top){margin-top:0!important;margin-bottom:var(--card-gap)!important}
 .right>:last-child{margin-bottom:0!important}
 .analysis-card-wrap>.coach-card{margin:0!important}
-.analysis-heading{font-size:var(--type-section)!important;font-weight:600;line-height:22px;margin:0 0 8px 2px}
+.analysis-heading{font-size:var(--type-section)!important;font-weight:600;line-height:22px;margin:0 0 8px 2px;color:var(--ink)}
 @media(min-width:1051px){
  .analysis-heading{display:flex;align-items:center;height:var(--workspace-toolbar);min-height:var(--workspace-toolbar);margin:0 0 var(--workspace-content-gap) 2px}
  body[data-layout=stack] .analysis-heading{height:auto;min-height:0;margin-bottom:8px}
@@ -153,3 +153,19 @@ button,input,select,textarea{font-family:inherit}
 #promo-choice .piece-visual{width:100%;height:100%}
 @media(prefers-reduced-motion:reduce){.play-mode-bar .side-badge{transition:none}}
 @media(prefers-reduced-motion:reduce){.position-pin,.pin-glyph{transition:none}}
+
+/* Inset feedback stays inside the hit area, with space between segmented states. */
+button:not(.square){border-radius:var(--selection-radius)}
+button:not(.square)::before{content:'';position:absolute;inset:2px;border-radius:var(--selection-radius);background:color-mix(in srgb,var(--accent) 9%,transparent);opacity:0;pointer-events:none;z-index:-1;transition:opacity .16s ease}
+button:not(.square):is(:hover,.press-feedback,:active):not(:disabled){background-image:none!important;box-shadow:none!important}
+button:not(.square):hover:not(:disabled):not([aria-disabled=true])::before{opacity:1}
+button:not(.square):is(.press-feedback,:active):not(:disabled):not([aria-disabled=true])::before{background:color-mix(in srgb,var(--accent) 14%,transparent);opacity:1}
+button:not(.square):focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 65%,transparent)!important;outline-offset:-2px!important}
+#mode-segment{gap:4px!important}
+#mode-segment button{min-width:0;padding-inline:6px!important}
+.mode-segment button:hover:not(.selected){background-color:transparent!important}
+.engine-toggle,.engine-toggle:focus-visible{border-radius:var(--selection-radius)}
+.library-row:hover:not(.is-current){background:transparent}
+.library-categories [role=tab][aria-selected=true],.library-toolbar .atelier-selected-label,#atelier-list-archive-select .atelier-option[aria-selected=true]{font-weight:700!important}
+.library-categories .category-count{font-weight:400!important}
+@media(prefers-reduced-motion:reduce){button:not(.square)::before{transition:none}}
