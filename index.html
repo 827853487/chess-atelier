@@ -5,7 +5,7 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=69" rel="stylesheet"/><link href="./engine-ui.css?v=69" rel="stylesheet"/><link href="./library-ui.css?v=69" rel="stylesheet"/><link href="./typography.css?v=73" rel="stylesheet"/>
+<link href="./app.css?v=69" rel="stylesheet"/><link href="./engine-ui.css?v=69" rel="stylesheet"/><link href="./library-ui.css?v=69" rel="stylesheet"/><link href="./typography.css?v=74" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
@@ -18,7 +18,7 @@
 <div class="board-heading"><div><h1>棋盘</h1></div></div>
 <div class="board-block">
 <div aria-label="学习模式" class="play-mode-bar" role="group">
-<div class="pin-tools"><button aria-label="锁定局面" aria-pressed="false" class="position-pin" id="position-pin" title="锁定局面 · 切换到对弈继续下" type="button"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8M9 3v6l-3 4v2h12v-2l-3-4V3M12 15v6"/></svg></button><button aria-label="返回锁定局面" class="pin-return" id="restore-study" title="返回锁定时的位置和原谱着法" type="button" hidden>返回</button></div>
+<div class="pin-tools"><button aria-label="锁定局面" aria-pressed="false" class="position-pin" id="position-pin" title="锁定局面 · 切换到对弈继续下" type="button"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><g class="pin-glyph"><path d="M8 3h8M9 3v6l-3 4v2h12v-2l-3-4V3M12 15v6"/></g></svg></button><button aria-label="返回锁定局面" class="pin-return" id="restore-study" title="返回锁定时的位置和原谱着法" type="button" hidden>返回</button></div>
 <div class="mode-segment" id="mode-segment"><button aria-pressed="true" class="selected" data-play-mode="free" type="button">打谱</button><button aria-pressed="false" data-play-mode="book" type="button">对弈</button></div>
 <span class="side-badge" id="side-badge" aria-live="polite">白方行棋</span></div>
 <div class="board-frame">
@@ -91,6 +91,6 @@
 </div></dialog>
 <dialog class="settings-dialog recent-dialog" id="recent-dialog" aria-labelledby="recent-title"><div class="settings-head"><strong id="recent-title">最近对局</strong><button aria-label="关闭" id="recent-close" type="button">×</button></div><div class="settings-body"><p class="recent-note">自动保留 20 局 · 刷新保留<br/>加入我的棋谱后，副本会单独保留。</p><div id="recent-list"></div></div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=73" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=69" defer></script>
+<script src="./app.bundle.js?v=74" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=69" defer></script>
 </body>
 </html>

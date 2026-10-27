@@ -9,6 +9,11 @@ export function createTrialRecord(game,ply,origin){
  copy.header('Result','*');
  return copy;
 }
+export function planPositionReturn(current,view,target,targetView){
+ const a=current.slice(0,view),b=target.slice(0,targetView),key=m=>m.from+m.to+(m.promotion||'');
+ let common=0;while(common<a.length&&common<b.length&&key(a[common])===key(b[common]))common++;
+ return {common,backward:a.slice(common).reverse(),forward:b.slice(common)};
+}
 export function readRecentGames(storage){
  try{
   const rows=JSON.parse(storage.getItem(RECENT_KEY)||'[]');

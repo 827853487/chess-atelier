@@ -1,8 +1,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const box=vm.createContext({console});
 for(const file of ['vendor/chess.js','game-record.js','game-sessions.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/^import .*;\s*$/gm,'').replace(/^export default .*;\s*$/gm,'').replace(/^export /gm,''),box);
-vm.runInContext('globalThis.api={Chess,createTrialRecord,standardPgn,readRecentGames,writeRecentGames,updateRecentGames}',box);
-const {Chess,createTrialRecord,standardPgn,readRecentGames,writeRecentGames,updateRecentGames}=box.api;
+vm.runInContext('globalThis.api={Chess,createTrialRecord,standardPgn,readRecentGames,writeRecentGames,updateRecentGames,planPositionReturn}',box);
+const {Chess,createTrialRecord,standardPgn,readRecentGames,writeRecentGames,updateRecentGames,planPositionReturn}=box.api;
 const store=()=>({value:null,getItem(){return this.value;},setItem(k,v){this.value=v;}});
 test('a trial keeps the complete prefix and can branch without changing the study continuation',()=>{
  const study=new Chess();study.loadPgn('[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 1-0');
@@ -21,4 +21,14 @@ test('recent saves update one session, roll to twenty, and survive a storage rou
 });
 test('corrupt storage is tolerated, while failed writes are surfaced to the caller',()=>{
  assert.equal(readRecentGames({getItem(){throw Error('disabled');}}).length,0);assert.equal(readRecentGames({getItem:()=>'{'}).length,0);assert.equal(readRecentGames({getItem:()=>JSON.stringify([null,{id:'bad',pgn:'x'},{id:'recent-good',pgn:'x'},{id:'recent-good',pgn:'duplicate'}])}).length,1);assert.throws(()=>writeRecentGames({setItem(){throw Error('quota');}},[]),/quota/);
+});
+
+test('return routes undo to the common ancestor, then replay the original line legally',()=>{
+ const target=new Chess();target.loadPgn('1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 *');
+ for(const [pgn,view,targetView] of [['1. e4 e5 2. Nf3 Nc6 *',4,2],['1. e4 c5 2. Nf3 *',3,5],['1. e4 *',1,5]]){
+  const current=new Chess();current.loadPgn(pgn);const route=planPositionReturn(current.history({verbose:true}),view,target.history({verbose:true}),targetView),g=createTrialRecord(current,view);
+  for(const move of route.backward){assert.equal(g.undo().from,move.from);}
+  for(const move of route.forward)g.move({from:move.from,to:move.to,promotion:move.promotion});
+  assert.equal(g.fen(),createTrialRecord(target,targetView).fen());
+ }
 });

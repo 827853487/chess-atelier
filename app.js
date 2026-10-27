@@ -7,7 +7,7 @@ import { pieceSvg, setPieceStyle, acquirePiece, releasePiece, resetPiecePool, pr
 import { SCORE_PACKS, PACK_GROUPS, ALL_PACKS, scorePackName, scoreCategory, scoreInCollection, personalPackName } from './master-collections.js';
 import { setupLogoEasterEgg } from './logo-easter-egg.js';
 import { readStarredScores, writeStarredScores } from './favorites.js';
-import { RECENT_KEY, createTrialRecord, readRecentGames, updateRecentGames, writeRecentGames } from './game-sessions.js';
+import { RECENT_KEY, createTrialRecord, planPositionReturn, readRecentGames, updateRecentGames, writeRecentGames } from './game-sessions.js';
 
 // Bundled rules module: no network dependency for board and PGN playback.
 import { Chess } from './vendor/chess.js';
@@ -76,13 +76,29 @@ function togglePositionPin(){
  button.title=positionPinned?'已锁定 · 切换保留局面，打谱可试走':'锁定局面 · 切换到对弈继续下';
  toast(positionPinned?'已锁定 · 切换保留局面，打谱可试走':'已解锁 · 切换模式恢复初始局面');
 }
-function restoreStudyTrial(){
+async function restoreStudyTrial(){
+ if(undoRunning)return;
  if(deferBoardAction(restoreStudyTrial))return;
  if(!positionPinned||!lockedStudyPosition)return;
  const original={...lockedStudyPosition,game:cloneRecord(lockedStudyPosition.game,lockedStudyPosition.game.history().length,lockedStudyPosition.origin)};
- if(state.mode!=='free'){setPlayMode('free',{studyTarget:original});return;}
- stopPlayback();cancelBusy();hidePromotion();
- animateOpening(()=>{Object.assign(state,original);invalidateViewMemo();clearHints();drawAll();});
+ rememberRecentGame();stopPlayback();cancelBusy();hidePromotion();
+ const orientation=state.orientation,route=planPositionReturn(cachedHistory(),state.view,original.game.history({verbose:true}),original.view);
+ const count=route.backward.length+route.forward.length,duration=Math.max(48,Math.min(130,Math.round(1050/Math.max(1,count))));
+ state.mode='free';state.duelStarted=false;duelSession=null;syncModeControls();
+ undoRunning=true;exclusiveDone=new Promise(ready=>finishExclusive=ready);
+ $('#restore-study').setAttribute('aria-busy','true');
+ try{
+  for(const move of route.backward){
+   const snapshot=takeMotionNodes(move,true);state.view--;clearHints();postReview?.prepareMotion(state.view);drawBoard();renderMoves();
+   await transition(move,true,snapshot,{duration,sound:false});
+  }
+  state.game=original.game;state.origin=original.origin;state.view=route.common;invalidateViewMemo();
+  for(const move of route.forward){
+   const snapshot=takeMotionNodes(move);state.view++;clearHints();postReview?.prepareMotion(state.view);drawBoard();renderMoves();
+   await transition(move,false,snapshot,{duration,sound:false});
+  }
+  Object.assign(state,original,{orientation});invalidateViewMemo();clearHints();drawAll();
+ }finally{undoRunning=false;$('#restore-study').setAttribute('aria-busy','false');finishExclusive?.();finishExclusive=null;flushBoardWork();}
 }
 let toastTime,playbackTimer=null,playbackEnd=null;
 function toast(t){const e=$('#toast');if(!e)return;e.textContent=t;e.classList.add('show');clearTimeout(toastTime);toastTime=setTimeout(()=>e.classList.remove('show'),2800);}
@@ -267,14 +283,14 @@ function takeMotionNodes(move,reverse=false){
  if(move.flags?.includes('k')||move.flags?.includes('q')){const rank=move.color==='w'?'1':'8',kingSide=move.flags.includes('k');result.rook=take((reverse?(kingSide?'f':'d'):(kingSide?'h':'a'))+rank);}
  return result;
 }
-function transition(m,reverse=false,snapshot=null){
+function transition(m,reverse=false,snapshot=null,{duration:requestedDuration,sound=true}={}){
  if(!m)return Promise.resolve();
  const from=reverse?m.to:m.from,to=reverse?m.from:m.to,isCapture=!!m.captured;
  const target=boardCell(to)?.querySelector(':scope > .piece'),src=squareOffset(from),end=squareOffset(to);
  showMoveCue(m,reverse);
  const releaseSnapshot=()=>{for(const node of Object.values(snapshot||{}))if(node)releasePiece(node);};
- if(!src||!end||!state.animEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches){releaseSnapshot();playMoveSound(m);return Promise.resolve();}
- const duration=Math.round(Math.max(220,Math.min(360,210+Math.hypot(end.x-src.x,end.y-src.y)*.18)));
+ if(!src||!end||!state.animEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches){releaseSnapshot();if(sound)playMoveSound(m);return Promise.resolve();}
+ const duration=requestedDuration??Math.round(Math.max(220,Math.min(360,210+Math.hypot(end.x-src.x,end.y-src.y)*.18)));
  const ghosts=[],anims=[],landings=[],recycle=[];
  const float=(node,square)=>{if(!node)return null;const loc=squareOffset(square),container=document.createElement('div');container.className='floating-piece';node.style.opacity='';container.append(node);const board=$('#board').getBoundingClientRect();Object.assign(container.style,{left:(loc.x/board.width*100)+'%',top:(loc.y/board.height*100)+'%',width:(loc.w/board.width*100)+'%',height:(loc.h/board.height*100)+'%'});$('#board').append(container);ghosts.push(container);return container;};
  const moving=snapshot?.mover||acquirePiece(reverse&&m.promotion?m.promotion:m.piece,m.color),mover=float(moving,from);
@@ -286,7 +302,7 @@ function transition(m,reverse=false,snapshot=null){
  if(snapshot?.rook){const rank=m.color==='w'?'1':'8',kingSide=m.flags.includes('k'),rf=(reverse?(kingSide?'f':'d'):(kingSide?'h':'a'))+rank,rt=(reverse?(kingSide?'h':'a'):(kingSide?'f':'d'))+rank,rookTarget=boardCell(rt)?.querySelector(':scope > .piece'),a=squareOffset(rf),b=squareOffset(rt),rook=float(snapshot.rook,rf);if(rookTarget)rookTarget.style.opacity='0';landings.push({node:snapshot.rook,target:rookTarget,square:rt});anims.push(rook.animate(frames(b.x-a.x,b.y-a.y),{duration,easing:'cubic-bezier(.32,.02,.2,1)',fill:'both'}));}
  let resolve,safety;const flight={done:false,promise:new Promise(ready=>resolve=ready)};
  flight.finish=()=>{if(flight.done)return;flight.done=true;clearTimeout(safety);for(const a of anims)a.cancel();for(const item of landings){if(item.promoted){releasePiece(item.node);if(item.target)item.target.style.opacity='';}else{if(item.target)releasePiece(item.target);item.node.remove();boardCell(item.square)?.prepend(item.node);item.node.style.opacity='';}}for(const node of recycle)releasePiece(node);for(const ghost of ghosts)ghost.remove();activeFlights.delete(flight);postReview?.motionSettled();resolve();flushBoardWork();};
- activeFlights.add(flight);postReview?.motionStarted(duration);playMoveSound(m);
+ activeFlights.add(flight);postReview?.motionStarted(duration);if(sound)playMoveSound(m);
  const finish=()=>flight.finish();
  safety=setTimeout(finish,duration+150);main.finished.then(finish,()=>{});return flight.promise;
 }
@@ -1140,6 +1156,14 @@ function setPlayMode(mode,{animate=true,studyTarget=null}={}){
  }
  clearBoardGeometry();
  invalidateViewMemo();clearHints();
+ syncModeControls();
+ $('#move-cue').textContent=keep?'已保留当前局面':next==='free'?'初始局面 · 使用箭头浏览棋谱':'初始局面 · 点击棋子开始';
+ drawAll();
+ },{animate});
+ Promise.resolve(motion).then(()=>{if(state.mode==='book'&&state.duelStarted)maybeBookReply();});
+}
+function syncModeControls(){
+ const next=state.mode;
  $('#mode').value=next;
  $$('#mode-segment button').forEach(b=>{let active=b.dataset.playMode===next;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));});
  $$('.mode-book-only').forEach(el=>el.classList.toggle('hidden',next!=='book'));
@@ -1147,10 +1171,6 @@ function setPlayMode(mode,{animate=true,studyTarget=null}={}){
  document.body.dataset.playMode=next;$('#right-heading').textContent=next==='book'?'对局':'棋谱';
  $('#record-heading').textContent=next==='book'?'着法记录':'棋谱着法';
  $('#duel-start').textContent=state.duelStarted?'重新开始':'开始对弈';
- $('#move-cue').textContent=keep?'已保留当前局面':next==='free'?'初始局面 · 使用箭头浏览棋谱':'初始局面 · 点击棋子开始';
- drawAll();
- },{animate});
- Promise.resolve(motion).then(()=>{if(state.mode==='book'&&state.duelStarted)maybeBookReply();});
 }
 function syncSideSelect(side){
  const sel=$('#side');if(!sel)return;
@@ -1177,6 +1197,7 @@ function beginDuel({animate=true}={}){
  state.review=false;state.reviewTitle='';
  stampDuelRecord();state.orientation=state.side;clearBoardGeometry();invalidateViewMemo();clearHints();drawAll();
  newDuelSession();
+ if(positionPinned){pinnedStudy=null;captureLockedPosition();}
  $('#duel-start').textContent='重新开始';
  $('#move-cue').textContent=state.side==='b'?'电脑先行':'初始局面 · 点击棋子开始';
  if(state.side==='b'){

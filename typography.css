@@ -87,10 +87,11 @@ button,input,select,textarea{font-family:inherit}
 .pin-tools{position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px}
 .play-mode-bar #mode-segment{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
 #restore-study[hidden]{display:none!important}
-.position-pin{display:grid;place-items:center;width:30px;height:30px;min-height:30px;padding:5px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;transition:background-color .18s,color .18s,border-color .18s}
-.position-pin svg{display:block;width:19px;height:19px;transform:rotate(40deg);transition:transform .2s cubic-bezier(.2,0,.2,1)}
+.position-pin{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;min-height:30px;padding:4px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;transition:background-color .18s,color .18s,border-color .18s}
+.position-pin svg{display:block;width:20px;height:20px;flex:none;overflow:visible}
+.pin-glyph{transform-box:view-box;transform-origin:50% 50%;transform:rotate(40deg);transition:transform .2s cubic-bezier(.2,0,.2,1);will-change:transform;backface-visibility:hidden}
 .position-pin[aria-pressed=true]{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 22%,transparent)}
-.position-pin[aria-pressed=true] svg{transform:rotate(0deg)}
+.position-pin[aria-pressed=true] .pin-glyph{transform:rotate(0deg)}
 .pin-return{display:block;min-height:30px;max-width:42px;padding:3px 6px;border:0;border-radius:8px;background:transparent;color:var(--accent);font-size:12px;line-height:20px;white-space:nowrap;cursor:pointer}
 .pin-return:hover{background:var(--accent-soft)}
 .position-pin:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -109,4 +110,13 @@ button,input,select,textarea{font-family:inherit}
 .recent-dialog-row>.inline-button{flex:none;font-size:12px;white-space:nowrap}
 .recent-save:disabled,.recent-dialog-row>.inline-button:disabled{opacity:.55;cursor:default}
 @media(max-width:360px){.record-tools{gap:6px}.record-tools .inline-button{padding-inline:4px;font-size:12px!important}.panel-heading{gap:6px}}
-@media(prefers-reduced-motion:reduce){.position-pin,.position-pin svg{transition:none}}
+.masthead{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:space-between!important;width:100%;min-width:0}
+.masthead .brand-wrap{flex:0 1 auto;min-width:0;margin:0!important}
+.masthead .top-tools{display:flex!important;flex:0 0 auto!important;width:auto!important;margin-left:auto!important;justify-content:flex-end!important;align-items:center!important;flex-wrap:nowrap!important}
+#side-badge.is-result{background:color-mix(in srgb,var(--accent) 18%,var(--paper));border:1px solid color-mix(in srgb,var(--accent) 38%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 9%,transparent);font-weight:700!important;color:var(--ink);transition:background-color .18s,border-color .18s,box-shadow .18s}
+.library-categories [role=tab][aria-selected=true]{font-weight:700!important}
+.library-categories .category-count{font-weight:400!important}
+.library-row{border-radius:10px;overflow:hidden}
+.library-row .library-open{border-radius:9px}
+.library-row .library-open:focus-visible{outline-offset:-2px}
+@media(prefers-reduced-motion:reduce){.position-pin,.pin-glyph{transition:none}}
