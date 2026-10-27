@@ -19,6 +19,7 @@ const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18865/dist/';
   const title=()=>page.locator('#music-title').innerText();
   const playing=()=>page.waitForFunction(()=>!document.querySelector('#music-audio').paused&&document.querySelector('#music-audio').currentTime>.08);
   const next=async button=>{await page.locator(button).click();await playing();return title();};
+  assert.equal(await page.locator('#music-shuffle').getAttribute('aria-pressed'),'false');await page.locator('#music-shuffle').click();
   await page.locator('[data-era=baroque]').click();await playing();const a=await title(),b=await next('#music-next'),c=await next('#music-next');assert.notEqual(a,b);assert.notEqual(b,c);
   await page.locator('#music-play').click();await page.locator('#music-play').click();await playing();
   const before=await page.locator('#music-audio').evaluate(a=>a.currentTime);await page.locator('#music-shuffle').click();assert.equal(await title(),c);assert.ok(await page.locator('#music-audio').evaluate((a,t)=>!a.paused&&a.currentTime>=t,before));

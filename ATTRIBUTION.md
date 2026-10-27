@@ -24,4 +24,4 @@
 
 ## Playback mode icons
 
-Lucide `shuffle` and `menu` SVGs are vendored in `assets/icons/` with their pinned upstream commit and hashes in MUSIC_ICONS.md. Full ISC/MIT notices are distributed in LUCIDE-LICENSE.txt. The same paths are inlined by music-mode.js; no icon CDN is requested at runtime.
+Lucide `shuffle` and `repeat` SVGs are vendored in `assets/icons/` with their pinned upstream commit and hashes in MUSIC_ICONS.md. Full ISC/MIT notices are distributed in LUCIDE-LICENSE.txt. The same paths are inlined by music-mode.js; no icon CDN is requested at runtime.

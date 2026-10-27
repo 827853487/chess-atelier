@@ -16,7 +16,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
  });
  try{
   await page.goto(base);await page.locator('#music-toggle').click();await page.waitForFunction(()=>Number(document.querySelector('#music-panel').dataset.onlineCount)>=3,null,{timeout:15000});
-  await page.locator('[data-era=baroque]').click();await page.waitForFunction(()=>!document.querySelector('#music-audio').paused&&document.querySelector('#music-audio').currentTime>.1);
+  await page.locator('#music-shuffle').click();await page.locator('[data-era=baroque]').click();await page.waitForFunction(()=>!document.querySelector('#music-audio').paused&&document.querySelector('#music-audio').currentTime>.1);
   await page.waitForFunction(()=>document.querySelector('#music-panel').dataset.nextBuffered==='true');await page.locator('#music-next').click();await page.waitForFunction(()=>!document.querySelector('#music-audio').paused&&document.querySelector('#music-audio').currentTime>.1);
   assert.ok(discoveries>0&&streams>0);assert.match(await page.locator('#music-title').innerText(),/Prelude concert/);assert.match(await page.locator('#music-artist').getAttribute('href'),/commons.*Bach_Prelude/);
   assert.equal(await page.locator('#music-online,#music-list,#music-status,#music-source,#music-more').count(),0);assert.equal(await page.locator('.music-progress').evaluate(node=>node.nextElementSibling.tagName),'AUDIO');assert.deepEqual(errors,[]);

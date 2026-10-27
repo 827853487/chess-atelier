@@ -186,5 +186,11 @@ button:not(.square):focus-visible{outline:2px solid color-mix(in srgb,var(--acce
 
 /* A shared 42px right column aligns the smaller spectrum with the mode icon. */
 #music-panel .now-playing{grid-template-columns:56px minmax(0,1fr) 42px!important}
-#music-panel .wave-bars{width:42px!important;flex-basis:42px!important;height:24px!important;gap:2.5px!important;justify-content:center!important}
-#music-panel .wave-bars i,#music-panel.is-playing .wave-bars i{width:2px!important;min-width:2px!important;max-width:2px!important;flex:0 0 2px!important;height:18px!important;max-height:18px!important}
+#music-panel .wave-bars{position:relative!important;inset:auto!important;display:block!important;width:42px!important;flex-basis:42px!important;height:24px!important}
+#music-panel .wave-bars i,#music-panel.is-playing .wave-bars i{position:absolute!important;top:3px;left:var(--spectrum-x,0px);width:var(--spectrum-width,2px)!important;min-width:var(--spectrum-width,2px)!important;max-width:var(--spectrum-width,2px)!important;height:18px!important;max-height:18px!important}
+
+#music-panel .wave-bars i:nth-child(1){--spectrum-x:10px}
+#music-panel .wave-bars i:nth-child(2){--spectrum-x:15px}
+#music-panel .wave-bars i:nth-child(3){--spectrum-x:20px}
+#music-panel .wave-bars i:nth-child(4){--spectrum-x:25px}
+#music-panel .wave-bars i:nth-child(5){--spectrum-x:30px}

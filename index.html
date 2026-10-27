@@ -5,7 +5,7 @@
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><meta content="#f8f3ef" name="theme-color"/>
 <title>棋境 · 国际象棋练习</title>
 <link href="./styles.css?v=81" rel="stylesheet"/><link href="./polish.css" rel="stylesheet"/><link href="./responsive.css" rel="stylesheet"/>
-<link href="./app.css?v=69" rel="stylesheet"/><link href="./engine-ui.css?v=69" rel="stylesheet"/><link href="./library-ui.css?v=69" rel="stylesheet"/><link href="./typography.css?v=84" rel="stylesheet"/>
+<link href="./app.css?v=69" rel="stylesheet"/><link href="./engine-ui.css?v=69" rel="stylesheet"/><link href="./library-ui.css?v=69" rel="stylesheet"/><link href="./typography.css?v=85" rel="stylesheet"/>
 </head>
 <body>
 <div class="shell">
@@ -60,7 +60,7 @@
 <button class="era-btn" data-era="modern">近现代</button>
 </div>
 <div class="now-playing"><div aria-hidden="true" class="now-art"><span class="composer-monogram" data-current="true">♪</span></div><div class="now-text"><div class="music-title-viewport" id="music-copy" role="button" tabindex="0" aria-label="复制当前曲目完整名称"><div class="music-title" id="music-title">即刻开始聆听</div></div><a class="muted-info" id="music-artist" href="https://commons.wikimedia.org/" target="_blank" rel="noopener noreferrer">点击暂停键播放</a><span class="music-copy-toast" id="music-copy-toast" role="status" hidden>已复制</span></div><span aria-hidden="true" class="wave-bars"><i></i><i></i><i></i><i></i><i></i></span></div>
-<div class="music-controls"><div class="music-main-controls"><button aria-label="上一首" id="music-prev" title="上一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 5v14M18 6 10 12l8 6V6z"></path></svg></button><button aria-label="播放" class="music-play-primary" id="music-play" title="播放"></button><button aria-label="下一首" id="music-next" title="下一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19 5v14M6 6l8 6-8 6V6z"></path></svg></button></div><button id="music-shuffle" type="button" aria-label="随机播放" aria-pressed="true" title="随机播放"><svg aria-hidden="true"
+<div class="music-controls"><div class="music-main-controls"><button aria-label="上一首" id="music-prev" title="上一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 5v14M18 6 10 12l8 6V6z"></path></svg></button><button aria-label="播放" class="music-play-primary" id="music-play" title="播放"></button><button aria-label="下一首" id="music-next" title="下一首"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M19 5v14M6 6l8 6-8 6V6z"></path></svg></button></div><button id="music-shuffle" type="button" aria-label="顺序播放" aria-pressed="false" title="顺序播放"><svg aria-hidden="true"
   xmlns="http://www.w3.org/2000/svg"
   width="24"
   height="24"
@@ -71,11 +71,10 @@
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="m18 14 4 4-4 4" />
-  <path d="m18 2 4 4-4 4" />
-  <path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22" />
-  <path d="M2 6h1.972a4 4 0 0 1 3.6 2.2" />
-  <path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45" />
+  <path d="m17 2 4 4-4 4" />
+  <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+  <path d="m7 22-4-4 4-4" />
+  <path d="M21 13v1a4 4 0 0 1-4 4H3" />
 </svg></button></div>
 <div class="music-progress"><span id="music-elapsed">0:00</span><input aria-label="进度" id="music-seek" max="1000" min="0" type="range" value="0"/><span id="music-duration">0:00</span></div>
 <audio id="music-audio" preload="auto"></audio><audio id="music-next-audio" preload="auto"></audio>
@@ -107,6 +106,6 @@
 </div></dialog>
 <dialog class="settings-dialog recent-dialog" id="recent-dialog" aria-labelledby="recent-title"><div class="settings-head"><strong id="recent-title">最近对局</strong><button aria-label="关闭" id="recent-close" type="button">×</button></div><div class="settings-body"><div id="recent-list"></div><p class="recent-note">最近 20 局 · 保存在此浏览器</p></div></dialog>
 <div aria-live="polite" class="toast" id="toast"></div><div class="loading" id="loading"><span>♞</span><strong>棋境</strong><small>正在打开棋盘…</small></div>
-<script src="./app.bundle.js?v=84" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=77" defer></script>
+<script src="./app.bundle.js?v=85" defer></script><script src="./interaction.js" defer></script><script src="./custom-select.js?v=77" defer></script>
 </body>
 </html>
