@@ -2514,7 +2514,47 @@ function setupMusicSession({audio,getTrack,play,pause,previous,next}){
 
 return { setupMusicSession };
 })();
+const { createPcmSpectrum }=(()=>{
+// Small real FFT for a decoded recording. This is a visual-only fallback when
+// captureStream is unavailable; it never generates or routes audible audio.
+function createPcmSpectrum(buffer){
+ const size=512,real=new Float64Array(size),imag=new Float64Array(size),window=new Float64Array(size),reverse=new Uint16Array(size);
+ for(let i=0;i<size;i++){
+  window[i]=.5-.5*Math.cos(2*Math.PI*i/(size-1));let n=i,j=0;
+  for(let b=0;b<9;b++){j=(j<<1)|(n&1);n>>=1;}reverse[i]=j;
+ }
+ const channels=Array.from({length:Math.min(2,buffer.numberOfChannels)},(_,i)=>buffer.getChannelData(i));
+ // Match the same approximate frequency bands as the live 48kHz analyser.
+ const edges=[0,190,380,750,1500,3000].map(hz=>Math.max(1,Math.min(size/2,Math.round(hz*size/buffer.sampleRate))));
+ return seconds=>{
+  const start=Math.floor(Math.max(0,seconds)*buffer.sampleRate)-size/2;
+  // Use the strongest channel so opposite stereo phases cannot cancel into a
+  // false silent indicator, while retaining actual waveform frequencies.
+  let channel=channels[0],peak=-1;
+  for(const candidate of channels){let energy=0;for(let i=0;i<size;i++){const value=candidate[start+i]||0;energy+=value*value;}if(energy>peak){peak=energy;channel=candidate;}}
+  for(let i=0;i<size;i++){
+   const index=start+i,sample=index>=0&&index<buffer.length?channel[index]:0;
+   real[reverse[i]]=sample*window[i];imag[reverse[i]]=0;
+  }
+  for(let length=2;length<=size;length*=2){
+   const half=length/2,angle=-2*Math.PI/length;
+   for(let start=0;start<size;start+=length)for(let j=0;j<half;j++){
+    const cos=Math.cos(angle*j),sin=Math.sin(angle*j),a=start+j,b=a+half,r=real[b]*cos-imag[b]*sin,q=real[b]*sin+imag[b]*cos;
+    real[b]=real[a]-r;imag[b]=imag[a]-q;real[a]+=r;imag[a]+=q;
+   }
+  }
+  return edges.slice(0,-1).map((from,i)=>{
+   const to=Math.max(from+1,edges[i+1]);let total=0;
+   for(let k=from;k<to;k++){const amplitude=4*Math.hypot(real[k],imag[k])/size,db=20*Math.log10(Math.max(1e-7,amplitude));total+=Math.max(0,Math.min(1,(db+100)/70));}
+   return total/(to-from);
+  });
+ };
+}
+
+return { createPcmSpectrum };
+})();
 const { setupPeriodMusic }=(()=>{
+
 
 
 
@@ -2545,7 +2585,8 @@ function scrollMusicLabel(node,viewport,key){
  if(overflow&&!reduced){const end=`translateX(${-distance}px)`;animation=node.animate([{transform:'translateX(0)',offset:0},{transform:'translateX(0)',offset:.1},{transform:end,offset:.9},{transform:end,offset:1}],{duration:Math.max(8500,distance/18*1000+2400),delay:1600,iterations:Infinity,direction:'alternate',easing:'linear',fill:'both'});}
  labelScrolls.set(node,{signature,animation});viewport.classList.toggle('is-overflowing',overflow);
 }
-let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0,spectrumTap=null,spectrumSerial=-1,spectrumSink=null,mediaSession=null;
+let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0,spectrumTap=null,spectrumSerial=-1,spectrumSink=null,spectrumTrack=null,mediaSession=null;
+let pcmSpectrum=null,pcmSerial=-1,pcmQueue=Promise.resolve();
 audio.crossOrigin='anonymous';
 function stopSpectrum(){cancelAnimationFrame(spectrumFrame);spectrumFrame=0;for(const bar of document.querySelectorAll('.wave-bars i'))bar.style.transform='scaleY(.12)';}
 function primeSpectrum(){
@@ -2554,34 +2595,87 @@ function primeSpectrum(){
  if(!audio.captureStream&&!audio.mozCaptureStream&&mobile)return;
  try{if(!spectrumContext){const Context=window.AudioContext||window.webkitAudioContext;if(!Context)return;spectrumContext=new Context();}spectrumContext.resume().catch(()=>{});}catch{}
 }
+function preparePcmSpectrum(){
+ if(!state.track||pcmSerial===state.serial)return;
+ const Context=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!Context)return;
+ const serial=state.serial,track=state.track;pcmSerial=serial;pcmSpectrum=null;
+ if(Number(track.duration||audio.duration)>900)return;
+ bufferTrack(track);const entry=state.buffers.get(track.id);
+ (async()=>{
+  await entry?.promise;if(state.serial!==serial||!entry?.url)return;
+  const response=await fetch(entry.url),bytes=await response.arrayBuffer();if(state.serial!==serial)return;
+  // Only decoding is serialized. An old network fetch must not hold up the
+  // current recording's visualizer after a quick track change.
+  pcmQueue=pcmQueue.catch(()=>{}).then(async()=>{
+   if(state.serial!==serial)return;
+   // 8 kHz is enough for the displayed bands and bounds decoded memory on phones.
+   const context=new Context(1,1,8000),buffer=await context.decodeAudioData(bytes);
+   if(state.serial===serial)pcmSpectrum=createPcmSpectrum(buffer);
+  });await pcmQueue;
+ })().catch(()=>{});
+}
+function clearSpectrumTap(){
+ spectrumSource?.disconnect();spectrum?.disconnect();spectrumSink?.disconnect();
+ spectrumTap?.getTracks().forEach(track=>track.stop());
+ spectrumSource=null;spectrum=null;spectrumSink=null;spectrumTap=null;spectrumTrack=null;spectrumSerial=-1;
+}
+function connectSpectrumSource(capture){
+ if(capture){
+  const track=spectrumTap?.getAudioTracks().find(track=>track.readyState==='live');
+  if(!track)return;
+  if(spectrumSource&&spectrumTrack===track)return;
+  spectrumSource?.disconnect();spectrumTrack=track;
+  spectrumSource=spectrumContext.createMediaStreamSource(new MediaStream([track]));
+ }else if(!spectrumSource)spectrumSource=spectrumContext.createMediaElementSource(audio);
+ if(!spectrum){
+  spectrum=spectrumContext.createAnalyser();spectrum.fftSize=1024;spectrum.smoothingTimeConstant=.72;
+  if(capture){spectrumSink=spectrumContext.createGain();spectrumSink.gain.value=0;spectrum.connect(spectrumSink);spectrumSink.connect(spectrumContext.destination);}
+  else spectrum.connect(spectrumContext.destination);
+ }
+ spectrumSource.connect(spectrum);
+}
 function ensureSpectrum(){
  if(document.hidden||audio.paused)return;
  try{
   const capture=audio.captureStream||audio.mozCaptureStream;
-  // A capture tap measures real frequencies without routing the audible output
-  // through AudioContext, which mobile OSes may suspend while screen-locked.
-  // Safari without captureStream retains native playback and a static indicator.
   const mobile=matchMedia('(pointer: coarse)').matches||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  if(!capture&&mobile)return;
+  if(!capture&&mobile){preparePcmSpectrum();return;}
   primeSpectrum();if(!spectrumContext)return;
   if(capture&&spectrumSerial!==state.serial){
-   spectrumSource?.disconnect();spectrum?.disconnect();spectrumSink?.disconnect();
-   spectrumTap?.getTracks().forEach(track=>track.stop());
-   spectrumSource=null;spectrum=null;spectrumSink=null;spectrumTap=capture.call(audio);spectrumSerial=state.serial;
-   if(!spectrumTap.getAudioTracks().length){spectrumSerial=-1;return;}
-   spectrumSource=spectrumContext.createMediaStreamSource(spectrumTap);
-  }else if(!capture&&!spectrumSource)spectrumSource=spectrumContext.createMediaElementSource(audio);
-  if(!spectrum&&spectrumSource){
-   spectrum=spectrumContext.createAnalyser();spectrum.fftSize=1024;spectrum.smoothingTimeConstant=.72;spectrumSource.connect(spectrum);
-   if(capture){spectrumSink=spectrumContext.createGain();spectrumSink.gain.value=0;spectrum.connect(spectrumSink);spectrumSink.connect(spectrumContext.destination);}
-   else spectrum.connect(spectrumContext.destination);
+   clearSpectrumTap();const serial=state.serial,stream=capture.call(audio);spectrumTap=stream;spectrumSerial=serial;
+   // Captured tracks can arrive AFTER playing. Keep this stream and connect
+   // on addtrack rather than abandoning the visualizer on the first empty read.
+   const reconnect=()=>{
+    if(spectrumTap!==stream||state.serial!==serial)return;
+    if(spectrumTrack?.readyState==='ended'){spectrumSource?.disconnect();spectrumSource=null;spectrumTrack=null;}
+    if(!document.hidden&&!audio.paused){try{connectSpectrumSource(true);}catch{}}
+   };
+   stream.addEventListener('addtrack',reconnect);stream.addEventListener('removetrack',reconnect);
   }
+  connectSpectrumSource(!!capture);
   spectrumContext.resume().catch(()=>{});
- }catch{spectrumSerial=-1;}
+ }catch{preparePcmSpectrum();}
 }
 function startSpectrum(){
- stopSpectrum();if(!spectrum||document.hidden)return;const data=new Uint8Array(spectrum.frequencyBinCount),groups=[[1,4],[4,8],[8,16],[16,32],[32,64]],bars=[...document.querySelectorAll('.wave-bars i')];
- const frame=()=>{if(document.hidden||audio.paused||$('music-panel').classList.contains('hidden')){spectrumFrame=0;return;}spectrum.getByteFrequencyData(data);groups.forEach(([from,to],i)=>{let total=0;for(let j=from;j<to;j++)total+=data[j];if(bars[i])bars[i].style.transform=`scaleY(${(.2+.8*Math.sqrt(total/(to-from)/255)).toFixed(3)})`;});spectrumFrame=requestAnimationFrame(frame);};spectrumFrame=requestAnimationFrame(frame);
+ stopSpectrum();if(document.hidden)return;
+ const groups=[[1,4],[4,8],[8,16],[16,32],[32,64]],bars=[...document.querySelectorAll('.wave-bars i')],started=performance.now();let data=null,lastCheck=-Infinity,lastPcm=-Infinity,pcmLevels=null;
+ const frame=now=>{
+  if(document.hidden||audio.paused||!surfaceOpen($('music-panel'))){spectrumFrame=0;return;}
+  // Recover from delayed tracks, an interrupted AudioContext and returning from
+  // background playback. This loop never controls the audible media element.
+  if(now-lastCheck>=400){lastCheck=now;ensureSpectrum();}
+  const live=spectrum&&spectrumContext?.state==='running'&&(!spectrumTap||spectrumTrack?.readyState==='live');
+  if(now-started>3000&&!live)preparePcmSpectrum();
+  let levels=null;
+  if(live){
+   if(data?.length!==spectrum.frequencyBinCount)data=new Uint8Array(spectrum.frequencyBinCount);
+   spectrum.getByteFrequencyData(data);levels=groups.map(([from,to])=>{let total=0;for(let j=from;j<to;j++)total+=data[j];return total/(to-from)/255;});
+  }else if(pcmSpectrum&&pcmSerial===state.serial){if(now-lastPcm>=50){lastPcm=now;pcmLevels=pcmSpectrum(audio.currentTime);}levels=pcmLevels;}
+  if(levels){
+   levels.forEach((level,i)=>{if(bars[i])bars[i].style.transform=`scaleY(${(.2+.8*Math.sqrt(level)).toFixed(3)})`;});
+  }
+  spectrumFrame=requestAnimationFrame(frame);
+ };spectrumFrame=requestAnimationFrame(frame);
 }
 const time=seconds=>Number.isFinite(seconds)&&seconds>=0?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'0:00';
 const playIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.8 18.7 12 8 18.2z"/></svg>',pauseIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM14 5h4v14h-4z"/></svg>';
@@ -2617,13 +2711,13 @@ function render(){
  const playing=state.playing&&!audio.paused;
  $('music-panel').classList.toggle('is-playing',playing);$('music-toggle').classList.toggle('music-is-playing',playing);$('music-toggle').setAttribute('aria-label',playing?'古典乐，正在播放':'古典乐，未播放');
  const button=$('music-play'),icon=playing?'pause':'play';if(button.dataset.icon!==icon){button.dataset.icon=icon;button.innerHTML=playing?pauseIcon:playIcon;button.setAttribute('aria-label',playing?'暂停':'播放');button.title=playing?'暂停':'播放';}
- const title=$('music-title'),titleText=state.track?musicDisplayTitle(state.track):'选择时期即播放';if(title.textContent!==titleText){cancelLabelScroll(title);title.textContent=titleText;}
+ const title=$('music-title'),titleText=state.track?musicDisplayTitle(state.track):'即刻开始聆听';if(title.textContent!==titleText){cancelLabelScroll(title);title.textContent=titleText;}
  const artist=$('music-artist'),composer=state.track?.composer||'',performer=musicPerformer(state.track),creditKey=JSON.stringify([composer,performer]);
  if(artist.dataset.creditKey!==creditKey){
   artist.dataset.creditKey=creditKey;cancelLabelScroll(artist.querySelector('.music-credit-text'));const text=document.createElement('span');text.className='music-credit-text';artist.replaceChildren(text);
   if(composer){const name=document.createElement('span');name.className='music-composer';name.textContent=composer;text.append(name);}
   if(performer){if(composer)text.append(document.createTextNode(' '));const name=document.createElement('span');name.className='music-performer';name.textContent=performer;text.append(name);}
-  if(!composer&&!performer)text.textContent='本地精选与在线曲库';
+  if(!composer&&!performer)text.textContent='点击暂停键播放';
  }
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
  // Recording attribution remains on the compact artist line; no controls or
@@ -2662,7 +2756,7 @@ function prefetch(){
 function start(track){
  if(!track)return;
  mediaSession?.activate();primeSpectrum();
- const serial=++state.serial;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
+ const serial=++state.serial;pcmSpectrum=null;audio.pause();state.track=track;state.playing=false;state.status='';resetProgress();
  updateMonogram(track);state.history.push(track.id);if(state.history.length>32)state.history.shift();
  audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
  // play() stays in the user's click stack, including on iPhone. Do not await a manifest/fetch first.
@@ -2721,7 +2815,7 @@ function setupPeriodMusic(){
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
  audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
- $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));for(const entry of labelScrolls.values())entry.animation?.play();scheduleTrackOverflow();}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused)startSpectrum();}else stopSpectrum();});
+ $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));for(const entry of labelScrolls.values())entry.animation?.play();scheduleTrackOverflow();}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused){primeSpectrum();ensureSpectrum();startSpectrum();}}else stopSpectrum();});
  $('music-close').addEventListener('click',closePanel);
  document.addEventListener('pointerdown',event=>{if(!event.composedPath().includes($('music-panel'))&&!event.target.closest?.('#music-toggle'))closePanel();});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&surfaceOpen($('music-panel'))){event.preventDefault();closePanel();$('music-toggle').focus({preventScroll:true});}});

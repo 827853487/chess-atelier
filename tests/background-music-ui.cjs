@@ -39,12 +39,12 @@ const base=process.env.CHESS_TEST_URL||'http://127.0.0.1:18865/dist/';
    await page.evaluate(()=>document.querySelector('#music-audio').dispatchEvent(new Event('ended')));
    await page.waitForFunction(title=>document.querySelector('#music-title').textContent!==title&&!document.querySelector('#music-audio').paused,second);
    await page.evaluate(()=>window.__show());
-   if(!nativeOnly){
+   {
     await page.waitForFunction(()=>Number.isFinite(document.querySelector('#music-audio').duration));
     await page.evaluate(()=>{document.querySelector('#music-audio').currentTime=15;});
     await page.waitForFunction(()=>[...document.querySelectorAll('.wave-bars i')].some(n=>Number(n.style.transform.match(/[\d.]+/)?.[0])>.3));
     const frames=await page.evaluate(()=>new Promise(resolve=>{const values=[];let count=0;const sample=()=>{values.push([...document.querySelectorAll('.wave-bars i')].map(n=>n.style.transform).join());if(++count<65)requestAnimationFrame(sample);else resolve(values);};sample();}));
-    assert.ok(new Set(frames).size>5,'passive spectrum must retain actual changing frequencies after a track change');
+    assert.ok(new Set(frames).size>5,(nativeOnly?'decoded recording':'passive capture')+' must retain actual changing frequencies after a track change');
    }
    assert.deepEqual(errors,[]);await context.close();console.log('PASS: '+(nativeOnly?'mobile native audio fallback':'desktop passive spectrum')+', lifecycle continuity, system metadata/actions, no forced resume, background next/ended');
   }
