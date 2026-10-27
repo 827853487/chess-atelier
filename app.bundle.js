@@ -261,6 +261,36 @@ function standardPgn(game, overrides={}){
 
 return { cloneRecord, recordRows, gameResult, standardPgn, recordEnding };
 })();
+const { RECENT_KEY, RECENT_LIMIT, createTrialRecord, readRecentGames, updateRecentGames, writeRecentGames }=(()=>{
+
+const RECENT_KEY='ChessAtelierRecentGamesV1';
+const RECENT_LIMIT=20;
+// Preserve every legal move before the branch (including a custom starting FEN).
+// The source record and its unplayed continuation are never mutated.
+function createTrialRecord(game,ply,origin){
+ const copy=cloneRecord(game,Math.max(0,Math.min(ply,game.history().length)),origin);
+ copy.header('Result','*');
+ return copy;
+}
+function readRecentGames(storage){
+ try{
+  const rows=JSON.parse(storage.getItem(RECENT_KEY)||'[]');
+  if(!Array.isArray(rows))return [];
+  const seen=new Set();
+  return rows.filter(row=>{
+   if(!row||typeof row.id!=='string'||!row.id.startsWith('recent-')||typeof row.pgn!=='string'||!row.pgn.trim()||seen.has(row.id))return false;
+   seen.add(row.id);return true;
+  }).slice(0,RECENT_LIMIT);
+ }catch{return [];}
+}
+function updateRecentGames(rows,entry){
+ if(!entry||typeof entry.id!=='string'||!entry.id.startsWith('recent-')||!entry.pgn)return rows.slice(0,RECENT_LIMIT);
+ return [{...entry},...rows.filter(row=>row.id!==entry.id)].slice(0,RECENT_LIMIT);
+}
+function writeRecentGames(storage,rows){storage.setItem(RECENT_KEY,JSON.stringify(rows.slice(0,RECENT_LIMIT)));}
+
+return { RECENT_KEY, RECENT_LIMIT, createTrialRecord, readRecentGames, updateRecentGames, writeRecentGames };
+})();
 const { browserEngineEnabled, browserEngineRequest, browserEngineStatus }=(()=>{
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
@@ -2480,6 +2510,7 @@ return { setupPeriodMusic };
 
 
 
+
 // Bundled rules module: no network dependency for board and PGN playback.
 
 
@@ -2515,6 +2546,36 @@ function toggleStarredScore(id){
 // 棋谱库脏标记：只有数据或筛选条件真的变了才重建列表 DOM，
 // 单纯走棋不再触发整份列表重绘。
 let collectionDirty=true;
+let positionPinned=false,pinnedStudy=null,studyTrialBase=null,duelSession=null,recentGames=[];
+try{recentGames=readRecentGames(localStorage);}catch{}
+let recentStorageWarned=false;
+const recentCopiesPending=new Set();
+function rememberRecentGame(){
+ if(state.mode!=='book'||!state.duelStarted||!duelSession?.hasMoves)return;
+ const pgn=currentPgn();if(pgn===duelSession.savedPgn)return;
+ const now=new Date(),entry={id:duelSession.id,pgn,title:duelSession.title||('人机对弈 · 执'+(state.side==='b'?'黑':'白')),origin:'最近对局',recent:true,updatedAt:now.toISOString(),side:state.side,orientation:state.orientation,ply:history().length,result:gameResult(state.game),basePly:duelSession.basePly};
+ try{if(localStorage.getItem(RECENT_KEY)!==null)recentGames=readRecentGames(localStorage);}catch{}
+ recentGames=updateRecentGames(recentGames,entry);
+ try{writeRecentGames(localStorage,recentGames);duelSession.savedPgn=pgn;recentStorageWarned=false;}catch{if(!recentStorageWarned){recentStorageWarned=true;toast('最近对局未能写入，请导出 PGN 备份');}}
+ collectionDirty=true;renderRecentGames();
+ if(libraryCategory==='mine'&&$('#archive-select').value==='mine:recent')renderCollection();
+}
+function newDuelSession(basePly=0,title=''){
+ duelSession={id:'recent-'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2)),basePly,title,hasMoves:false,savedPgn:''};
+}
+function studySnapshot(){return {game:state.game,origin:state.origin,view:state.view,orientation:state.orientation,review:state.review,reviewTitle:state.reviewTitle,currentScoreId:state.currentScoreId,currentScoreSource:state.currentScoreSource};}
+function togglePositionPin(){
+ positionPinned=!positionPinned;if(!positionPinned)pinnedStudy=null;
+ const button=$('#position-pin');button.setAttribute('aria-pressed',String(positionPinned));
+ button.title=positionPinned?'已锁定 · 切换保留局面，打谱可试走':'锁定局面 · 切换到对弈继续下';
+ toast(positionPinned?'已锁定 · 切换保留局面，打谱可试走':'已解锁 · 切换模式恢复初始局面');
+}
+function restoreStudyTrial(){
+ if(deferBoardAction(restoreStudyTrial))return;
+ if(state.mode!=='free'||!studyTrialBase)return;
+ stopPlayback();cancelBusy();hidePromotion();const original=studyTrialBase;studyTrialBase=null;
+ animateOpening(()=>{Object.assign(state,original);invalidateViewMemo();clearHints();drawAll();});
+}
 let toastTime,playbackTimer=null,playbackEnd=null;
 function toast(t){const e=$('#toast');if(!e)return;e.textContent=t;e.classList.add('show');clearTimeout(toastTime);toastTime=setTimeout(()=>e.classList.remove('show'),2800);}
 function history(){return state.game.history({verbose:true});}
@@ -2643,6 +2704,7 @@ function drawBoard(){
  $('#ply').textContent=state.view+' / '+moves.length;
  $('#ply').title=state.review?'剩余 '+(moves.length-state.view)+' 个半回合':'当前走棋记录';
  postReview?.sync();
+ $('#restore-study').hidden=state.mode!=='free'||!studyTrialBase;
 }
 let boardDrawPending=false,pendingBoardAction=null,boardFlush=false,undoRunning=false,exclusiveDone=Promise.resolve(),finishExclusive=null;
 function boardAnimating(){return activeFlights.size>0||!!openingMotion||appearanceMotion.length>0;}
@@ -2744,7 +2806,7 @@ function playChosen(moves){
  if(moves.some(m=>m.flags?.includes('p'))){askPromotion(from,to,moves[0].color||'w');return;}
  makeMove({from,to,promotion:moves[0].promotion});
 }
-function clickSquare(square){if(boardLocked())return;if(state.mode==='free'){toast('打谱模式仅供浏览，请使用箭头切换着法');return;}if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
+function clickSquare(square){if(boardLocked())return;if(state.mode==='free'&&!positionPinned){toast('打谱仅供浏览，锁定图钉后可试走');return;}if(state.busy||state.promo)return;const g=viewGame();if(g.isGameOver())return;
  stopPlayback();
  if(state.mode==='book'&&!state.duelStarted){toast('请先点击「开始对弈」');return;}
  if(state.mode==='book'&&!state.review&&g.turn()!==state.side){toast('电脑行棋中；可切换为「打谱研究」操作双方');return;}
@@ -2768,14 +2830,16 @@ function clickSquare(square){if(boardLocked())return;if(state.mode==='free'){toa
 }
 function clearHints(){state.selected=null;state.legal=[];state.arrow=null;state.analysis=null;}
 function makeMove(m,{auto=false,quiet=false}={}){
- if(boardLocked()||state.mode==='book'&&!state.duelStarted||!auto&&state.mode==='book'&&viewGame().turn()!==state.side)return false;
+ if(boardLocked()||state.mode==='free'&&!positionPinned||state.mode==='book'&&!state.duelStarted||!auto&&state.mode==='book'&&viewGame().turn()!==state.side)return false;
  stopPlayback();let applied,snapshot;
  const legal=fromUci(viewGame(),m.from+m.to+(m.promotion||''));if(!legal)return false;
  snapshot=quiet?null:takeMotionNodes(legal);
  if(state.mode==='book'&&!state.duelStarted)return false;
  try{
   if(state.mode==='book'&&!auto&&viewGame().turn()!==state.side)return false;
-  if(state.review||state.view!==history().length){
+  const firstTrial=state.mode==='free'&&!studyTrialBase;
+  if(firstTrial)studyTrialBase=studySnapshot();
+  if(firstTrial||state.review||state.view!==history().length){
    state.game=cloneRecord(state.game,state.view,state.origin);state.game.header('Result','*');
    state.review=false;state.reviewTitle='';state.currentScoreId=null;state.currentScoreSource=null;
   }
@@ -2784,6 +2848,7 @@ function makeMove(m,{auto=false,quiet=false}={}){
  }catch{for(const node of Object.values(snapshot||{}))if(node)releasePiece(node);drawBoard();if(!auto)toast('不是合法着法');return false;}
  const gen=state.generation;
  state.view=history().length;clearHints();postReview?.prepareMotion(state.view);
+ if(state.mode==='book'&&duelSession)duelSession.hasMoves=true;
  drawBoard();
  if(!quiet){
   const landed=boardCell(applied.to)?.querySelector(':scope > .piece');
@@ -2795,6 +2860,7 @@ function makeMove(m,{auto=false,quiet=false}={}){
  const wrapUp=()=>{
   if(gen!==state.generation)return;
   state.busy=false;drawBoard();refreshPanels();
+  rememberRecentGame();
   const done=viewGame();
   if(done.isCheckmate())toast('将死 · '+(applied.color==='w'?'白方':'黑方')+'获胜');
   else if(done.isStalemate())toast('逼和 · 本局判和');
@@ -2828,6 +2894,7 @@ async function undo(){
  undoRunning=true;exclusiveDone=new Promise(ready=>finishExclusive=ready);
  try{for(let i=0;i<count&&history().length;i++){const move=cachedHistory().at(-1),snapshot=takeMotionNodes(move,true);state.game.undo();state.game.header('Result','*');invalidateViewMemo();state.view=history().length;clearHints();postReview?.prepareMotion(state.view);drawAll();await transition(move,true,snapshot);}}
  finally{undoRunning=false;finishExclusive?.();finishExclusive=null;$('#move-cue').textContent='已悔棋';flushBoardWork();}
+ rememberRecentGame();
  if(state.mode==='book'&&state.game.turn()!==state.side&&!state.game.isGameOver())maybeBookReply();
 }
 const UCI_RE=/^[a-h][1-8][a-h][1-8][qrbn]?$/;
@@ -2872,8 +2939,8 @@ async function maybeBookReply(){
   $('#retry-engine').classList.remove('hidden');toast(state.engineError);
  }finally{clearTimeout(timeout);if(playController===controller)playController=null;}
 }
-function loadPosition(fen,title='残局练习'){if(deferBoardAction(()=>loadPosition(fen,title)))return false;try{const game=new Chess(fen);animateOpening(()=>{stopPlayback();invalidateViewMemo();cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();});return true;}catch{toast('无法读取此残局局面');return false;}}
-function loadPgn(pgn,title='',targetPly=null){if(deferBoardAction(()=>loadPgn(pgn,title,targetPly)))return false;try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');animateOpening(()=>{stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();});
+function loadPosition(fen,title='残局练习'){if(deferBoardAction(()=>loadPosition(fen,title)))return false;try{const game=new Chess(fen);animateOpening(()=>{studyTrialBase=null;stopPlayback();invalidateViewMemo();cancelBusy();state.game=game;state.origin=game.fen();state.view=0;state.orientation=game.turn();state.review=true;state.reviewTitle=title;clearHints();drawAll();});return true;}catch{toast('无法读取此残局局面');return false;}}
+function loadPgn(pgn,title='',targetPly=null){if(deferBoardAction(()=>loadPgn(pgn,title,targetPly)))return false;try{const game=new Chess();game.loadPgn(pgn,{strict:false});const moves=game.history({verbose:true});if(!moves.length)throw Error('空棋谱');animateOpening(()=>{studyTrialBase=null;stopPlayback();invalidateViewMemo();state.currentScoreId=null;state.currentScoreSource=null;cancelBusy();state.game=game;state.origin=game.header()?.FEN||defaultFen;state.view=Number.isInteger(targetPly)?Math.min(targetPly,moves.length):0;state.orientation='w';state.review=true;state.reviewTitle=title||'参考棋谱';clearHints();drawAll();});
  return true;}catch(e){console.warn('PGN parse failed',e);toast('棋谱格式无法解析');return false;}}
 // 着法记录：只在棋谱长度变化时重建 DOM，回放时仅切换选中态，
 // 并用事件委托取代逐个按钮绑定，长棋谱下不再每次走棋都产生上百个监听器。
@@ -2971,6 +3038,7 @@ async function initLocal(){
   }
  }catch(e){console.warn('IndexedDB unavailable',e);}
  state.rebuildArchiveOptions?.();renderCollection();
+ renderRecentGames();
  loadBuiltinScores();
 }
 async function loadBuiltinScores(){
@@ -3068,7 +3136,7 @@ function initializeArchives(){
   const sections=new Map();
   for(const p of packs){const section=p.section||(libraryCategory==='masters'?'棋手名局':'');if(!sections.has(section))sections.set(section,[]);sections.get(section).push(p);}
    const parts=[];
-   if(libraryCategory==='mine')parts.push('<option value="mine:starred">星标收藏 ★</option>');
+   if(libraryCategory==='mine')parts.push('<option value="mine:starred">星标收藏 ★</option><option value="mine:recent">最近对局</option>');
   for(const [section,items] of sections){
    if(section)parts.push(`<optgroup label="${safeText(section)}">`);
    for(const p of items)parts.push(`<option value="${safeText(p.id)}">${safeText(p.label)}</option>`);
@@ -3081,6 +3149,7 @@ function initializeArchives(){
   $('.library-actions').hidden=libraryCategory!=='mine';
   const counts={openings:0,masters:0,training:0,mine:0};
   for(const score of state.local){const category=scoreCategory(score);counts[category]++;if(category!=='mine'&&starredIds.has(score.id))counts.mine++;}
+  counts.mine+=recentGames.length;
   for(const button of tabs.querySelectorAll('[data-category]')){
    const active=button.dataset.category===libraryCategory;
    button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;
@@ -3147,7 +3216,7 @@ function renderPackDialog(){
 function createPackFromDialog(){
  const name=($('#pack-name')?.value||'').trim();
  if(!name){toast('请先填写合集名称');return;}
- if(name==='星标收藏'||isBuiltinPack(name)||isPinnedPack(name)||userExtras().includes(name)){toast('已有同名合集');return;}
+ if(['星标收藏','最近对局'].includes(name)||isBuiltinPack(name)||isPinnedPack(name)||userExtras().includes(name)){toast('已有同名合集');return;}
  rememberUserPack(name);
  $('#pack-name').value='';
  state.packFocus=name;state.packConfirm='';
@@ -3263,6 +3332,7 @@ function collectionPackName(x){
  return scorePackName(x);
 }
 function collectionRowMeta(x){
+ if(x.recent)return new Date(x.updatedAt).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' · '+x.ply+' 着 · '+({'1-0':'白胜','0-1':'黑胜','1/2-1/2':'和棋','*':'未结束'}[x.result]||'未结束');
  const parts=[];
  if(x.puzzleSide)parts.push(x.puzzleSide==='w'?'白方先行':'黑方先行');
  const year=cleanDate(x.date);
@@ -3278,6 +3348,7 @@ function collectionRowHtml(x,idx){
  const current=x.id===state.currentScoreId;
  const drop=isMutableScore(x);
  const starred=starredIds.has(x.id),name=safeText(displayName(x));
+ if(x.recent){const saved=state.local.some(score=>score.recentId===x.id);return `<div class="library-row recent-row${current?' is-current':''}" data-score-id="${safeText(x.id)}"><button type="button" class="library-open" data-local="${idx}"><span class="row-main"><b>${name}</b><small>${safeText(meta)}</small></span></button><button type="button" class="inline-button recent-save" data-save-recent="${safeText(x.id)}" ${saved?'disabled':''}>${saved?'已添加':'加入棋谱'}</button></div>`;}
  return `<div class="library-row${current?' is-current':''}" data-score-id="${safeText(x.id)}"${current?' aria-current="true"':''}><button type="button" class="library-open" data-local="${idx}"><span class="row-main"><b>${name}</b>${meta?`<small>${safeText(meta)}</small>`:''}</span></button><button type="button" class="score-star" data-star="${safeText(x.id)}" aria-label="${starred?'取消收藏':'收藏'}：${name}" aria-pressed="${starred}" title="${starred?'取消星标':'星标收藏'}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.4l-5.6 3 1.1-6.3-4.6-4.5 6.3-.9Z"/></svg></button>${drop?`<button type="button" class="row-remove" data-remove="${idx}" aria-label="从合集中移除：${name}" title="从合集中移除">×</button>`:''}</div>`;
 }
 let visibleScores=[],collectionLimit=LIST_PAGE,collectionSig='';
@@ -3286,6 +3357,7 @@ let visibleScores=[],collectionLimit=LIST_PAGE,collectionSig='';
 // 因此即使本地有几千局棋谱，DOM 里始终只有几十个节点，操作保持流畅。
 function collectionFilter(){
  const term=$('#filter-collection').value.toLowerCase().trim(),pack=$('#archive-select').value;
+ if(libraryCategory==='mine'&&pack==='mine:recent')return recentGames.filter(x=>!term||searchBlob(x).includes(term));
  return state.local.filter(x=>{
   if(!scoreInCollection(x,libraryCategory,pack,starredIds.has(x.id)))return false;
   if(!term)return true;
@@ -3302,7 +3374,8 @@ function renderCollection(full=true){
   visibleScores=found;
   const slice=found.slice(0,collectionLimit);
   list.innerHTML=slice.length?slice.map((x,i)=>collectionRowHtml(x,i)).join('')
-   :`<p class="hint">${$('#archive-select').value==='mine:starred'?'暂无星标棋谱，点击棋谱右侧的星星即可收藏。':libraryCategory==='mine'&&!state.local.some(x=>scoreCategory(x)==='mine')?'还没有个人棋谱，可以导入 PGN 或保存当前对局。':'当前分类没有匹配的棋谱，试试其他关键词或切换本分类的合集。'}</p>`;
+   :`<p class="hint">${$('#archive-select').value==='mine:recent'?'对弈后自动保留最近 20 局，可随时加入我的棋谱。':$('#archive-select').value==='mine:starred'?'暂无星标棋谱，点击棋谱右侧的星星即可收藏。':libraryCategory==='mine'&&!state.local.some(x=>scoreCategory(x)==='mine')?'还没有个人棋谱，可以导入 PGN 或保存当前对局。':'当前分类没有匹配的棋谱，试试其他关键词或切换本分类的合集。'}</p>`;
+  const storageNote=$('#library-storage-note');if(storageNote){storageNote.hidden=libraryCategory!=='mine';storageNote.textContent=$('#archive-select').value==='mine:recent'?'自动保留最近 20 局 · 添加副本可长期保留':'收藏与棋谱存于此浏览器 · 刷新保留';}
   list.scrollTop=keepScroll;
   const meta=$('#collection-meta');
   if(meta)meta.textContent=collectionContext(found.length);
@@ -3339,7 +3412,8 @@ function markCurrentScore(){
 function openLocalScore(source){
  if(deferBoardAction(()=>openLocalScore(source)))return;
  if(!source)return;
- if((source.pgn?loadPgn(source.pgn,source.title):source.fen?loadPosition(source.fen,source.title):false)){
+ if(state.mode==='book'){setPlayMode('free');if(deferBoardAction(()=>openLocalScore(source)))return;}
+ if((source.pgn?loadPgn(source.pgn,source.title,source.recent?source.ply:null):source.fen?loadPosition(source.fen,source.title):false)){
   state.currentScoreId=source.id;state.currentScoreSource=source;
   markCurrentScore();
  }
@@ -3370,6 +3444,26 @@ function confirmSaveGame(){
  dbTransaction('readwrite',store=>store.put(source)).then(()=>{state.local.push(source);collectionDirty=true;state.rebuildArchiveOptions?.();selectArchivePack(origin);renderCollection();renderPackDialog();toast('棋谱已保存到「'+origin+'」');}).catch(()=>toast('保存失败，请使用「导出 PGN」备份'));
 }
 function saveGame(){openSaveDialog();}
+function renderRecentGames(){
+ const list=$('#recent-list');if(!list)return;
+ const button=$('#recent-games');if(button)button.textContent='最近对局'+(recentGames.length?' · '+recentGames.length:'');
+ if(!$('#recent-dialog').open)return;
+ list.innerHTML=recentGames.length?recentGames.map(entry=>{
+  const saved=state.local.some(score=>score.recentId===entry.id);
+  return `<div class="recent-dialog-row"><button type="button" class="recent-open" data-open-recent="${safeText(entry.id)}"><b>${safeText(entry.title)}</b><small>${safeText(collectionRowMeta(entry))}</small></button><button type="button" class="inline-button" data-save-recent="${safeText(entry.id)}" ${saved?'disabled':''}>${saved?'已添加':'加入棋谱'}</button></div>`;
+ }).join(''):'<p class="hint">走出第一步后，将自动保存到这里。</p>';
+}
+async function saveRecentCopy(id){
+ const entry=recentGames.find(row=>row.id===id);if(!entry||recentCopiesPending.has(id))return;
+ if(state.local.some(row=>row.recentId===id)){toast('已加入我的棋谱');return;}
+ if(!state.db){download(entry.pgn,pgnFileName());toast('浏览器存储不可用，已导出 PGN 备份');return;}
+ recentCopiesPending.add(id);
+ try{
+  const copy={id:'save-'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2)),recentId:id,title:entry.title,origin:'我的棋谱',stage:'复盘',pgn:entry.pgn};
+  await dbTransaction('readwrite',store=>store.put(copy));state.local.push(copy);collectionDirty=true;
+  state.rebuildArchiveOptions?.();renderCollection();renderRecentGames();renderPackDialog();toast('已加入我的棋谱 · 不受最近对局替换影响');
+ }catch{toast('保存失败，请导出 PGN 备份');}finally{recentCopiesPending.delete(id);}
+}
 analysisUi=setupLocalAnalysis({state,viewGame,cachedHistory,enginePosition,drawArrow,maybeBookReply,toast});
 const {scheduleEngine,refreshEngineStatus}=analysisUi;
 postReview=setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis:analysisUi,whenFlightsIdle:()=>Promise.all([whenFlightsIdle(),whenOpeningIdle()])});
@@ -3513,14 +3607,30 @@ function initializeThemeMotion(){
 function setPlayMode(mode,{animate=true}={}){
  if(deferBoardAction(()=>setPlayMode(mode,{animate})))return;
  const next=mode==='book'?'book':'free';
+ if(next===state.mode&&$('#mode').value===next&&document.body.dataset.playMode===next)return;
+ rememberRecentGame();
  stopPlayback();settleFlights();cancelBusy();hidePromotion();
+ const keep=positionPinned,fromStudy=state.mode==='free',source=studySnapshot();
+ if(keep&&fromStudy)pinnedStudy=source;
+ const motion=animateOpening(()=>{
  state.mode=next;
  state.currentScoreId=null;state.currentScoreSource=null;
- state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;
  state.review=false;state.reviewTitle='';
  state.duelStarted=false;
- if(next==='book'){state.side='w';state.orientation='w';syncSideSelect('w');}
- else{state.orientation='w';const lesson=LESSONS.find(item=>item.id==='italian');state.game.loadPgn(lesson.pgn);state.review=true;state.reviewTitle=lesson.title;state.currentScoreId=lesson.id;state.currentScoreSource=lesson;}
+ if(keep&&next==='book'){
+  state.game=createTrialRecord(source.game,source.view,source.origin);state.origin=source.origin;state.view=state.game.history().length;
+  state.side=source.orientation;state.orientation=source.orientation;syncSideSelect(state.side);
+  if(source.reviewTitle)state.game.header('SourceStudy',source.reviewTitle);
+  state.game.header('ContinuationPly',String(state.view),'Date',pgnDate());
+  stampDuelRecord();state.duelStarted=true;newDuelSession(state.view,source.reviewTitle?'试下 · '+source.reviewTitle:'');
+ }else if(keep&&next==='free'){
+  Object.assign(state,pinnedStudy||source);duelSession=null;
+ }else{
+  pinnedStudy=null;studyTrialBase=null;duelSession=null;state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;
+  state.orientation='w';
+  if(next==='book'){state.side='w';syncSideSelect('w');state.duelStarted=true;stampDuelRecord();newDuelSession();}
+  else{const lesson=LESSONS.find(item=>item.id==='italian');state.game.loadPgn(lesson.pgn);state.review=true;state.reviewTitle=lesson.title;state.currentScoreId=lesson.id;state.currentScoreSource=lesson;}
+ }
  clearBoardGeometry();
  invalidateViewMemo();clearHints();
  $('#mode').value=next;
@@ -3529,8 +3639,11 @@ function setPlayMode(mode,{animate=true}={}){
  $$('.mode-free-only').forEach(el=>el.classList.toggle('hidden',next==='book'));
  document.body.dataset.playMode=next;$('#right-heading').textContent=next==='book'?'对局':'棋谱';
  $('#record-heading').textContent=next==='book'?'着法记录':'棋谱着法';
- if(next==='book')beginDuel({animate});
- else animateOpening(()=>{$('#duel-start').textContent='开始对弈';$('#move-cue').textContent='初始局面 · 使用箭头浏览棋谱';drawAll();},{animate});
+ $('#duel-start').textContent=state.duelStarted?'重新开始':'开始对弈';
+ $('#move-cue').textContent=keep?'已保留当前局面':next==='free'?'初始局面 · 使用箭头浏览棋谱':'初始局面 · 点击棋子开始';
+ drawAll();
+ },{animate});
+ Promise.resolve(motion).then(()=>{if(state.mode==='book'&&state.duelStarted)maybeBookReply();});
 }
 function syncSideSelect(side){
  const sel=$('#side');if(!sel)return;
@@ -3541,6 +3654,7 @@ function syncSideSelect(side){
 }
 function stampDuelRecord(){
  const computer='Stockfish',level=Number($('#bot-level').value),elos={1:1300,2:1600,3:1900,4:2200,5:2600,6:3000};
+ delete state.game._headers.WhiteType;delete state.game._headers.BlackType;
  state.game.header('Event','Local Computer Game','Site','Local','White',state.side==='w'?'Player':computer,'Black',state.side==='b'?'Player':computer,state.side==='w'?'BlackType':'WhiteType','program');
  delete state.game._headers.WhiteElo;delete state.game._headers.BlackElo;
  if(elos[level])state.game.header(state.side==='w'?'BlackElo':'WhiteElo',String(elos[level]));
@@ -3548,12 +3662,14 @@ function stampDuelRecord(){
 function stampNewRecord(){state.engineError='';state.game.header('Event','Casual Game','Site','Local','Date',pgnDate(),'Round','-','White','?','Black','?','Result','*');}
 function beginDuel({animate=true}={}){
  if(deferBoardAction(()=>beginDuel({animate})))return;
+ rememberRecentGame();
  animateOpening(()=>{
  stopPlayback();settleFlights();cancelBusy();hidePromotion();
  state.currentScoreId=null;state.currentScoreSource=null;state.duelStarted=true;
  state.game=new Chess();stampNewRecord();state.origin=defaultFen;state.view=0;
  state.review=false;state.reviewTitle='';
  stampDuelRecord();state.orientation=state.side;clearBoardGeometry();invalidateViewMemo();clearHints();drawAll();
+ newDuelSession();
  $('#duel-start').textContent='重新开始';
  $('#move-cue').textContent=state.side==='b'?'电脑先行':'初始局面 · 点击棋子开始';
  if(state.side==='b'){
@@ -3582,6 +3698,17 @@ function flipBrandKnight(){
 }
 window.addEventListener('pagehide',()=>{brandSpin?.cancel();brandSpin=null;});
 function setupEvents(){
+ $('#restore-study').addEventListener('click',restoreStudyTrial);
+ $('#position-pin').addEventListener('click',togglePositionPin);
+ $('#recent-games').addEventListener('click',()=>{$('#recent-dialog').showModal();renderRecentGames();});
+ $('#recent-close').addEventListener('click',()=>$('#recent-dialog').close());
+ $('#recent-dialog').addEventListener('click',event=>{if(event.target===$('#recent-dialog'))$('#recent-dialog').close();});
+ $('#recent-list').addEventListener('click',event=>{
+  const save=event.target.closest('[data-save-recent]');if(save){saveRecentCopy(save.dataset.saveRecent);return;}
+  const open=event.target.closest('[data-open-recent]');if(open){const entry=recentGames.find(row=>row.id===open.dataset.openRecent);if(entry){$('#recent-dialog').close();openLocalScore(entry);}}
+ });
+ addEventListener('pagehide',rememberRecentGame);
+ addEventListener('storage',event=>{if(event.key===RECENT_KEY||event.key===null){try{recentGames=readRecentGames(localStorage);}catch{}state.rebuildArchiveOptions?.();collectionDirty=true;renderCollection();renderRecentGames();}});
  document.addEventListener('pointerdown',event=>{const guide=$('#collection-guide');if(guide?.open&&!guide.contains(event.target))hideSurface(guide.querySelector('.collection-guide-body'),()=>{guide.open=false;});});
  $('#board').addEventListener('error',e=>{if(e.target.matches('.piece-art-img'))e.target.closest('.assetpiece')?.classList.add('asset-fallback-mode');},true);
  $('#home').addEventListener('click',e=>{e.preventDefault();flipBrandKnight();});
@@ -3641,6 +3768,7 @@ function setupEvents(){
  $('#movelist').addEventListener('click',e=>{const b=e.target.closest('[data-ply]');if(b){stopPlayback();goto(Number(b.dataset.ply));}});
  // 棋谱库扁平列表：选择对局（事件委托，避免每次重渲染重复绑定）
  $('#collection').addEventListener('click',e=>{
+  const copy=e.target.closest('[data-save-recent]');if(copy){saveRecentCopy(copy.dataset.saveRecent);return;}
   const star=e.target.closest('[data-star]');if(star){toggleStarredScore(star.dataset.star);return;}
   const rm=e.target.closest('[data-remove]');
   if(rm){e.preventDefault();e.stopPropagation();removeLocalScore(visibleScores[Number(rm.dataset.remove)]);return;}
