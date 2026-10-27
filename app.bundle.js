@@ -481,9 +481,9 @@ class UciWorker{
 }
 const play=new UciWorker(),analysis=new UciWorker();
 async function browserEngineStatus(){
- // The initial status probe shares the analysis worker. Do not compile a second
- // WASM instance on a phone until the user actually starts a computer game.
- await analysis.ensure();
+ // The page's initial status probe prewarms both independent UCI sessions.
+ // Asset preparation is shared, so this still downloads JS and WASM only once.
+ await Promise.all([analysis.ensure(),play.ensure()]);
  return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[analysis.eloMin,analysis.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,engineElo:value.elo===null?null:Math.max(analysis.eloMin,Math.min(analysis.eloMax,value.elo))}]))};
 }
 function browserEngineRequest(path,body,options){
