@@ -9,7 +9,7 @@
     selectWrap.classList.remove('is-open');
     selectWrap.classList.remove('opens-up');
     const menu=document.getElementById(selectWrap.querySelector('.atelier-select-trigger').getAttribute('aria-controls'));
-    if(menu){if(motion)motion.hide(menu,()=>{menu.classList.remove('is-open-menu');menu.style.visibility='';menu.hidden=true;});else menu.classList.remove('is-open-menu');}
+    if(menu){menu.classList.remove('is-keyboard');if(motion)motion.hide(menu,()=>{menu.classList.remove('is-open-menu');menu.style.visibility='';menu.hidden=true;});else menu.classList.remove('is-open-menu');}
     selectWrap.querySelector('.atelier-select-trigger').setAttribute('aria-expanded', 'false');
     if (restore) selectWrap.querySelector('.atelier-select-trigger').focus({ preventScroll: true });
     if (opened === selectWrap) opened = null;
@@ -75,7 +75,7 @@
       walk(select);
       if(wrap.classList.contains('is-open')){
         list.scrollTop=scroll;
-        items().find(row=>row.dataset.value===focused)?.focus({preventScroll:true});
+        if(list.classList.contains('is-keyboard'))items().find(row=>row.dataset.value===focused)?.focus({preventScroll:true});
       }
     }
     function selectOption(value){
@@ -83,10 +83,12 @@
       if(select.value!==value){select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));}
       optionsChanged();
     }
-    function open(){
+    function open({keyboard=false}={}){
       if(trigger.disabled)return;
       if(opened && opened!==wrap)close(opened);
+      if(!keyboard)trigger.focus({preventScroll:true});
       optionsChanged();list.hidden=false;wrap.classList.add('is-open');trigger.setAttribute('aria-expanded','true');opened=wrap;
+      list.classList.toggle('is-keyboard',keyboard);
       const settings=wrap.closest('#settings-dialog .settings-body');
       if(settings){
         const dialog=settings.closest('dialog'),anchor=trigger.getBoundingClientRect(),bounds=dialog.getBoundingClientRect();
@@ -96,10 +98,10 @@
       globalThis.ChessSurfaces?.show(list);
       const active=list.querySelector('[aria-selected="true"]')||items()[0];
       if(id==='archive-select'){
-        list.scrollTop=0;items()[0]?.focus({preventScroll:true});
+        list.scrollTop=0;if(keyboard)items()[0]?.focus({preventScroll:true});
       }else{
         if(active)list.scrollTop=Math.max(0,active.offsetTop-10);
-        active?.focus({preventScroll:true});
+        if(keyboard)active?.focus({preventScroll:true});
       }
     }
     trigger.addEventListener('click',()=>wrap.classList.contains('is-open')?close(wrap):open());
@@ -107,10 +109,11 @@
       if(!['Escape','ArrowDown','ArrowUp','Home','End','Enter',' '].includes(e.key))return;
       e.preventDefault();
       if(e.key==='Escape'){close(wrap,true);return;}
-      if(!wrap.classList.contains('is-open')){open();return;}
+      if(!wrap.classList.contains('is-open')){open({keyboard:true});return;}
+      list.classList.add('is-keyboard');
       const rows=items();if(!rows.length)return;
       const focused=rows.indexOf(document.activeElement);
-      if(e.key==='Enter'||e.key===' '){if(focused>=0)selectOption(rows[focused].dataset.value);return;}
+      if(e.key==='Enter'||e.key===' '){if(focused>=0)selectOption(rows[focused].dataset.value);else close(wrap,true);return;}
       const next=e.key==='Home'?0:e.key==='End'?rows.length-1:e.key==='ArrowDown'?Math.min(focused+1,rows.length-1):Math.max(focused-1,0);
       const row=rows[next];row.focus({preventScroll:true});
       // Scroll only this menu; scrollIntoView can also move the enclosing page/right pane.
@@ -118,6 +121,8 @@
       else if(row.offsetTop+row.offsetHeight>list.scrollTop+list.clientHeight)list.scrollTop=row.offsetTop+row.offsetHeight-list.clientHeight;
     };
     wrap.addEventListener('keydown',handleKeys);list.addEventListener('keydown',e=>{if(!wrap.contains(list))handleKeys(e);});
+    list.addEventListener('pointermove',()=>list.classList.remove('is-keyboard'),{passive:true});
+    list.addEventListener('pointerdown',()=>list.classList.remove('is-keyboard'),{passive:true});
     select.addEventListener('change',optionsChanged);
     if(id==='archive-select'){
       let pending=false;

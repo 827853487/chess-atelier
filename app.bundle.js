@@ -2744,7 +2744,7 @@ function boardLocked(){return boardAnimating()||undoRunning;}
 function deferBoardAction(action){if(!boardLocked())return false;pendingBoardAction=action;return true;}
 function flushBoardWork(){if(boardFlush)return;boardFlush=true;requestAnimationFrame(()=>{boardFlush=false;if(boardLocked())return;const action=pendingBoardAction;pendingBoardAction=null;if(action){action();return;}if(boardDrawPending){boardDrawPending=false;drawBoard();}});}
 async function whenBoardIdle(){while(boardLocked()||pendingBoardAction){if(pendingBoardAction&&!boardLocked()){flushBoardWork();await new Promise(requestAnimationFrame);continue;}await Promise.all([whenFlightsIdle(),whenOpeningIdle(),...appearanceMotion.map(item=>item.animation.finished.catch(()=>{})),undoRunning?exclusiveDone:Promise.resolve()]);}}
-function flipBoard(){if(deferBoardAction(flipBoard))return;hidePromotion();animateOpening(()=>{state.orientation=state.orientation==='w'?'b':'w';clearBoardGeometry();drawBoard();});}
+function flipBoard(){if(deferBoardAction(flipBoard))return;hidePromotion();animateOpening(()=>{state.orientation=state.orientation==='w'?'b':'w';clearBoardGeometry();drawBoard();},{fadeCoordinates:true});}
 // Smooth piece movement, captures, castling, promotions and step-by-step playback.
 // 格子几何：棋盘是固定网格，只在棋盘盒尺寸变化时重算一次，
 // 避免每步动画都做多次 getBoundingClientRect 触发强制回流。
@@ -3530,14 +3530,16 @@ function clearOpeningMotion(){
  const active=openingMotion;if(!active)return;openingMotion=null;
  for(const animation of active.animations)animation.cancel();
  for(const node of active.oldNodes)releasePiece(node);
+ active.oldCoordinates?.remove();
  active.layer?.remove();$('#board').classList.remove('is-opening');$('#board').removeAttribute('aria-busy');
  active.resolve();flushBoardWork();
 }
 function whenOpeningIdle(){return openingMotion?.done||Promise.resolve();}
-function animateOpening(update,{animate=true}={}){
+function animateOpening(update,{animate=true,fadeCoordinates=false}={}){
  clearOpeningMotion();clearAppearanceMotion();settleFlights();
  postReview?.boardResetStarted();state.arrow=null;drawArrow();analysisUi?.boardReset();
  const board=$('#board'),motion=animate&&state.animEnabled&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const coordinates=motion&&fadeCoordinates?$('.board-coordinates'):null,oldCoordinates=coordinates?.cloneNode(true);
  const layer=document.createElement('div'),oldNodes=[];
  layer.className='opening-layer';layer.setAttribute('aria-hidden','true');
  if(motion)for(const cell of board.querySelectorAll(':scope > .square')){
@@ -3547,11 +3549,12 @@ function animateOpening(update,{animate=true}={}){
  }
  update();
  if(!motion)return;
- let resolve;const done=new Promise(ready=>resolve=ready),active={animations:[],oldNodes,layer,resolve,done};
+ let resolve;const done=new Promise(ready=>resolve=ready),active={animations:[],oldNodes,layer,oldCoordinates,resolve,done};
  openingMotion=active;board.classList.add('is-opening');board.setAttribute('aria-busy','true');
- const startTime=document.timeline.currentTime;
+ const startTime=document.timeline.currentTime;let finishAt=0;
  const run=(node,frames,options)=>{
   const animation=node.animate(frames,{...options,fill:'both'});animation.startTime=startTime;active.animations.push(animation);
+  finishAt=Math.max(finishAt,(options.delay||0)+options.duration);
  };
  if(oldNodes.length){
   board.append(layer);
@@ -3564,6 +3567,12 @@ function animateOpening(update,{animate=true}={}){
   let x=0,y=0;if(col===edge)x=-26;if(7-col===edge)x=26;if(row===edge)y=-26;if(7-row===edge)y=26;
   const along=x?Math.min(row,7-row):Math.min(col,7-col),delay=(oldNodes.length?330:0)+edge*95+along*14;
   run(node,[{transform:`translate(${x}%,${y}%) scale(.45)`,opacity:0},{transform:'translate(0,0) scale(1)',opacity:1}],{duration:340,delay,easing:'cubic-bezier(.16,1,.3,1)'});
+ }
+ if(coordinates&&oldCoordinates){
+  oldCoordinates.classList.add('coordinates-exit');coordinates.parentElement.append(oldCoordinates);
+  const revealAt=oldNodes.length?330:0,end=Math.max(finishAt,revealAt+180);
+  run(oldCoordinates,[{opacity:1},{opacity:0}],{duration:320,easing:'ease-in'});
+  run(coordinates,[{opacity:0},{opacity:1}],{duration:end-revealAt,delay:revealAt,easing:'ease-out'});
  }
  Promise.all(active.animations.map(animation=>animation.finished.catch(()=>{}))).then(()=>{if(openingMotion===active)clearOpeningMotion();});
  return done;
