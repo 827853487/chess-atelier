@@ -1,5 +1,5 @@
 import { Chess } from './vendor/chess.js';
-import { engineRequest, engineStatus } from './engine-client.js';
+import { engineRequest, engineRequestTimeout, engineStatus } from './engine-client.js';
 import { setupRestNotes } from './chess-notes.js';
 
 export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookReply,toast}){
@@ -62,7 +62,7 @@ export function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,mayb
   $('#engine-probability').dataset.pending='true';status('正在分析',true);
   timer=setTimeout(async()=>{
    timer=null;
-   const request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),12000);
+   const request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),engineRequestTimeout());
    try{
     await engineRequest('/api/analyze',{...position,stream:true},{signal:request.signal,onUpdate:data=>{
      if(seq!==sequence)return;remember(k,data);render(data,position);

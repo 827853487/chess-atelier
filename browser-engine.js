@@ -1,13 +1,14 @@
 import { Chess } from './vendor/chess.js';
+import { prepareBrowserEngineAssets } from './engine-assets.js';
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
 export function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
 const LEVELS={1:{name:'入门',elo:1300,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3000,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
-const assetUrl=new URL('./vendor/stockfish/stockfish-19-lite-single.js',document.baseURI).href;
 class UciWorker{
- constructor(){this.worker=null;this.ready=null;this.listeners=new Set();this.queue=Promise.resolve();this.eloMin=1320;this.eloMax=3190;}
+ constructor(){this.worker=null;this.ready=null;this.listeners=new Set();this.queue=Promise.resolve();this.eloMin=1320;this.eloMax=3190;this.generation=0;}
  fail(error){
+  this.generation++;
   this.worker?.terminate();this.worker=null;this.ready=null;
   for(const listener of [...this.listeners])listener.reject(error);
  }
@@ -22,9 +23,12 @@ class UciWorker{
  }
  ensure(){
   if(this.ready)return this.ready;
+  const generation=this.generation;
   this.ready=(async()=>{
    if(typeof WebAssembly!=='object'||typeof Worker!=='function')throw Error('当前浏览器不支持本地 Stockfish，请使用新版浏览器。');
-   this.worker=new Worker(assetUrl);
+   const {workerUrl}=await prepareBrowserEngineAssets();
+   if(generation!==this.generation)throw abortError();
+   this.worker=new Worker(workerUrl);
    this.worker.onmessage=event=>{
     if(typeof event.data!=='string')return;
     for(const line of event.data.split(/\r?\n/)){
@@ -33,18 +37,27 @@ class UciWorker{
      for(const listener of [...this.listeners])listener.line(line);
     }
    };
-   this.worker.onerror=event=>{event.preventDefault();this.fail(Error('浏览器 Stockfish 加载失败，请刷新或重试。'));};
-   const uci=this.waitFor(line=>line==='uciok');this.send('uci');await uci;
+   this.worker.onerror=event=>{event.preventDefault();if(generation===this.generation)this.fail(Error('浏览器 Stockfish 加载失败，请刷新或重试。'));};
+   const uci=this.waitFor(line=>line==='uciok',30000);this.send('uci');await uci;
    // Single-thread WASM needs no SharedArrayBuffer / cross-origin isolation.
    this.send('setoption name Hash value 16');this.send('setoption name UCI_ShowWDL value true');
    const ready=this.waitFor(line=>line==='readyok');this.send('isready');await ready;
-  })().catch(error=>{this.fail(error);throw error;});
+  })().catch(error=>{if(generation===this.generation)this.fail(error);throw error;});
   return this.ready;
+ }
+ async waitUntilReady(signal){
+  if(signal?.aborted)throw abortError();
+  let abort;
+  try{
+   await Promise.race([this.ensure(),new Promise((resolve,reject)=>{
+    abort=()=>reject(abortError());signal?.addEventListener('abort',abort,{once:true});
+   })]);
+  }finally{if(abort)signal?.removeEventListener('abort',abort);}
  }
  request(body,analysis,{signal,onUpdate}={}){
   const task=this.queue.catch(()=>{}).then(async()=>{
    if(signal?.aborted)throw abortError();
-   await this.ensure();if(signal?.aborted)throw abortError();
+   await this.waitUntilReady(signal);if(signal?.aborted)throw abortError();
    const origin=body.origin||body.fen,moves=body.moves||[];
    if(typeof origin!=='string'||origin.length>160||!Array.isArray(moves)||moves.length>2048)throw Error('无效的局面或着法记录');
    const game=new Chess(origin);
@@ -103,8 +116,10 @@ class UciWorker{
 }
 const play=new UciWorker(),analysis=new UciWorker();
 export async function browserEngineStatus(){
- await play.ensure();
- return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[play.eloMin,play.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,engineElo:value.elo===null?null:Math.max(play.eloMin,Math.min(play.eloMax,value.elo))}]))};
+ // The initial status probe shares the analysis worker. Do not compile a second
+ // WASM instance on a phone until the user actually starts a computer game.
+ await analysis.ensure();
+ return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[analysis.eloMin,analysis.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,engineElo:value.elo===null?null:Math.max(analysis.eloMin,Math.min(analysis.eloMax,value.elo))}]))};
 }
 export function browserEngineRequest(path,body,options){
  if(path==='/api/play')return play.request(body,false,options);

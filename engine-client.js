@@ -1,5 +1,9 @@
 import { browserEngineEnabled, browserEngineRequest, browserEngineStatus } from './browser-engine.js';
 
+// Cold downloads can take longer than searches. Worker searches retain their
+// own 15s deadline; native requests keep their previous shorter limit.
+export function engineRequestTimeout(nativeTimeout=12000){return browserEngineEnabled()?120000:nativeTimeout;}
+
 export async function engineStatus(){
  if(browserEngineEnabled())return browserEngineStatus();
  const response=await fetch('/api/engine',{cache:'no-store'});

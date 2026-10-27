@@ -297,16 +297,83 @@ function writeRecentGames(storage,rows){storage.setItem(RECENT_KEY,JSON.stringif
 
 return { RECENT_KEY, RECENT_LIMIT, createTrialRecord, planPositionReturn, readRecentGames, updateRecentGames, writeRecentGames };
 })();
+const { prepareBrowserEngineAssets }=(()=>{
+// Stockfish.js 19.0.1, GPL-3.0. Upstream and corresponding source:
+// vendor/stockfish/manifest.json, Copying.txt and source.tar.gz.
+// These are build-time provenance links only; runtime never downloads a CDN asset.
+const ENGINE_FILES=[
+ {name:'stockfish-19-lite-single.js',type:'application/javascript',bytes:28230,sha256:'ccb130d7ff29408531c47d859a49f91d59d4f482d05a53eb1a3231a4f624c91a'},
+ {name:'stockfish-19-lite-single.wasm',type:'application/wasm',bytes:1845971,sha256:'ee4f115bdb2d32cadf96cada104a05b5ec257d7ad6f57582190b49bc71f096de'}
+];
+const engineRoot=new URL('./vendor/stockfish/',document.baseURI);
+const cacheName='chess-atelier-engine-19.0.1-'+encodeURIComponent(engineRoot.pathname);
+let preparedAssets=null;
+
+async function verifiedBytes(response,file){
+ if(!response?.ok)throw Error('引擎文件下载失败'+(response?'（'+response.status+'）':''));
+ const bytes=await response.arrayBuffer();
+ if(bytes.byteLength!==file.bytes)throw Error('引擎文件不完整，请重试。');
+ if(globalThis.crypto?.subtle){
+  const digest=await crypto.subtle.digest('SHA-256',bytes);
+  const hex=Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('');
+  if(hex!==file.sha256)throw Error('引擎文件校验失败，请重试。');
+ }
+ return bytes;
+}
+
+async function loadEngineFile(file){
+ const url=new URL(file.name,engineRoot);
+ if(url.origin!==location.origin)throw Error('引擎必须由当前网站托管。');
+ url.searchParams.set('v',file.sha256.slice(0,16));
+ let cache;
+ // Safari private browsing / full storage may deny Cache Storage. Downloading
+ // and playing still work; persistent caching is an optional optimization.
+ try{cache=await globalThis.caches?.open(cacheName);}catch{}
+ try{
+  const stored=await cache?.match(url.href);
+  if(stored)return await verifiedBytes(stored,file);
+ }catch{try{await cache?.delete(url.href);}catch{}}
+ let failure;
+ for(let attempt=0;attempt<3;attempt++){
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),25000);
+  try{
+   const response=await fetch(url.href,{signal:controller.signal,mode:'same-origin',credentials:'same-origin',redirect:'error',cache:attempt?'reload':'default'});
+   const bytes=await verifiedBytes(response,file);
+   try{await cache?.put(url.href,new Response(bytes,{headers:{'Content-Type':file.type}}));}catch{}
+   return bytes;
+  }catch(error){failure=error;}
+  finally{clearTimeout(timeout);}
+  if(attempt<2)await new Promise(resolve=>setTimeout(resolve,400*(attempt+1)));
+ }
+ throw Error('本站 Stockfish 加载失败，请检查网络后重试。'+(failure?.name==='AbortError'?'下载超时。':failure?.message||''));
+}
+
+function prepareBrowserEngineAssets(){
+ if(preparedAssets)return preparedAssets;
+ preparedAssets=Promise.all(ENGINE_FILES.map(loadEngineFile)).then(([script,wasm])=>{
+  const wasmUrl=URL.createObjectURL(new Blob([wasm],{type:'application/wasm'}));
+  const scriptUrl=URL.createObjectURL(new Blob([script],{type:'application/javascript'}));
+  // Stockfish.js accepts an explicit WASM location in its worker URL fragment.
+  // Both blobs came from verified same-origin bytes, so workers need no network,
+  // correct server WASM MIME, SharedArrayBuffer, CDN or analysis API.
+  return {workerUrl:scriptUrl+'#'+encodeURIComponent(wasmUrl)};
+ }).catch(error=>{preparedAssets=null;throw error;});
+ return preparedAssets;
+}
+
+return { prepareBrowserEngineAssets };
+})();
 const { browserEngineEnabled, browserEngineRequest, browserEngineStatus }=(()=>{
+
 
 // Public builds use two local Web Workers; desktop builds keep the native Python bridge.
 function browserEngineEnabled(){return globalThis.CHESS_ENGINE_MODE==='browser';}
 const LEVELS={1:{name:'入门',elo:1300,ms:350},2:{name:'一般',elo:1600,ms:500},3:{name:'进阶',elo:1900,ms:700},4:{name:'高手',elo:2200,ms:1000},5:{name:'大师',elo:2600,ms:1400},6:{name:'顶级',elo:3000,ms:2200}};
 const abortError=()=>new DOMException('操作已取消','AbortError');
-const assetUrl=new URL('./vendor/stockfish/stockfish-19-lite-single.js',document.baseURI).href;
 class UciWorker{
- constructor(){this.worker=null;this.ready=null;this.listeners=new Set();this.queue=Promise.resolve();this.eloMin=1320;this.eloMax=3190;}
+ constructor(){this.worker=null;this.ready=null;this.listeners=new Set();this.queue=Promise.resolve();this.eloMin=1320;this.eloMax=3190;this.generation=0;}
  fail(error){
+  this.generation++;
   this.worker?.terminate();this.worker=null;this.ready=null;
   for(const listener of [...this.listeners])listener.reject(error);
  }
@@ -321,9 +388,12 @@ class UciWorker{
  }
  ensure(){
   if(this.ready)return this.ready;
+  const generation=this.generation;
   this.ready=(async()=>{
    if(typeof WebAssembly!=='object'||typeof Worker!=='function')throw Error('当前浏览器不支持本地 Stockfish，请使用新版浏览器。');
-   this.worker=new Worker(assetUrl);
+   const {workerUrl}=await prepareBrowserEngineAssets();
+   if(generation!==this.generation)throw abortError();
+   this.worker=new Worker(workerUrl);
    this.worker.onmessage=event=>{
     if(typeof event.data!=='string')return;
     for(const line of event.data.split(/\r?\n/)){
@@ -332,18 +402,27 @@ class UciWorker{
      for(const listener of [...this.listeners])listener.line(line);
     }
    };
-   this.worker.onerror=event=>{event.preventDefault();this.fail(Error('浏览器 Stockfish 加载失败，请刷新或重试。'));};
-   const uci=this.waitFor(line=>line==='uciok');this.send('uci');await uci;
+   this.worker.onerror=event=>{event.preventDefault();if(generation===this.generation)this.fail(Error('浏览器 Stockfish 加载失败，请刷新或重试。'));};
+   const uci=this.waitFor(line=>line==='uciok',30000);this.send('uci');await uci;
    // Single-thread WASM needs no SharedArrayBuffer / cross-origin isolation.
    this.send('setoption name Hash value 16');this.send('setoption name UCI_ShowWDL value true');
    const ready=this.waitFor(line=>line==='readyok');this.send('isready');await ready;
-  })().catch(error=>{this.fail(error);throw error;});
+  })().catch(error=>{if(generation===this.generation)this.fail(error);throw error;});
   return this.ready;
+ }
+ async waitUntilReady(signal){
+  if(signal?.aborted)throw abortError();
+  let abort;
+  try{
+   await Promise.race([this.ensure(),new Promise((resolve,reject)=>{
+    abort=()=>reject(abortError());signal?.addEventListener('abort',abort,{once:true});
+   })]);
+  }finally{if(abort)signal?.removeEventListener('abort',abort);}
  }
  request(body,analysis,{signal,onUpdate}={}){
   const task=this.queue.catch(()=>{}).then(async()=>{
    if(signal?.aborted)throw abortError();
-   await this.ensure();if(signal?.aborted)throw abortError();
+   await this.waitUntilReady(signal);if(signal?.aborted)throw abortError();
    const origin=body.origin||body.fen,moves=body.moves||[];
    if(typeof origin!=='string'||origin.length>160||!Array.isArray(moves)||moves.length>2048)throw Error('无效的局面或着法记录');
    const game=new Chess(origin);
@@ -402,8 +481,10 @@ class UciWorker{
 }
 const play=new UciWorker(),analysis=new UciWorker();
 async function browserEngineStatus(){
- await play.ensure();
- return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[play.eloMin,play.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,engineElo:value.elo===null?null:Math.max(play.eloMin,Math.min(play.eloMax,value.elo))}]))};
+ // The initial status probe shares the analysis worker. Do not compile a second
+ // WASM instance on a phone until the user actually starts a computer game.
+ await analysis.ensure();
+ return {available:true,source:'stockfish',name:'Stockfish 19 Lite',local:true,browser:true,eloRange:[analysis.eloMin,analysis.eloMax],levels:Object.fromEntries(Object.entries(LEVELS).map(([key,value])=>[key,{...value,engineElo:value.elo===null?null:Math.max(analysis.eloMin,Math.min(analysis.eloMax,value.elo))}]))};
 }
 function browserEngineRequest(path,body,options){
  if(path==='/api/play')return play.request(body,false,options);
@@ -414,7 +495,11 @@ window.addEventListener('pagehide',()=>{play.fail(abortError());analysis.fail(ab
 
 return { browserEngineEnabled, browserEngineRequest, browserEngineStatus };
 })();
-const { engineRequest, engineStatus, scoreValue, scoreLabel, moveQuality }=(()=>{
+const { engineRequest, engineStatus, engineRequestTimeout, scoreValue, scoreLabel, moveQuality }=(()=>{
+
+// Cold downloads can take longer than searches. Worker searches retain their
+// own 15s deadline; native requests keep their previous shorter limit.
+function engineRequestTimeout(nativeTimeout=12000){return browserEngineEnabled()?120000:nativeTimeout;}
 
 async function engineStatus(){
  if(browserEngineEnabled())return browserEngineStatus();
@@ -463,7 +548,7 @@ function moveQuality(previous,current,move){
  return {loss,label:loss<30?'良好':loss<100?'可改进':loss<250?'失误':'严重失误',cls:loss<30?'good':loss<100?'ok':'bad'};
 }
 
-return { engineRequest, engineStatus, scoreValue, scoreLabel, moveQuality };
+return { engineRequest, engineStatus, engineRequestTimeout, scoreValue, scoreLabel, moveQuality };
 })();
 const { CHESS_QUOTE_DATA }=(()=>{
 // Verified short extracts and original practice prompts. See data/CHESS_QUOTES.md.
@@ -832,7 +917,7 @@ function setupLocalAnalysis({state,viewGame,enginePosition,drawArrow,maybeBookRe
   $('#engine-probability').dataset.pending='true';status('正在分析',true);
   timer=setTimeout(async()=>{
    timer=null;
-   const request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),12000);
+   const request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),engineRequestTimeout());
    try{
     await engineRequest('/api/analyze',{...position,stream:true},{signal:request.signal,onUpdate:data=>{
      if(seq!==sequence)return;remember(k,data);render(data,position);
@@ -999,7 +1084,7 @@ function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,anal
   timer=null;if(!state.postReview||!record)return;
   const order=[state.view,...(state.view?[state.view-1]:[]),...record.positions.map((_,i)=>i)],index=order.find(i=>!record.results.has(i));
   if(index===undefined){render();return;}
-  const snapshot=record,token=epoch,request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),15000);
+  const snapshot=record,token=epoch,request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),engineRequestTimeout(15000));
   try{
    const data=await engineRequest('/api/analyze',{...snapshot.positions[index],stream:true,review:true},{signal:request.signal,onUpdate:data=>{if(token===epoch&&state.postReview&&state.view===index)analysis.renderReview(data,snapshot.positions[index]);}});
    if(token!==epoch||snapshot!==record||!state.postReview)return;
@@ -2953,7 +3038,7 @@ async function maybeBookReply(){
  const g=viewGame();if(g.turn()===state.side||g.isGameOver()){state.busy=false;return;}
  const token=++state.generation,fen=g.fen();
  playController?.abort();const controller=playController=new AbortController();
- const timeout=setTimeout(()=>controller.abort(),12000);
+ const timeout=setTimeout(()=>controller.abort(),engineRequestTimeout());
  state.busy=true;$('#retry-engine').classList.add('hidden');drawBoard();
  try{
   const data=await engineRequest('/api/play',{...enginePosition(g),level:botLevel()},{signal:controller.signal});

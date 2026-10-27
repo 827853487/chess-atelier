@@ -1,5 +1,5 @@
 import { Chess } from './vendor/chess.js';
-import { engineRequest, moveQuality, scoreLabel } from './engine-client.js';
+import { engineRequest, engineRequestTimeout, moveQuality, scoreLabel } from './engine-client.js';
 export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArrow,analysis,whenFlightsIdle}){
  const $=id=>document.getElementById(id);let record=null,controller=null,timer=null,epoch=0,lastView=-1,error='',annotationKey='',annotationJob=0,textMotion=null,textAnimation=null,textSignature='';
  const departingMarks=new Set();
@@ -109,7 +109,7 @@ export function setupPostReview({state,cachedHistory,enginePosition,goto,drawArr
   timer=null;if(!state.postReview||!record)return;
   const order=[state.view,...(state.view?[state.view-1]:[]),...record.positions.map((_,i)=>i)],index=order.find(i=>!record.results.has(i));
   if(index===undefined){render();return;}
-  const snapshot=record,token=epoch,request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),15000);
+  const snapshot=record,token=epoch,request=controller=new AbortController(),timeout=setTimeout(()=>request.abort(),engineRequestTimeout(15000));
   try{
    const data=await engineRequest('/api/analyze',{...snapshot.positions[index],stream:true,review:true},{signal:request.signal,onUpdate:data=>{if(token===epoch&&state.postReview&&state.view===index)analysis.renderReview(data,snapshot.positions[index]);}});
    if(token!==epoch||snapshot!==record||!state.postReview)return;

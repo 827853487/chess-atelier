@@ -12,7 +12,7 @@ import { RECENT_KEY, createTrialRecord, planPositionReturn, readRecentGames, upd
 // Bundled rules module: no network dependency for board and PGN playback.
 import { Chess } from './vendor/chess.js';
 import { cloneRecord, recordRows, gameResult, standardPgn, recordEnding } from './game-record.js';
-import { engineRequest, scoreValue, scoreLabel, moveQuality } from './engine-client.js';
+import { engineRequest, engineRequestTimeout, scoreValue, scoreLabel, moveQuality } from './engine-client.js';
 document.querySelector('#loading').remove();
 const $ = q=>document.querySelector(q), $$=q=>[...document.querySelectorAll(q)];
 const FILES='abcdefgh';
@@ -445,7 +445,7 @@ async function maybeBookReply(){
  const g=viewGame();if(g.turn()===state.side||g.isGameOver()){state.busy=false;return;}
  const token=++state.generation,fen=g.fen();
  playController?.abort();const controller=playController=new AbortController();
- const timeout=setTimeout(()=>controller.abort(),12000);
+ const timeout=setTimeout(()=>controller.abort(),engineRequestTimeout());
  state.busy=true;$('#retry-engine').classList.add('hidden');drawBoard();
  try{
   const data=await engineRequest('/api/play',{...enginePosition(g),level:botLevel()},{signal:controller.signal});
