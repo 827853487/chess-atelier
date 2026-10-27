@@ -179,6 +179,12 @@ button:not(.square):focus-visible{outline:2px solid color-mix(in srgb,var(--acce
 #music-panel .music-controls{display:grid!important;grid-template-columns:minmax(42px,1fr) auto minmax(42px,1fr)!important;align-items:center!important;gap:0!important}
 #music-panel .music-main-controls{grid-column:2;grid-row:1}
 #music-panel #music-shuffle{grid-column:3;grid-row:1;justify-self:end;align-self:center;display:grid!important;width:42px!important;height:42px!important;border-radius:12px!important;border:1px solid transparent!important;color:var(--muted)!important;background:transparent!important}
-#music-panel #music-shuffle[aria-pressed=true]{color:var(--accent)!important;background:var(--accent-soft)!important}
-#music-panel #music-shuffle:hover{background:var(--sub)!important}
-#music-panel #music-shuffle[aria-pressed=true]:hover{background:var(--accent-soft)!important}
+#music-panel #music-shuffle[aria-pressed=true]{color:var(--accent)!important}
+#music-panel #music-shuffle:hover{color:var(--accent)!important}
+#music-panel #music-shuffle,#music-panel #music-shuffle:hover{background:transparent!important;background-image:none!important;box-shadow:none!important;transition:background-color .12s ease,color .12s ease}
+#music-panel #music-shuffle.mode-feedback,#music-panel #music-shuffle.mode-feedback:hover{background:var(--accent-soft)!important}
+
+/* A shared 42px right column aligns the smaller spectrum with the mode icon. */
+#music-panel .now-playing{grid-template-columns:56px minmax(0,1fr) 42px!important}
+#music-panel .wave-bars{width:42px!important;flex-basis:42px!important;height:24px!important;gap:2.5px!important;justify-content:center!important}
+#music-panel .wave-bars i,#music-panel.is-playing .wave-bars i{width:2px!important;min-width:2px!important;max-width:2px!important;flex:0 0 2px!important;height:18px!important;max-height:18px!important}

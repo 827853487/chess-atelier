@@ -20,3 +20,8 @@
 - **视觉原则**：参考 Google Material Design 3 的布局、触控目标及状态反馈原则，但没有声称由 Google 设计或使用其官方组件库。
 
 - **本地音乐目录**：`assets/music/playlist.json` 收录四时期共 16 首录音及其独立许可，原始 Commons 元数据保存在 source-metadata.json。
+
+
+## Playback mode icons
+
+Lucide `shuffle` and `menu` SVGs are vendored in `assets/icons/` with their pinned upstream commit and hashes in MUSIC_ICONS.md. Full ISC/MIT notices are distributed in LUCIDE-LICENSE.txt. The same paths are inlined by music-mode.js; no icon CDN is requested at runtime.

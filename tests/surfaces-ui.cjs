@@ -12,7 +12,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
   await page.locator('#music-toggle').click();await page.waitForTimeout(230);assert.equal(await page.locator('#music-panel').isVisible(),true,'reopen cancels a pending exit');
   await page.locator('[data-era=baroque]').click();await page.waitForFunction(()=>!document.querySelector('#music-audio').paused);await page.waitForSelector('.composer-monogram[data-current=true]');await page.waitForTimeout(220);
   assert.match(await page.locator('.composer-monogram[data-current=true]').innerText(),/^[BV]$/);assert.equal(await page.locator('.now-art img').count(),0);
-  const bars=await page.locator('.wave-bars i').evaluateAll(ns=>ns.map(n=>({width:getComputedStyle(n).width,round:parseFloat(getComputedStyle(n).borderRadius)})));assert.equal(bars.length,5);assert.ok(bars.every(n=>n.width==='3px'&&n.round>=3));
+  const bars=await page.locator('.wave-bars i').evaluateAll(ns=>ns.map(n=>({width:getComputedStyle(n).width,round:parseFloat(getComputedStyle(n).borderRadius)})));assert.equal(bars.length,5);assert.ok(bars.every(n=>n.width==='2px'&&n.round>=3));
   await page.locator('#music-panel').screenshot({path:path.resolve(__dirname,`../test-results/surfaces-player-${width}.png`)});
   await page.evaluate(()=>document.querySelector('.board-heading').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true})));await page.waitForTimeout(60);assert.ok((await fade('#music-panel')).opacity<1);await page.waitForTimeout(180);assert.equal(await page.locator('#music-panel').isVisible(),false);
   await page.locator('#settings-toggle').click();await page.waitForTimeout(220);await page.locator('#atelier-move-hints .atelier-select-trigger').click();await page.waitForTimeout(210);

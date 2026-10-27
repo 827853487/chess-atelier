@@ -2567,7 +2567,42 @@ function createPcmSpectrum(buffer){
 
 return { createPcmSpectrum };
 })();
+const { setupMusicModeButton }=(()=>{
+// Lucide shuffle/menu paths; copyright Lucide and Feather contributors.
+// Original SVGs, pinned source and full ISC/MIT notices: assets/icons/.
+const MODE_ICONS = {"random": "<svg aria-hidden=\"true\"\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"m18 14 4 4-4 4\" />\n  <path d=\"m18 2 4 4-4 4\" />\n  <path d=\"M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22\" />\n  <path d=\"M2 6h1.972a4 4 0 0 1 3.6 2.2\" />\n  <path d=\"M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45\" />\n</svg>", "sequence": "<svg aria-hidden=\"true\"\n  xmlns=\"http://www.w3.org/2000/svg\"\n  width=\"24\"\n  height=\"24\"\n  viewBox=\"0 0 24 24\"\n  fill=\"none\"\n  stroke=\"currentColor\"\n  stroke-width=\"2\"\n  stroke-linecap=\"round\"\n  stroke-linejoin=\"round\"\n>\n  <path d=\"M4 5h16\" />\n  <path d=\"M4 12h16\" />\n  <path d=\"M4 19h16\" />\n</svg>"};
+function setupMusicModeButton(button,isRandom,onToggle){
+ let visible=null,running=false,feedbackTimer;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const desired=()=>isRandom()?'random':'sequence';
+ const replace=mode=>{button.innerHTML=MODE_ICONS[mode];button.dataset.mode=mode;visible=mode;};
+ function render(){
+  button.setAttribute('aria-pressed',String(isRandom()));
+  button.setAttribute('aria-label',isRandom()?'随机播放，切换为顺序播放':'顺序播放，切换为随机播放');
+  button.title=isRandom()?'随机播放':'顺序播放 · 沿已播放记录切换';
+  if(visible===null){replace(desired());return;}
+  if(running||visible===desired())return;
+  running=true;
+  (async()=>{
+   while(visible!==desired()){
+    const old=button.querySelector('svg');
+    if(!reduced.matches)await old.animate([{opacity:1},{opacity:0}],{duration:80,fill:'forwards',easing:'ease-out'}).finished.catch(()=>{});
+    replace(desired());
+    if(!reduced.matches)await button.querySelector('svg').animate([{opacity:0},{opacity:1}],{duration:110,easing:'ease-in'}).finished.catch(()=>{});
+   }
+  })().finally(()=>{running=false;});
+ }
+ button.addEventListener('click',()=>{
+  clearTimeout(feedbackTimer);button.classList.add('mode-feedback');feedbackTimer=setTimeout(()=>button.classList.remove('mode-feedback'),260);
+  onToggle();render();
+ });
+ render();return {render};
+}
+
+return { setupMusicModeButton };
+})();
 const { setupPeriodMusic }=(()=>{
+
 
 
 
@@ -2599,7 +2634,7 @@ function scrollMusicLabel(node,viewport,key){
  if(overflow&&!reduced){const end=`translateX(${-distance}px)`;animation=node.animate([{transform:'translateX(0)',offset:0},{transform:'translateX(0)',offset:.1},{transform:end,offset:.9},{transform:end,offset:1}],{duration:Math.max(8500,distance/18*1000+2400),delay:1600,iterations:Infinity,direction:'alternate',easing:'linear',fill:'both'});}
  labelScrolls.set(node,{signature,animation});viewport.classList.toggle('is-overflowing',overflow);
 }
-let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0,spectrumTap=null,spectrumSerial=-1,spectrumSink=null,spectrumTrack=null,mediaSession=null;
+let spectrumContext=null,spectrum=null,spectrumSource=null,spectrumFrame=0,spectrumTap=null,spectrumSerial=-1,spectrumSink=null,spectrumTrack=null,mediaSession=null,modeControl=null;
 let pcmSpectrum=null,pcmSerial=-1,pcmQueue=Promise.resolve();
 audio.crossOrigin='anonymous';
 function stopSpectrum(){cancelAnimationFrame(spectrumFrame);spectrumFrame=0;for(const bar of document.querySelectorAll('.wave-bars i'))bar.style.transform='scaleY(.12)';}
@@ -2613,11 +2648,11 @@ function preparePcmSpectrum(){
  if(!state.track||pcmSerial===state.serial)return;
  const Context=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!Context)return;
  const serial=state.serial,track=state.track;pcmSerial=serial;pcmSpectrum=null;
- if(Number(track.duration||audio.duration)>900)return;
+ if(Number(track.duration||audio.duration)>900||track.bytes>8_000_000)return;
  bufferTrack(track);const entry=state.buffers.get(track.id);
  (async()=>{
   await entry?.promise;if(state.serial!==serial||!entry?.url)return;
-  const response=await fetch(entry.url),bytes=await response.arrayBuffer();if(state.serial!==serial)return;
+  const response=await fetch(entry.url),bytes=await response.arrayBuffer();if(bytes.byteLength>8_000_000)return;if(state.serial!==serial)return;
   // Only decoding is serialized. An old network fetch must not hold up the
   // current recording's visualizer after a quick track change.
   pcmQueue=pcmQueue.catch(()=>{}).then(async()=>{
@@ -2743,7 +2778,7 @@ function render(){
   if(!composer&&!performer)text.textContent='点击暂停键播放';
  }
  document.querySelectorAll('.era-btn').forEach(button=>{const selected=button.dataset.era===state.era;button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));});
- $('music-shuffle').setAttribute('aria-pressed',String(state.shuffle));$('music-shuffle').title=state.shuffle?'随机播放':'顺序播放 · 沿已播放记录切换';
+ modeControl?.render();
  // Recording attribution remains on the compact artist line; no controls or
  // web prompts are inserted below the progress bar.
  artist.href=state.track?.sourceUrl||'https://commons.wikimedia.org/';artist.title=[[composer,performer].filter(Boolean).join(' '),[state.track?.credit,state.track?.license,'查看录音来源与许可'].filter(Boolean).join(' · ')].filter(Boolean).join('\n');
@@ -2751,31 +2786,69 @@ function render(){
  scheduleTrackOverflow();
  mediaSession?.sync();
 }
-function disposeBuffer(id){const entry=state.buffers.get(id);if(!entry)return;entry.controller.abort();if(entry.url)URL.revokeObjectURL(entry.url);state.buffers.delete(id);}
+let activeBuffer=null;
+function bufferStats(){
+ $('music-panel').dataset.buffered=String([...state.buffers.values()].filter(entry=>entry.status==='ready').length);
+ $('music-panel').dataset.nextBuffered=String(!!state.plan[0]&&state.buffers.get(state.plan[0].id)?.status==='ready');
+}
+function disposeBuffer(id){
+ const entry=state.buffers.get(id);if(!entry)return;entry.cancelled=true;entry.controller.abort();entry.resolve?.();if(entry.url)URL.revokeObjectURL(entry.url);state.buffers.delete(id);
+}
+function currentBufferSafe(){
+ if(!state.track||state.buffers.get(state.track.id)?.status==='ready')return true;
+ if(audio.readyState<3)return false;
+ const position=audio.currentTime,remaining=Number.isFinite(audio.duration)?Math.max(0,audio.duration-position):Infinity,ranges=audio.buffered;
+ for(let i=0;i<ranges.length;i++)if(ranges.start(i)<=position+.1&&ranges.end(i)>=position)return ranges.end(i)-position>=Math.min(20,remaining);
+ return false;
+}
+function pumpBuffers(){
+ if(activeBuffer||!currentBufferSafe())return;
+ const queued=[...state.buffers.values()].filter(entry=>entry.status==='queued');
+ const next=queued.find(entry=>entry.track.id===state.track?.id)||queued[0];if(!next)return;
+ activeBuffer=next;next.run();
+}
+function deferWarmup(){
+ const pending=activeBuffer;if(!pending||pending.track.id===state.track?.id)return;
+ const track=pending.track;disposeBuffer(track.id);bufferTrack(track);
+}
 function bufferTrack(track){
  if(state.buffers.has(track.id))return;
- const entry={controller:new AbortController(),status:'loading',url:null};state.buffers.set(track.id,entry);
- entry.promise=(async()=>{
-  if(track.bytes>8_000_000){entry.status='stream';return;}
-  const response=await fetch(source(track),{signal:entry.controller.signal,cache:'force-cache'});if(!response.ok)throw Error('Audio HTTP '+response.status);
-  if(Number(response.headers.get('Content-Length'))>8_000_000){entry.status='stream';entry.controller.abort();return;}
-  const reader=response.body.getReader(),chunks=[];let size=0;
-  while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>8_000_000){entry.status='stream';await reader.cancel();return;}chunks.push(value);}
-  if(state.buffers.get(track.id)!==entry)return;
-  entry.url=URL.createObjectURL(new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'}));entry.status='ready';
- })().catch(()=>{if(entry.status==='loading')entry.status='failed';}).finally(()=>{
-  $('music-panel').dataset.buffered=String([...state.buffers.values()].filter(value=>value.status==='ready').length);
- });
+ const entry={track,controller:new AbortController(),status:'queued',url:null,cancelled:false};
+ entry.promise=new Promise(resolve=>entry.resolve=resolve);state.buffers.set(track.id,entry);
+ entry.run=async()=>{
+  entry.status='loading';const timeout=setTimeout(()=>entry.controller.abort(),45000);
+  try{
+   if(track.bytes>32_000_000){entry.status='stream';return;}
+   const response=await fetch(source(track),{signal:entry.controller.signal,cache:'force-cache',priority:track.id===state.track?.id?'high':'low'});if(!response.ok)throw Error('Audio HTTP '+response.status);
+   if(Number(response.headers.get('Content-Length'))>32_000_000){entry.status='stream';await response.body?.cancel();return;}
+   const reader=response.body.getReader(),chunks=[];let size=0;
+   while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>32_000_000){entry.status='stream';await reader.cancel();return;}chunks.push(value);}
+   if(state.buffers.get(track.id)!==entry)return;
+   entry.url=URL.createObjectURL(new Blob(chunks,{type:response.headers.get('Content-Type')||'audio/mpeg'}));entry.status='ready';
+  }catch{entry.status=entry.cancelled?'cancelled':'failed';}
+  finally{
+   clearTimeout(timeout);entry.resolve();if(activeBuffer===entry)activeBuffer=null;
+   bufferStats();
+   if(!entry.cancelled&&entry.status==='failed'&&track.id!==state.track?.id&&state.plan[0]?.id===track.id){
+    state.failed.add(track.id);if(track.online)state.onlineBackoffUntil=Date.now()+60000;state.plan=[];prefetch();
+   }
+   pumpBuffers();
+  }
+ };
+ if(track.id===state.track?.id)deferWarmup();pumpBuffers();
 }
 function prefetch(){
- const pool=tracks(),plan=[],first=(!state.shuffle&&historyStep(1)?.track)||pick(1);if(first&&first.id!==state.track?.id)plan.push(first);
- const remaining=pool.filter(track=>track.id!==state.track?.id&&!plan.some(item=>item.id===track.id));
- for(let i=remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]];}
-
- plan.push(...remaining.slice(0,3-plan.length));state.plan=plan;
- const keep=new Set([state.track?.id,...plan.map(track=>track.id)]);for(const id of state.buffers.keys())if(!keep.has(id))disposeBuffer(id);
- for(const track of plan)bufferTrack(track);
- $('music-panel').dataset.preloadCount=String(plan.length);
+ const pool=tracks(),previous=state.plan[0];
+ const valid=previous&&previous.id!==state.track?.id&&pool.some(track=>track.id===previous.id);
+ const first=!state.shuffle?(historyStep(1)?.track||pick(1)):(valid?previous:pick(1));
+ state.plan=first&&first.id!==state.track?.id?[first]:[];
+ const keep=new Set([state.track?.id,...state.plan.map(track=>track.id)]);for(const id of state.buffers.keys())if(!keep.has(id))disposeBuffer(id);
+ for(const track of state.plan)bufferTrack(track);
+ $('music-panel').dataset.preloadCount=String(state.plan.length);bufferStats();pumpBuffers();
+}
+function initialTrack(){
+ const pool=tracks(),ready=pool.filter(track=>track.id!==state.track?.id&&state.buffers.get(track.id)?.status==='ready'),locals=pool.filter(track=>track.localUrl);
+ return selectMusicTrack(ready.length?ready:locals.length?locals:pool,{currentId:state.track?.id,recent:state.history,shuffle:state.shuffle});
 }
 function start(track,{historyIndex=null}={}){
  if(!track)return;
@@ -2784,6 +2857,7 @@ function start(track,{historyIndex=null}={}){
  state.pendingHistoryIndex=historyIndex;
  if(Number.isInteger(historyIndex)&&state.era!=='all'&&track.era&&track.era!==state.era)state.era=track.era;
  updateMonogram(track);
+ const pending=state.buffers.get(track.id);if(pending&&pending.status!=='ready')disposeBuffer(track.id);
  audio.src=state.buffers.get(track.id)?.url||source(track);audio.preload='auto';audio.load();
  // play() stays in the user's click stack, including on iPhone. Do not await a manifest/fetch first.
  const request=audio.play();render();prefetch();
@@ -2795,7 +2869,7 @@ function start(track,{historyIndex=null}={}){
 }
 function resumePlayback(){
  mediaSession?.activate();primeSpectrum();
- if(!state.track||state.failed.has(state.track.id)){state.failed.clear();state.errors=0;start(pick(1));return;}
+ if(!state.track||state.failed.has(state.track.id)){state.failed.clear();state.errors=0;start(initialTrack());return;}
  const serial=state.serial;
  return audio.play().catch(error=>{
   if(serial!==state.serial||error.name==='AbortError')return;
@@ -2835,21 +2909,36 @@ function closePanel(){
  $('music-toggle').setAttribute('aria-expanded','false');stopSpectrum();
 }
 function setupPeriodMusic(){
- let copyTimer;
+ let copyTimer,stallTimer;
+ const clearStall=()=>{clearTimeout(stallTimer);stallTimer=null;};
+ const watchStall=(delay=15000)=>{
+  clearStall();const serial=state.serial,position=audio.currentTime;
+  stallTimer=setTimeout(()=>{
+   if(serial!==state.serial||audio.paused||audio.seeking||audio.readyState>=3||audio.currentTime>position+.05)return;
+   if(state.track?.online)state.onlineBackoffUntil=Date.now()+60000;
+   fail(serial);
+  },delay);
+ };
  const copyTitle=async()=>{if(!state.track)return;const label=musicCopyTitle(state.track),toast=$('music-copy-toast');try{await navigator.clipboard.writeText(label);toast.textContent='已复制';}catch{toast.textContent='复制失败，请允许剪贴板权限';}clearTimeout(copyTimer);showSurface(toast);copyTimer=setTimeout(()=>hideSurface(toast),1400);};
  $('music-copy').addEventListener('click',copyTitle);$('music-copy').addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();copyTitle();}});
  audio.volume=.25;$('music-next-audio').preload='none';
  mediaSession=setupMusicSession({audio,getTrack:()=>state.track,play:resumePlayback,pause:()=>audio.pause(),previous:()=>advance(-1),next:()=>advance(1)});
  audio.addEventListener('playing',()=>{
+  clearStall();
   if(state.visitSerial!==state.serial){
    state.timeline=recordMusicVisit(state.timeline,state.track,state.pendingHistoryIndex);state.visitSerial=state.serial;
    state.history.push(state.track.id);if(state.history.length>32)state.history.shift();
   }
   state.playing=true;state.errors=0;state.status='';ensureSpectrum();render();startSpectrum();
  });
- audio.addEventListener('pause',()=>{state.playing=false;stopSpectrum();render();});
+ audio.addEventListener('pause',()=>{clearStall();state.playing=false;stopSpectrum();render();});
  audio.addEventListener('durationchange',()=>{if(Number.isFinite(audio.duration))$('music-duration').textContent=time(audio.duration);});
  audio.addEventListener('timeupdate',()=>{if(!Number.isFinite(audio.currentTime))return;$('music-elapsed').textContent=time(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0){$('music-seek').value=Math.round(audio.currentTime/audio.duration*1000);$('music-seek').style.setProperty('--seek-progress',Math.round(audio.currentTime/audio.duration*100)+'%');}});
+ for(const event of ['progress','canplay','canplaythrough','timeupdate','seeked'])audio.addEventListener(event,pumpBuffers);
+ for(const event of ['waiting','stalled'])audio.addEventListener(event,()=>{if(!currentBufferSafe())deferWarmup();watchStall();});
+ audio.addEventListener('loadstart',()=>watchStall(25000));
+ audio.addEventListener('seeking',clearStall);
+ audio.addEventListener('seeked',()=>{if(!audio.paused&&audio.readyState<3)watchStall();});
  audio.addEventListener('ended',()=>{resetProgress();advance();expandOnline();});
  audio.addEventListener('error',()=>{if(audio.getAttribute('src')&&audio.error)fail();});
  $('music-toggle').addEventListener('click',event=>{event.stopPropagation();const open=!surfaceOpen($('music-panel'));if(open){syncPanelAnchor();showSurface($('music-panel'));for(const entry of labelScrolls.values())entry.animation?.play();scheduleTrackOverflow();}else closePanel();$('music-toggle').setAttribute('aria-expanded',String(open));if(open){prefetch();expandOnline();if(!audio.paused){primeSpectrum();ensureSpectrum();startSpectrum();}}else stopSpectrum();});
@@ -2858,11 +2947,11 @@ function setupPeriodMusic(){
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&surfaceOpen($('music-panel'))){event.preventDefault();closePanel();$('music-toggle').focus({preventScroll:true});}});
  document.querySelectorAll('.era-btn').forEach(button=>button.addEventListener('click',()=>{
   state.era=button.dataset.era;state.failed.clear();state.plan=[];state.errors=0;
-  start(pick(1));expandOnline();
+  start(initialTrack());expandOnline();
  }));
  $('music-play').addEventListener('click',()=>{if(!audio.paused)audio.pause();else resumePlayback();});
  $('music-prev').addEventListener('click',()=>advance(-1));$('music-next').addEventListener('click',()=>advance(1));
- $('music-shuffle').addEventListener('click',()=>{state.shuffle=!state.shuffle;state.plan=[];prefetch();render();});
+ modeControl=setupMusicModeButton($('music-shuffle'),()=>state.shuffle,()=>{state.shuffle=!state.shuffle;state.plan=[];prefetch();render();});
  $('music-seek').addEventListener('input',event=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(event.target.value)/1000;});
  $('music-seek').addEventListener('pointerup',event=>event.target.blur());
  addEventListener('resize',()=>{syncPanelAnchor();updateTrackOverflow();},{passive:true});const anchorObserver=new ResizeObserver(schedulePanelAnchor);anchorObserver.observe(document.querySelector('.masthead'));anchorObserver.observe($('music-toggle'));

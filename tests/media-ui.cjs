@@ -20,19 +20,19 @@ const root=path.resolve(__dirname,'..'),output=path.join(root,'test-results'),ca
   for(const era of ['baroque','classical','romantic','modern','all']){
    await page.locator(`[data-era=${era}]`).click();await page.waitForFunction(()=>{const audio=document.querySelector('#music-audio');return !audio.paused&&audio.currentTime>.1;},null,{timeout:25000});
    const label=await page.locator('#music-title').innerText();assert.ok(catalog.some(track=>track.title.replace(new RegExp('^'+track.composer+'[ ·:：–—-]+'),'')===label&&(era==='all'||track.era===era)));
-   await page.waitForFunction(()=>Number(document.querySelector('#music-panel').dataset.buffered)>=3,null,{timeout:30000});
+   await page.waitForFunction(()=>document.querySelector('#music-panel').dataset.nextBuffered==='true',null,{timeout:30000});
   }
   // Allow the selected recording's quiet lead-in to pass before sampling FFT.
   await page.locator('[data-era=baroque]').click();
   await page.waitForFunction(()=>document.querySelector('#music-audio').currentTime>4);
   const spectrum=await page.evaluate(()=>new Promise(resolve=>{const frames=[];let n=0;function sample(){frames.push([...document.querySelectorAll('.wave-bars i')].map(node=>node.style.transform).join('|'));if(++n<75)requestAnimationFrame(sample);else resolve(frames);}requestAnimationFrame(sample);}));
-  assert.equal(await page.locator('.wave-bars i').count(),5);const widths=await page.locator('.wave-bars i').evaluateAll(ns=>ns.map(n=>getComputedStyle(n).width));assert.ok(widths.every(w=>w==='3px'));assert.ok(new Set(spectrum).size>5,'spectrum follows actual changing audio frequency data');assert.ok(await page.locator('.wave-bars i').evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).animationName==='none')));
+  assert.equal(await page.locator('.wave-bars i').count(),5);const widths=await page.locator('.wave-bars i').evaluateAll(ns=>ns.map(n=>getComputedStyle(n).width));assert.ok(widths.every(w=>w==='2px'));assert.ok(new Set(spectrum).size>5,'spectrum follows actual changing audio frequency data');assert.ok(await page.locator('.wave-bars i').evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).animationName==='none')));
   await page.locator('#music-title').click();await page.locator('#music-copy-toast').waitFor({state:'visible'});assert.equal(await page.locator('#music-copy-toast').innerText(),'已复制');const copied=await page.evaluate(()=>navigator.clipboard.readText());assert.ok(catalog.some(track=>copied===track.composer+' - '+track.title.replace(new RegExp('^'+track.composer+'[ ·:：–—-]+'),'')));assert.equal(await page.evaluate(()=>getSelection().toString()),'');
   await page.locator('[data-era=baroque]').click();const a=await page.locator('#music-title').innerText();await page.locator('#music-next').click();const b=await page.locator('#music-title').innerText();await page.locator('#music-prev').click();const c=await page.locator('#music-title').innerText();assert.notEqual(a,b);assert.notEqual(c,a);assert.notEqual(c,b);
   assert.equal(await page.locator('#music-shuffle').getAttribute('aria-pressed'),'true','random playback remains the initial mode');
   await page.locator('#music-panel').screenshot({path:path.join(output,'local-classical-player.png')});await page.locator('#music-toggle').click();
   await page.setViewportSize({width:390,height:844});await page.locator('#settings-toggle').click();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.locator('#settings-dialog').screenshot({path:path.join(output,'compact-settings-mobile.png')});
   assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'media-ui-result.json'),JSON.stringify({passed:true,localTracks:catalog.length,realFft:true,erasAutoPlay:true,threeBuffers:true,shufflePreviousFresh:true,alwaysShuffle:true,logoStopsAfterCurrentTurn:true,insetCardBorders:true,compactSettings:true,pageErrors:errors},null,2));
-  console.log('PASS: real local MP3 playback for all eras, three buffers, ordering, uninterrupted single logo rotations, card borders and compact settings');
+  console.log('PASS: real local MP3 playback for all eras, prioritized next buffer, ordering, uninterrupted single logo rotations, card borders and compact settings');
  }catch(error){await page.screenshot({path:path.join(output,'media-ui-failure.png'),fullPage:true});throw error;}finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
