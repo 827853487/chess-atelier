@@ -77,7 +77,7 @@ class UciWorker{
    this.send('position fen '+origin+(moves.length?' moves '+moves.join(' '):''));
    const sign=game.turn()==='w'?1:-1,count=Math.min(3,game.moves().length),batches=new Map();let rows=null,lastEmit=0;
    let aborted=false,stopTimer;
-   const stop=()=>{aborted=true;this.send('stop');stopTimer=setTimeout(()=>this.fail(abortError()),1500);};
+   const stop=()=>{aborted=true;if(!this.worker)return;this.send('stop');stopTimer=setTimeout(()=>this.fail(abortError()),1500);};
    signal?.addEventListener('abort',stop,{once:true});
    try{
     if(signal?.aborted)throw abortError();

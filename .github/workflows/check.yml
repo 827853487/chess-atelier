@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Unit checks
         run: |
-          node --test tests/records.test.cjs tests/game-sessions.test.cjs tests/library.test.cjs tests/chess-notes.test.cjs tests/music-order.test.cjs tests/engine-assets.test.cjs
+          node --test tests/records.test.cjs tests/game-sessions.test.cjs tests/library.test.cjs tests/chess-notes.test.cjs tests/music-order.test.cjs tests/engine-assets.test.cjs tests/music-session.test.cjs
           python tests/piece_assets.py
       - name: Build browser application
         run: |
